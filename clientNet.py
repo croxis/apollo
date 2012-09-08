@@ -11,7 +11,7 @@ from universals import log
 
 
 #PROPOSAL! {server entity id: client entity id} and reverse lookup dict too
-
+#test
 
 class NetworkSystem(sandbox.EntitySystem):
     def init(self, port=2000, server="127.0.0.1", serverPort=1999, backlog=1000, compress=False):
@@ -51,8 +51,8 @@ class NetworkSystem(sandbox.EntitySystem):
 
                 if msgID == protocol.NEW_SHIP:
                     log.info("New ship")
-                    playerPilotID = myIterator.getUint16()
-                    shipID = myIterator.getUint16()
+                    playerPilotID = myIterator.getUint8()
+                    shipID = myIterator.getUint8()
                     shipName = myIterator.getString()
                     health = myIterator.getUint8()
                     position = Point3(myIterator.getFloat32(), myIterator.getFloat32(), myIterator.getFloat32())

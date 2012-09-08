@@ -18,19 +18,6 @@ import protocol
 import ships
 import universals
 
-accountEntities = {} #{"name": id}
-
-
-class AccountComponent(object):
-    name = ""
-    passwordHash = ""
-    agentKeys = []
-    address = None
-    online = False
-    admin = False
-    mod = False
-    owner = False
-
 
 class NetworkSystem(sandbox.EntitySystem):
     def init(self, port=1999, backlog=1000, compress=False):
@@ -49,6 +36,7 @@ class NetworkSystem(sandbox.EntitySystem):
 
         self.activePlayers = []  # PlayerComponent
         self.activeConnections = {}  # {NetAddress : PlayerComponent}
+        self.shipMap = {} # {ShipID: {CONSOL: Netaddress}}
         self.lastAck = {}  # {NetAddress: time}
 
         self.startPolling()
@@ -56,7 +44,7 @@ class NetworkSystem(sandbox.EntitySystem):
 
     def startPolling(self):
         #taskMgr.add(self.tskReaderPolling, "serverListenTask", -40)
-        taskMgr.doMethodLater(10, self.activeCheck, "activeCheck")
+        sandbox.base.taskMgr.doMethodLater(10, self.activeCheck, "activeCheck")
 
     #def tskReaderPolling(self, taskdata):
     def begin(self):
@@ -83,9 +71,11 @@ class NetworkSystem(sandbox.EntitySystem):
                 hashID = myIterator.getUint16()
 
                 if msgID == protocol.LOGIN:
-                    username = myIterator.getString()
-                    password = myIterator.getString()
-                    if username not in accountEntities:
+                    #TODO, if connection previously existed, reconnect
+                    #TODO: send current mission status.
+                    ackDatagram = protocol.loginAccepted(entity.id)
+                    self.sendData(ackDatagram, datagram.getAddress())
+                    '''if username not in accountEntities:
                         entity = sandbox.createEntity()
                         component = AccountComponent()
                         component.name = username
@@ -102,14 +92,14 @@ class NetworkSystem(sandbox.EntitySystem):
                         ackDatagram = protocol.loginAccepted(entity.id)
                         self.sendData(ackDatagram, datagram.getAddress())
                         #TODO: Send initial states?
-                        messenger.send("newPlayerShip", [component, entity])
+                        #messenger.send("newPlayerShip", [component, entity])
                     else:
                         component = sandbox.entities[accountEntities[username]].getComponent(AccountComponent)
                         if component.passwordHash != password:
                             log.info("Player " + username + " has the wrong password.")
                         else:
                             component.connection = datagram.getConnection()
-                            log.info("Player " + username + " logged in.")
+                            log.info("Player " + username + " logged in.")'''
 
     def activeCheck(self, task):
         """Checks for last ack from all known active conenctions."""

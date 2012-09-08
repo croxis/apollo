@@ -39,8 +39,8 @@ class PlayerShipsSystem(sandbox.EntitySystem):
         ship.addComponent(component)
         component = ships.InfoComponent()
         ship.addComponent(component)
-        messenger.send("shipGenerated", [ship])
-        messenger.send("putPlayerOnShip", [accountEntity.id, ship.id])
+        sandbox.base.messenger.send("shipGenerated", [ship])
+        #messenger.send("putPlayerOnShip", [accountEntity.id, ship.id])
         #TODO Transmit player's ship data
         #TODO Broadcast new ship data
         #TODO Prioritize updating new client of surroundings

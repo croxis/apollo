@@ -1,0 +1,326 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"account",
+				"accountEntity	(local, instance)"
+			],
+			[
+				"acc",
+				"accountEntity"
+			],
+			[
+				"sol",
+				"solarSystemRoot  (variable)"
+			],
+			[
+				"get",
+				"getSystem  (function)"
+			],
+			[
+				"add",
+				"addUint8"
+			],
+			[
+				"n",
+				"newShip  (function)"
+			],
+			[
+				"getPhys",
+				"getPhysicsWorld	(global, function)"
+			],
+			[
+				"client",
+				"clientNet	(imported, module)"
+			],
+			[
+				"g",
+				"getSystem  (function)"
+			],
+			[
+				"Bullet",
+				"BulletSphereShape"
+			],
+			[
+				"run",
+				"runClient"
+			],
+			[
+				"LOGIN",
+				"LOGIN_ACCEPTED	(global, instance)"
+			],
+			[
+				"ge",
+				"getSystem  (function)"
+			],
+			[
+				"Physics",
+				"PhysicsSystem	(global, class)"
+			],
+			[
+				"comp",
+				"component	(local, instance)"
+			],
+			[
+				"act",
+				"activeConnections"
+			],
+			[
+				"l",
+				"lastAck	(attribute, instance)"
+			],
+			[
+				"getC",
+				"getConnection"
+			],
+			[
+				"my",
+				"myPyDatagram	(local, instance)"
+			],
+			[
+				"send",
+				"sendLogin	(attribute, function)"
+			],
+			[
+				"L",
+				"LOGIN_ACCEPT  (variable)"
+			],
+			[
+				"packe",
+				"packetCount	(attribute, instance)"
+			],
+			[
+				"user",
+				"userName	(local, instance)"
+			],
+			[
+				"Acc",
+				"AccountComponent	(global, class)"
+			],
+			[
+				"cre",
+				"createEntity"
+			],
+			[
+				"Solar",
+				"SolarSystemSystem"
+			],
+			[
+				"solar",
+				"solarSystemRoot	(local, instance)"
+			],
+			[
+				"sola",
+				"solarDB	(global, instance)"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "Packages/User/apollo server.sublime-build",
+	"command_palette":
+	{
+		"height": 75.0,
+		"selected_items":
+		[
+			[
+				"Package Control: in",
+				"Package Control: Install Package"
+			],
+			[
+				"Package Control: ",
+				"Package Control: Remove Package"
+			]
+		],
+		"width": 602.0
+	},
+	"console":
+	{
+		"height": 153.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/home/croxis/src/apollo/main.py",
+		"/home/croxis/src/apollo/playerShipSystem.py",
+		"/home/croxis/src/apollo/serverNet.py",
+		"/home/croxis/src/apollo/protocol.py",
+		"/home/croxis/src/apollo/physics.py",
+		"/home/croxis/src/apollo/ships.py",
+		"/home/croxis/src/apollo/universals.py",
+		"/home/croxis/src/apollo/clientNet.py",
+		"/home/croxis/src/apollo/apollo.sublime-project",
+		"/home/croxis/.config/sublime-text-2/Packages/User/apollo server.sublime-build",
+		"/home/croxis/src/apollo/clientNet.py",
+		"/home/croxis/src/apollo/serverNet.py",
+		"/home/croxis/src/apollo/solarSystem.py",
+		"/home/croxis/src/apollo/universals.py",
+		"/home/croxis/src/apollo/physics.py",
+		"/home/croxis/src/apollo/protocol.py",
+		"/home/croxis/src/apollo/ships.py",
+		"/home/croxis/src/apollo/playerShipSystem.py",
+		"/home/croxis/src/apollo/client.py",
+		"/home/croxis/src/apollo/solarsystem.yaml",
+		"/home/croxis/.config/sublime-text-2/Packages/User/apollo Server Client.sublime-build",
+		"/home/croxis/src/apollo/PlayerShipSystem.py",
+		"/home/croxis/src/apollo/PlayerShipSystem",
+		"/home/croxis/src/apollo/physics",
+		"/home/croxis/src/apollo/globals.py",
+		"/home/croxis/.config/sublime-text-2/Packages/Pylinter/Pylinter.sublime-settings",
+		"/home/croxis/.config/sublime-text-2/Packages/User/Pylinter.sublime-settings",
+		"/home/croxis/src/SandBox/__init__.py",
+		"/home/croxis/.config/sublime-text-2/Packages/SublimeCodeIntel/Base File.sublime-settings",
+		"/home/croxis/.config/sublime-text-2/Packages/Default/Preferences.sublime-settings",
+		"/home/croxis/.config/sublime-text-2/Packages/User/Python.sublime-settings",
+		"/home/croxis/.config/sublime-text-2/Packages/User/SideBarGit.sublime-settings",
+		"/home/croxis/.config/sublime-text-2/Packages/SideBarGit/SideBarGit.sublime-settings",
+		"/home/croxis/.config/sublime-text-2/Packages/User/Preferences.sublime-settings"
+	],
+	"find":
+	{
+		"height": 38.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+			"*.py"
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": true,
+		"find_history":
+		[
+			"add",
+			"datagram",
+			"SandBox",
+			"NodePath"
+		],
+		"highlight": true,
+		"in_selection": true,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"get",
+			"myIterator",
+			"sandbox"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		},
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 0.0
+	},
+	"input":
+	{
+		"height": 35.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			],
+			[
+				1,
+				0,
+				2,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			0.474322175639,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"replace":
+	{
+		"height": 64.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+			[
+				"",
+				"protocol.py"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"selected_items":
+		[
+			[
+				"sa",
+				"/home/croxis/src/SandBox/sandbox.sublime-project"
+			],
+			[
+				"",
+				"/home/croxis/src/SandBox/sandbox.sublime-project"
+			],
+			[
+				"sand",
+				"/home/croxis/src/SandBox/sandbox.sublime-project"
+			],
+			[
+				"sandbox",
+				"/home/croxis/src/SandBox/sandbox.sublime-project"
+			]
+		],
+		"width": 380.0
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 150.0,
+	"status_bar_visible": true
+}

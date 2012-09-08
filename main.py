@@ -76,7 +76,6 @@ if logFilename:
     loadPrcFileData('', 'notify-timestamp 1')
 
 
-
 if not universals.runClient:
     # Don't open a graphics window on the server.  (Open a window only
     # if we're running a normal client, not one of the server
@@ -85,22 +84,22 @@ if not universals.runClient:
     loadPrcFileData('', 'window-type none\naudio-library-name null')
 else:
     print "Test"
-    loadPrcFileData( '', 'frame-rate-meter-scale 0.035' )
-    loadPrcFileData( '', 'frame-rate-meter-side-margin 0.1' )
-    loadPrcFileData( '', 'show-frame-rate-meter 1' )
-    loadPrcFileData( '', 'window-title '+ "ITF" )
-    loadPrcFileData( '', "sync-video 0")
+    loadPrcFileData('', 'frame-rate-meter-scale 0.035')
+    loadPrcFileData('', 'frame-rate-meter-side-margin 0.1')
+    loadPrcFileData('', 'show-frame-rate-meter 1')
+    loadPrcFileData('', 'window-title ' + "ITF")
+    loadPrcFileData('', "sync-video 0")
 
 # After initial setup we can now start sandbox
 log.debug("Loading sandbox")
 import sandbox
 
 if universals.runClient and not universals.runServer:
-    base.setSleep(0.001)
+    sandbox.base.setSleep(0.001)
 if not universals.runClient and universals.runServer:
-    base.setSleep(0.001)
+    sandbox.base.setSleep(0.001)
 
-base.disableMouse()
+sandbox.base.disableMouse()
 
 import physics
 import playerShipSystem
@@ -131,13 +130,19 @@ def planetPositionDebug(task):
         log.debug(bod.getName() + ": " + str(bod.getPos()))
     return task.again
 
+
 def loginDebug(task):
     sandbox.getSystem(clientNet.NetworkSystem).sendLogin(universals.username, "Hash Password")
 
-taskMgr.doMethodLater(10, planetPositionDebug, "Position Debug")
+sandbox.base.taskMgr.doMethodLater(10, planetPositionDebug, "Position Debug")
 if universals.runClient:
-    taskMgr.doMethodLater(1, loginDebug, "Login Debug")
+    sandbox.base.taskMgr.doMethodLater(1, loginDebug, "Login Debug")
+
+if universals.runServer:
+    # Hard coded stuff for now!
+
 log.info("Setup complete.")
+
 sandbox.run()
 
 ##TODO: FIX BULLET PHYSICS AND SOLAR SYSTE RENDER TO PROPERLY USE ROOT SOLAR SYSTEM NODE
