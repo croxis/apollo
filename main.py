@@ -142,6 +142,7 @@ if universals.runServer:
     # Hard coded stuff for now!
 
 log.info("Setup complete.")
+#glob.glob('ships/*/ship.yaml')
 
 sandbox.run()
 
