@@ -2,6 +2,8 @@ from direct.distributed.PyDatagram import PyDatagram
 
 import ships
 import universals
+
+import yaml
 #Client to server even
 #Server to client odd
 #If both will probably be even
@@ -32,22 +34,35 @@ LOGIN = 100
 LOGIN_DENIED = 101
 LOGIN_ACCEPTED = 103
 
+SHIP_CLASSES = 104
+PLAYER_SHIPS = 105
+
+REQUEST_STATIONS = 106
+
+
 ACCOUNT_REC = 110  # Requests name of account for a given id entity id
 ACCOUNT_ACK = 111
 
-CHAT = 104
 
 
-def genericPacket(key, packetCount=0):
+def genericPacket(key, packetCount=0, protobuf=0):
     myPyDatagram = PyDatagram()
     myPyDatagram.addUint8(key)
     myPyDatagram.addUint8(packetCount)
     myPyDatagram.addUint8(0)
     myPyDatagram.addUint16(0)
     myPyDatagram.addUint16(0)
+    myPyDatagram.addUint8(protobuf)
     return myPyDatagram
 
 #Client to server datagram generators
+
+def requestStations(name, stations):
+    datagram = genericPacket(REQUEST_STATIONS)
+    datagram.addString(name)
+    datagram.addString(yaml.dump(stations))
+    return datagram
+
 
 #Server to client datagram generators
 
@@ -59,9 +74,10 @@ def loginAccepted(x):
     return datagram
 
 
+# Depreciate. Move to a universal ship entering sensorrange, even if
+# Ship spawns inside sensors
 def newShip(ship):
     datagram = genericPacket(NEW_SHIP)
-    datagram.addUint8(ship.getComponent(ships.PilotComponent).accountEntityID)
     datagram.addUint8(ship.id)
     datagram.addString(ship.getComponent(ships.InfoComponent).name)
     datagram.addUint8(ship.getComponent(ships.InfoComponent).health)
@@ -77,4 +93,10 @@ def newShip(ship):
     datagram.addFloat32(ship.getComponent(ships.BulletPhysicsComponent).node.getAngularVelocity().x)
     datagram.addFloat32(ship.getComponent(ships.BulletPhysicsComponent).node.getAngularVelocity().y)
     datagram.addFloat32(ship.getComponent(ships.BulletPhysicsComponent).node.getAngularVelocity().z)
+    return datagram
+
+
+def shipClasses(db):
+    datagram = genericPacket(SHIP_CLASSES)
+    datagram.addString(yaml.dump(db))
     return datagram

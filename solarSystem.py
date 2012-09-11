@@ -74,7 +74,8 @@ class SolarSystemSystem(sandbox.EntitySystem):
 
     def process(self, entity):
         '''Gets the xyz position of the body, relative to its parent, on the given day before/after the date of element. Units will be in AU'''
-        universals.day += globalClock.getDt() / 86400 * universals.TIMEFACTOR
+        #Static bodies for now
+        #universals.day += globalClock.getDt() / 86400 * universals.TIMEFACTOR
         component = 0
         try:
             component = entity.getComponent(BaryCenter)

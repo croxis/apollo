@@ -99,29 +99,35 @@ if universals.runClient and not universals.runServer:
 if not universals.runClient and universals.runServer:
     sandbox.base.setSleep(0.001)
 
-sandbox.base.disableMouse()
+#sandbox.base.disableMouse()
 
 import physics
-import playerShipSystem
-import ships
+import shipSystem
+import shipComponents
 import solarSystem
 if universals.runClient:
     import clientNet
+    import guiSystem
     log.info("Setting up client network")
     sandbox.addSystem(clientNet.NetworkSystem())
+    log.info("Setting up gui system")
+    sandbox.addSystem(guiSystem.GUISystem())
 if universals.runServer:
     import serverNet
-    log.info("Setting up server Pathnetwork")
+    log.info("Setting up server network")
     sandbox.addSystem(serverNet.NetworkSystem())
 
 log.info("Setting up Solar System Body Simulator")
 sandbox.addSystem(solarSystem.SolarSystemSystem(solarSystem.BaryCenter, solarSystem.Body, solarSystem.Star))
 
 log.info("Setting up dynamic physics")
-sandbox.addSystem(physics.PhysicsSystem(ships.BulletPhysicsComponent))
+sandbox.addSystem(physics.PhysicsSystem(shipComponents.BulletPhysicsComponent))
 
-log.info("Setting up player-ship interface system")
-sandbox.addSystem(playerShipSystem.PlayerShipsSystem(ships.PilotComponent))
+log.info("Setting up ship interface system")
+sandbox.addSystem(shipSystem.ShipSystem(shipComponents.PlayerComponent))
+
+#log.info("Setting up player-ship interface system")
+#sandbox.addSystem(shipSystem.PlayerShipsSystem(ships.PlayerComponent))
 
 
 def planetPositionDebug(task):
@@ -139,11 +145,12 @@ if universals.runClient:
     sandbox.base.taskMgr.doMethodLater(1, loginDebug, "Login Debug")
 
 if universals.runServer:
-    # Hard coded stuff for now!
+    shipSystem = sandbox.getSystem(shipSystem.ShipSystem)
+    shipSystem.loadShipClasses()
+    shipSystem.newShip("The hype", "hyperion", True)
+    
 
 log.info("Setup complete.")
-#glob.glob('ships/*/ship.yaml')
-
 sandbox.run()
 
 ##TODO: FIX BULLET PHYSICS AND SOLAR SYSTE RENDER TO PROPERLY USE ROOT SOLAR SYSTEM NODE

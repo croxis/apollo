@@ -5,15 +5,19 @@ from direct.distributed.PyDatagram import PyDatagram
 from direct.distributed.PyDatagramIterator import PyDatagramIterator
 
 import protocol
-import ships
+import shipComponents
 import universals
 from universals import log
 
+import yaml
 
 #PROPOSAL! {server entity id: client entity id} and reverse lookup dict too
-#test
 
 class NetworkSystem(sandbox.EntitySystem):
+    def requestStations(self, shipname, stations):
+        datagram = protocol.requestStations(shipname, stations)
+        self.sendData(datagram)
+
     def init(self, port=2000, server="127.0.0.1", serverPort=1999, backlog=1000, compress=False):
         self.packetCount = 0
         self.port = port
@@ -27,6 +31,8 @@ class NetworkSystem(sandbox.EntitySystem):
 
         self.udpSocket = self.cManager.openUDPConnection(self.port)
         self.cReader.addConnection(self.udpSocket)
+
+        self.accept('requestStations', self.requestStations)
 
     def begin(self):
         if self.cReader.dataAvailable():
@@ -47,11 +53,14 @@ class NetworkSystem(sandbox.EntitySystem):
                 ack = myIterator.getUint8()
                 acks = myIterator.getUint16()
                 hashID = myIterator.getUint16()
+                protobuf = myIterator.getUint8()
                 sourceOfMessage = datagram.getConnection()
 
-                if msgID == protocol.NEW_SHIP:
+                if msgID == protocol.PLAYER_SHIPS:
+                    db = yaml.load(myIterator.getString())
+                    sandbox.send('shipSelectScreen', [db])
+                elif msgID == protocol.NEW_SHIP:
                     log.info("New ship")
-                    playerPilotID = myIterator.getUint8()
                     shipID = myIterator.getUint8()
                     shipName = myIterator.getString()
                     health = myIterator.getUint8()
@@ -102,6 +111,8 @@ class NetworkSystem(sandbox.EntitySystem):
         while not sent:
             print "resending"
             sent = self.cWriter.send(datagram, self.udpSocket, self.serverAddress)
+
+
             
 
 class ServerComponent:

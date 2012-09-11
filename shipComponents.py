@@ -9,9 +9,9 @@ class BulletPhysicsComponent(object):
 class AIPilotComponent(object):
     ai = None
 
-class PilotComponent(object):
-    account = None
-    accountEntityID = 0
+class PlayerComponent(object):
+    '''These are given NetAddresses'''
+    navigation = 0
 
 class ThrustComponent(object):
     '''Maximum thrust values, in newtons'''
@@ -25,3 +25,4 @@ class ThrustComponent(object):
 class InfoComponent(object):
     health = 100
     name = "A ship"
+    shipClass = ""
