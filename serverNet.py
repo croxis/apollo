@@ -28,6 +28,7 @@ class NetworkSystem(sandbox.EntitySystem):
     def init(self, port=1999, backlog=1000, compress=False):
         log.debug("Initiating Network System")
         self.accept("broadcastData", self.broadcastData)
+        self.accept("confirmPlayerStations", self.confirmPlayerStations)
         self.port = port
         self.backlog = backlog
         self.compress = compress
@@ -41,7 +42,7 @@ class NetworkSystem(sandbox.EntitySystem):
 
         self.activePlayers = []  # PlayerComponent
         self.activeConnections = {}  # {NetAddress : PlayerComponent}
-        self.shipMap = {} # {ShipID: {CONSOL: Netaddress}}
+        #self.shipMap = {} # {ShipID: {CONSOL: Netaddress}}
         self.lastAck = {}  # {NetAddress: time}
 
         self.startPolling()
@@ -75,16 +76,37 @@ class NetworkSystem(sandbox.EntitySystem):
                 acks = myIterator.getUint16()
                 hashID = myIterator.getUint16()
                 protobuf = myIterator.getUint8()
-
+                #print "Data", datagram.getConnection(), datagram.getAddress(), datagram.getAddress().getPort()
                 if msgID == protocol.REQUEST_STATIONS:
+                    print self.activeConnections
+                    #if self.n == datagram.getAddress():
+                    #    print "yay"
+                    #else:
+                    #    print "===nay==="
+                    #    print datagram.getAddress(), datagram.getAddress().getPort()
+                    #    print self.n, self.n.getPort()
                     shipname = myIterator.getString()
                     stations = yaml.load(myIterator.getString())
-                    print shipname, stations
+                    shipSys = sandbox.getSystem(shipSystem.ShipSystem)
+                    entities = shipSys.getPlayerShipEntities()
+                    db = {}
+                    for entity in entities:
+                        info = entity.getComponent(shipComponents.InfoComponent)
+                        if shipname == info.name:
+                            player = entity.getComponent(shipComponents.PlayerComponent)
+                            for station in stations:
+                                if getattr(player, station) != 0:
+                                    print "Resend ship select window"
+                            sandbox.send('setPlayerStations', [datagram.getAddress(), shipname, stations])
                 elif msgID == protocol.LOGIN:
                     #TODO, if connection previously existed, reconnect
                     #TODO: send current mission status.
                     #ackDatagram = protocol.loginAccepted(entity.id)
                     #self.sendData(ackDatagram, datagram.getAddress())
+                    #TODO: Move ship select to separate function
+                    #self.n = datagram.getAddress()
+                    #print "======"
+                    #print datagram.getAddress(), datagram.getAddress().getPort(), self.n, self.n.getPort()
                     shipSys = sandbox.getSystem(shipSystem.ShipSystem)
                     ackDatagram = protocol.shipClasses(shipSys.shipClasses)
                     self.sendData(ackDatagram, datagram.getAddress())
@@ -107,6 +129,7 @@ class NetworkSystem(sandbox.EntitySystem):
                     component.address = datagram.getAddress()
                     entity.addComponent(component)
                     self.activeConnections[component.address] = component
+                    print self.activeConnections
                     '''if username not in accountEntities:
                         entity = sandbox.createEntity()
                         component = AccountComponent()
@@ -160,6 +183,10 @@ class NetworkSystem(sandbox.EntitySystem):
         datagram = protocol.newShip(ship)
         print "Checking if new ship is valid for udp:", self.cWriter.isValidForUdp(datagram)
         self.broadcastData(datagram)
+
+    def confirmPlayerStations(self, netAddress, stations):
+        datagram = protocol.confirmStations(stations)
+        self.sendData(datagram, netAddress)
 
 class ClientComponent:
     """Theoretical component that stores which clients are 

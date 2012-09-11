@@ -38,7 +38,7 @@ SHIP_CLASSES = 104
 PLAYER_SHIPS = 105
 
 REQUEST_STATIONS = 106
-
+CONFIRM_STATIONS = 107
 
 ACCOUNT_REC = 110  # Requests name of account for a given id entity id
 ACCOUNT_ACK = 111
@@ -71,6 +71,11 @@ def loginAccepted(x):
     datagram = genericPacket(LOGIN_ACCEPTED)
     datagram.addUint8(x)  # entity id of user
     datagram.addFloat32(universals.day)
+    return datagram
+
+def confirmStations(stations):
+    datagram = genericPacket(CONFIRM_STATIONS)
+    datagram.addString(yaml.dump(stations))
     return datagram
 
 

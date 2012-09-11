@@ -17,7 +17,7 @@ import yaml
 
 class ShipSystem(sandbox.EntitySystem):
     def init(self):
-        #self.accept("newPlayerShip", self.newPlayerShip)
+        self.accept("setPlayerStations", self.setPlayerStation)
         self.shipClasses = {}
 
     def process(self, entity):
@@ -65,3 +65,15 @@ class ShipSystem(sandbox.EntitySystem):
 
     def getPlayerShipEntities(self):
         return sandbox.getEntitiesByComponentType(shipComponents.PlayerComponent)
+
+    def setPlayerStation(self, netAddress, shipname, stations):
+        ships = self.getPlayerShipEntities()
+        acceptedStations = []
+        for ship in ships:
+            if ship.getComponent(shipComponents.InfoComponent).name == shipname:
+                playerComponent = ship.getComponent(shipComponents.PlayerComponent)
+                for station in stations:
+                    if getattr(playerComponent, station) == 0:
+                        setattr(playerComponent, station, netAddress)
+                        acceptedStations.append(station)
+        sandbox.send("confirmPlayerStations", [netAddress, acceptedStations])

@@ -29,7 +29,8 @@ class NetworkSystem(sandbox.EntitySystem):
         self.cReader = QueuedConnectionReader(self.cManager, 0)
         self.cWriter = ConnectionWriter(self.cManager, 0)
 
-        self.udpSocket = self.cManager.openUDPConnection(self.port)
+        #self.udpSocket = self.cManager.openUDPConnection(self.port)
+        self.udpSocket = self.cManager.openUDPConnection()
         self.cReader.addConnection(self.udpSocket)
 
         self.accept('requestStations', self.requestStations)
@@ -59,6 +60,9 @@ class NetworkSystem(sandbox.EntitySystem):
                 if msgID == protocol.PLAYER_SHIPS:
                     db = yaml.load(myIterator.getString())
                     sandbox.send('shipSelectScreen', [db])
+                elif msgID == protocol.CONFIRM_STATIONS:
+                    stations = yaml.load(myIterator.getString())
+                    print "Stations", stations
                 elif msgID == protocol.NEW_SHIP:
                     log.info("New ship")
                     shipID = myIterator.getUint8()
