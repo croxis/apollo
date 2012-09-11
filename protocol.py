@@ -1,6 +1,6 @@
 from direct.distributed.PyDatagram import PyDatagram
 
-import ships
+import shipComponents
 import universals
 
 import yaml
