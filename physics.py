@@ -3,7 +3,7 @@ from panda3d.core import Point3, Vec3
 
 import sandbox
 
-import ships
+import shipComponents
 import solarSystem
 import universals
 
