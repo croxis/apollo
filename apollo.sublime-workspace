@@ -4,8 +4,28 @@
 		"selected_items":
 		[
 			[
+				"udp",
+				"udpSocket	(attribute, instance)"
+			],
+			[
+				"acti",
+				"activeConnections	(attribute, instance)"
+			],
+			[
 				"get",
-				"getattr	(builtin, function)"
+				"getAddress"
+			],
+			[
+				"proto",
+				"protocol"
+			],
+			[
+				"acc",
+				"acceptedStations	(local, instance)"
+			],
+			[
+				"I",
+				"InfoComponent  (class)"
 			],
 			[
 				"getS",
@@ -70,10 +90,6 @@
 			[
 				"account",
 				"accountEntity	(local, instance)"
-			],
-			[
-				"acc",
-				"accountEntity"
 			],
 			[
 				"sol",
@@ -176,25 +192,6 @@
 	"buffers":
 	[
 		{
-			"file": "protocol.py",
-			"settings":
-			{
-				"buffer_size": 3431,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"contents": "import sys\nsys.path.append('..')\nimport sandbox\n\nfrom pandac.PandaModules import loadPrcFileData\nloadPrcFileData(\"\", \"notify-level-ITF-ServerNetwork debug\")\nfrom direct.directnotify.DirectNotify import DirectNotify\nlog = DirectNotify().newCategory(\"ITF-ServerNetwork\")\n\nimport datetime\n\nfrom direct.distributed.PyDatagram import PyDatagram\nfrom direct.distributed.PyDatagramIterator import PyDatagramIterator\n\nfrom panda3d.core import ConnectionWriter, NetDatagram, QueuedConnectionManager, QueuedConnectionReader\n\nimport protocol\nimport shipComponents\nimport universals\nimport shipSystem\n\nimport yaml\n\nclass AccountComponent(object):\n    address = None\n\nclass NetworkSystem(sandbox.EntitySystem):\n    def init(self, port=1999, backlog=1000, compress=False):\n        log.debug(\"Initiating Network System\")\n        self.accept(\"broadcastData\", self.broadcastData)\n        self.port = port\n        self.backlog = backlog\n        self.compress = compress\n\n        self.cManager = QueuedConnectionManager()\n        self.cReader = QueuedConnectionReader(self.cManager, 0)\n        #self.cReader.setRawMode(True)\n        self.cWriter = ConnectionWriter(self.cManager, 0)\n        self.udpSocket = self.cManager.openUDPConnection(self.port)\n        self.cReader.addConnection(self.udpSocket)\n\n        self.activePlayers = []  # PlayerComponent\n        self.activeConnections = {}  # {NetAddress : PlayerComponent}\n        self.shipMap = {} # {ShipID: {CONSOL: Netaddress}}\n        self.lastAck = {}  # {NetAddress: time}\n\n        self.startPolling()\n        #self.accept(\"shipGenerated\", self.shipGenerated)\n\n    def startPolling(self):\n        #taskMgr.add(self.tskReaderPolling, \"serverListenTask\", -40)\n        sandbox.base.taskMgr.doMethodLater(10, self.activeCheck, \"activeCheck\")\n\n    #def tskReaderPolling(self, taskdata):\n    def begin(self):\n        if self.cReader.dataAvailable():\n            datagram = NetDatagram()  # catch the incoming data in this instance\n            # Check the return value; if we were threaded, someone else could have\n            # snagged this data before we did\n            if self.cReader.getData(datagram):\n                myIterator = PyDatagramIterator(datagram)\n                msgID = myIterator.getUint8()\n\n                #If not in our protocol range then we just reject\n                if msgID < 0 or msgID > 200:\n                    return\n\n                self.lastAck[datagram.getAddress()] = datetime.datetime.now()\n                #TODO Switch to ip address and port\n\n                #Order of these will need to be optimized later\n                #We now pull out the rest of our headers\n                remotePacketCount = myIterator.getUint8()\n                ack = myIterator.getUint8()\n                acks = myIterator.getUint16()\n                hashID = myIterator.getUint16()\n                protobuf = myIterator.getUint8()\n\n                if msgID == protocol.REQUEST_STATIONS:\n                    shipname = myIterator.getString()\n                    stations = yaml.load(myIterator.getString())\n                    print shipname, stations\n                    shipSys = sandbox.getSystem(shipSystem.ShipSystem)\n                    entities = shipSys.getPlayerShipEntities()\n                    db = {}\n                    for entity in entities:\n                        info = entity.getComponent(shipComponents.InfoComponent)\n                        if shipname == info.name:\n                            player = entity.getComponent(shipComponents.PlayerComponent)\n                            for station in stations:\n                                if getattr(player, station) != 0:\n                                    print \"Resend ship select window\"\n                                \n                elif msgID == protocol.LOGIN:\n                    #TODO, if connection previously existed, reconnect\n                    #TODO: send current mission status.\n                    #ackDatagram = protocol.loginAccepted(entity.id)\n                    #self.sendData(ackDatagram, datagram.getAddress())\n                    #TODO: Move ship select to separate function\n                    shipSys = sandbox.getSystem(shipSystem.ShipSystem)\n                    ackDatagram = protocol.shipClasses(shipSys.shipClasses)\n                    self.sendData(ackDatagram, datagram.getAddress())\n                    ackDatagram = protocol.genericPacket(protocol.PLAYER_SHIPS)\n                    entities = shipSys.getPlayerShipEntities()\n                    db = {}\n                    for entity in entities:\n                        db[entity.id] = {}\n                        info = entity.getComponent(shipComponents.InfoComponent)\n                        db[entity.id]['name'] = info.name\n                        db[entity.id]['class'] = info.shipClass\n                        player = entity.getComponent(shipComponents.PlayerComponent)\n                        db[entity.id]['stations'] = {}\n                        db[entity.id]['stations']['navigation'] = player.navigation\n                    print \"DB\", db, yaml.dump(db)\n                    ackDatagram.addString(yaml.dump(db))\n                    self.sendData(ackDatagram, datagram.getAddress())\n                    entity = sandbox.createEntity()\n                    component = AccountComponent()\n                    component.address = datagram.getAddress()\n                    entity.addComponent(component)\n                    self.activeConnections[component.address] = component\n                    '''if username not in accountEntities:\n                        entity = sandbox.createEntity()\n                        component = AccountComponent()\n                        component.name = username\n                        component.passwordHash = password\n                        if not accountEntities:\n                            component.owner = True\n                        component.address = datagram.getAddress()\n                        entity.addComponent(component)\n                        accountEntities[username] = entity.id\n                        log.info(\"New player \" + username + \" logged in.\")\n                        #\n                        self.activePlayers.append(component)\n                        self.activeConnections[component.address] = component\n                        ackDatagram = protocol.loginAccepted(entity.id)\n                        self.sendData(ackDatagram, datagram.getAddress())\n                        #TODO: Send initial states?\n                        #messenger.send(\"newPlayerShip\", [component, entity])\n                    else:\n                        component = sandbox.entities[accountEntities[username]].getComponent(AccountComponent)\n                        if component.passwordHash != password:\n                            log.info(\"Player \" + username + \" has the wrong password.\")\n                        else:\n                            component.connection = datagram.getConnection()\n                            log.info(\"Player \" + username + \" logged in.\")'''\n\n    def activeCheck(self, task):\n        \"\"\"Checks for last ack from all known active connections.\"\"\"\n        for address, lastTime in self.lastAck.items():\n            if (datetime.datetime.now() - lastTime).seconds > 30:\n                print self.activeConnections\n                component = self.activeConnections[address]\n                #TODO: Disconnect\n        return task.again\n\n    def sendData(self, datagram, address):\n        self.cWriter.send(datagram, self.udpSocket, address)\n\n    def broadcastData(self, datagram):\n        # Broadcast data out to all activeConnections\n        #for accountID in accountEntities.items():\n            #sandbox.entities[accountID].getComponent()\n        for addr in self.activeConnections.keys():\n            self.sendData(datagram, addr)\n\n    def processData(self, netDatagram):\n        myIterator = PyDatagramIterator(netDatagram)\n        return self.decode(myIterator.getString())\n\n    def shipGenerated(self, ship):\n        datagram = protocol.newShip(ship)\n        print \"Checking if new ship is valid for udp:\", self.cWriter.isValidForUdp(datagram)\n        self.broadcastData(datagram)\n\nclass ClientComponent:\n    \"\"\"Theoretical component that stores which clients are \n    also tracking this entity as well as last update\"\"\"",
-			"file": "serverNet.py",
-			"file_size": 7611,
-			"file_write_time": 1347325558000000,
-			"settings":
-			{
-				"buffer_size": 8324,
-				"line_ending": "Unix"
-			}
-		},
-		{
 			"file": "shipComponents.py",
 			"settings":
 			{
@@ -211,6 +208,30 @@
 			}
 		},
 		{
+			"file": "physics.py",
+			"settings":
+			{
+				"buffer_size": 1532,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "serverNet.py",
+			"settings":
+			{
+				"buffer_size": 8865,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "protocol/proto.proto",
+			"settings":
+			{
+				"buffer_size": 42,
+				"line_ending": "Unix"
+			}
+		},
+		{
 			"file": "main.py",
 			"settings":
 			{
@@ -222,7 +243,15 @@
 			"file": "clientNet.py",
 			"settings":
 			{
-				"buffer_size": 5284,
+				"buffer_size": 5513,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "protocol.py",
+			"settings":
+			{
+				"buffer_size": 3605,
 				"line_ending": "Unix"
 			}
 		},
@@ -238,7 +267,7 @@
 			"file": "shipSystem.py",
 			"settings":
 			{
-				"buffer_size": 2586,
+				"buffer_size": 3155,
 				"line_ending": "Unix"
 			}
 		},
@@ -291,6 +320,13 @@
 	},
 	"file_history":
 	[
+		"/home/croxis/.config/sublime-text-2/Packages/User/Preferences.sublime-settings",
+		"/home/croxis/src/apollo/serverNet.py",
+		"/home/croxis/.config/sublime-text-2/Packages/User/SideBarGit.sublime-settings",
+		"/home/croxis/.config/sublime-text-2/Packages/SideBarGit/SideBarGit.sublime-settings",
+		"/home/croxis/.config/sublime-text-2/Packages/Git/Git.sublime-settings",
+		"/home/croxis/.config/sublime-text-2/Packages/User/Git.sublime-settings",
+		"/home/croxis/.gitignore",
 		"/home/croxis/src/apollo/ships.py",
 		"/home/croxis/src/SandBox/sandbox/errors.py",
 		"/home/croxis/src/apollo/solarSystem.py",
@@ -298,7 +334,6 @@
 		"/home/croxis/src/apollo/playerShipSystem.py",
 		"/home/croxis/src/apollo/ships/hyperiontest/ship.yaml",
 		"/home/croxis/src/apollo/main.py",
-		"/home/croxis/src/apollo/serverNet.py",
 		"/home/croxis/src/apollo/protocol.py",
 		"/home/croxis/src/apollo/physics.py",
 		"/home/croxis/src/apollo/universals.py",
@@ -325,10 +360,7 @@
 		"/home/croxis/src/SandBox/__init__.py",
 		"/home/croxis/.config/sublime-text-2/Packages/SublimeCodeIntel/Base File.sublime-settings",
 		"/home/croxis/.config/sublime-text-2/Packages/Default/Preferences.sublime-settings",
-		"/home/croxis/.config/sublime-text-2/Packages/User/Python.sublime-settings",
-		"/home/croxis/.config/sublime-text-2/Packages/User/SideBarGit.sublime-settings",
-		"/home/croxis/.config/sublime-text-2/Packages/SideBarGit/SideBarGit.sublime-settings",
-		"/home/croxis/.config/sublime-text-2/Packages/User/Preferences.sublime-settings"
+		"/home/croxis/.config/sublime-text-2/Packages/User/Python.sublime-settings"
 	],
 	"find":
 	{
@@ -371,241 +403,11 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 4,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "protocol.py",
-					"settings":
-					{
-						"buffer_size": 3431,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1268,
-								1268
-							]
-						],
-						"settings":
-						{
-							"annotations":
-							[
-								"TODO",
-								"README",
-								"FIXME"
-							],
-							"csslint_options":
-							{
-								"adjoining-classes": "warning",
-								"box-model": true,
-								"box-sizing": "warning",
-								"compatible-vendor-prefixes": "warning",
-								"display-property-grouping": true,
-								"duplicate-background-images": "warning",
-								"duplicate-properties": true,
-								"empty-rules": true,
-								"errors": true,
-								"fallback-colors": "warning",
-								"floats": "warning",
-								"font-faces": "warning",
-								"font-sizes": "warning",
-								"gradients": "warning",
-								"ids": "warning",
-								"import": "warning",
-								"important": "warning",
-								"known-properties": true,
-								"outline-none": "warning",
-								"overqualified-elements": "warning",
-								"qualified-headings": "warning",
-								"regex-selectors": "warning",
-								"rules-count": "warning",
-								"shorthand": "warning",
-								"star-property-hack": "warning",
-								"text-indent": "warning",
-								"underscore-property-hack": "warning",
-								"unique-headings": "warning",
-								"universal-selector": "warning",
-								"vendor-prefix": true,
-								"zero-units": "warning"
-							},
-							"gjslint_ignore":
-							[
-								110
-							],
-							"gjslint_options":
-							[
-							],
-							"javascript_linter": "jshint",
-							"jshint_options":
-							{
-								"browser": true,
-								"evil": true,
-								"regexdash": true,
-								"sub": true,
-								"trailing": true,
-								"wsh": true
-							},
-							"pep8": true,
-							"pep8_ignore":
-							[
-								"E501"
-							],
-							"perl_linter": "perlcritic",
-							"pyflakes_ignore":
-							[
-							],
-							"pyflakes_ignore_import_*": true,
-							"sublimelinter": true,
-							"sublimelinter_delay": 2,
-							"sublimelinter_disable":
-							[
-							],
-							"sublimelinter_executable_map":
-							{
-							},
-							"sublimelinter_fill_outlines": false,
-							"sublimelinter_gutter_marks": false,
-							"sublimelinter_mark_style": "outline",
-							"sublimelinter_notes": false,
-							"sublimelinter_objj_check_ascii": false,
-							"sublimelinter_popup_errors_on_save": false,
-							"sublimelinter_syntax_map":
-							{
-								"Python Django": "python",
-								"Ruby on Rails": "ruby"
-							},
-							"sublimelinter_wrap_find": true,
-							"syntax": "Packages/Python/Python.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 510.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "serverNet.py",
-					"settings":
-					{
-						"buffer_size": 8324,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								3748,
-								3748
-							]
-						],
-						"settings":
-						{
-							"annotations":
-							[
-								"TODO",
-								"README",
-								"FIXME"
-							],
-							"csslint_options":
-							{
-								"adjoining-classes": "warning",
-								"box-model": true,
-								"box-sizing": "warning",
-								"compatible-vendor-prefixes": "warning",
-								"display-property-grouping": true,
-								"duplicate-background-images": "warning",
-								"duplicate-properties": true,
-								"empty-rules": true,
-								"errors": true,
-								"fallback-colors": "warning",
-								"floats": "warning",
-								"font-faces": "warning",
-								"font-sizes": "warning",
-								"gradients": "warning",
-								"ids": "warning",
-								"import": "warning",
-								"important": "warning",
-								"known-properties": true,
-								"outline-none": "warning",
-								"overqualified-elements": "warning",
-								"qualified-headings": "warning",
-								"regex-selectors": "warning",
-								"rules-count": "warning",
-								"shorthand": "warning",
-								"star-property-hack": "warning",
-								"text-indent": "warning",
-								"underscore-property-hack": "warning",
-								"unique-headings": "warning",
-								"universal-selector": "warning",
-								"vendor-prefix": true,
-								"zero-units": "warning"
-							},
-							"gjslint_ignore":
-							[
-								110
-							],
-							"gjslint_options":
-							[
-							],
-							"javascript_linter": "jshint",
-							"jshint_options":
-							{
-								"browser": true,
-								"evil": true,
-								"regexdash": true,
-								"sub": true,
-								"trailing": true,
-								"wsh": true
-							},
-							"pep8": true,
-							"pep8_ignore":
-							[
-								"E501"
-							],
-							"perl_linter": "perlcritic",
-							"pyflakes_ignore":
-							[
-							],
-							"pyflakes_ignore_import_*": true,
-							"sublimelinter": true,
-							"sublimelinter_delay": 2,
-							"sublimelinter_disable":
-							[
-							],
-							"sublimelinter_executable_map":
-							{
-							},
-							"sublimelinter_fill_outlines": false,
-							"sublimelinter_gutter_marks": false,
-							"sublimelinter_mark_style": "outline",
-							"sublimelinter_notes": false,
-							"sublimelinter_objj_check_ascii": false,
-							"sublimelinter_popup_errors_on_save": false,
-							"sublimelinter_syntax_map":
-							{
-								"Python Django": "python",
-								"Ruby on Rails": "ruby"
-							},
-							"sublimelinter_wrap_find": true,
-							"syntax": "Packages/Python/Python.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1171.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 2,
 					"file": "shipComponents.py",
 					"settings":
 					{
@@ -720,7 +522,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 3,
+					"buffer": 1,
 					"file": "/home/croxis/src/SandBox/sandbox/__init__.py",
 					"settings":
 					{
@@ -833,15 +635,358 @@
 						"zoom_level": 1.0
 					},
 					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "physics.py",
+					"settings":
+					{
+						"buffer_size": 1532,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								155,
+								155
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110
+							],
+							"gjslint_options":
+							[
+							],
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"pep8": true,
+							"pep8_ignore":
+							[
+								"E501"
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"sublimelinter": true,
+							"sublimelinter_delay": 2,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": false,
+							"sublimelinter_mark_style": "outline",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "serverNet.py",
+					"settings":
+					{
+						"buffer_size": 8865,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1848,
+								1848
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110
+							],
+							"gjslint_options":
+							[
+							],
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"pep8": true,
+							"pep8_ignore":
+							[
+								"E501"
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"sublimelinter": true,
+							"sublimelinter_delay": 2,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": false,
+							"sublimelinter_mark_style": "outline",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 459.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "protocol/proto.proto",
+					"settings":
+					{
+						"buffer_size": 42,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								40,
+								40
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110
+							],
+							"gjslint_options":
+							[
+							],
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"pep8": true,
+							"pep8_ignore":
+							[
+								"E501"
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"sublimelinter": true,
+							"sublimelinter_delay": 2,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": false,
+							"sublimelinter_mark_style": "outline",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
 				}
 			]
 		},
 		{
-			"selected": 3,
+			"selected": 2,
 			"sheets":
 			[
 				{
-					"buffer": 4,
+					"buffer": 5,
 					"file": "main.py",
 					"settings":
 					{
@@ -950,25 +1095,25 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1275.0,
+						"translation.y": 2042.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
-					"buffer": 5,
+					"buffer": 6,
 					"file": "clientNet.py",
 					"settings":
 					{
-						"buffer_size": 5284,
+						"buffer_size": 5513,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								662,
-								662
+								1281,
+								1281
 							]
 						],
 						"settings":
@@ -1065,13 +1210,128 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 306.0,
+						"translation.y": 55.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
-					"buffer": 6,
+					"buffer": 7,
+					"file": "protocol.py",
+					"settings":
+					{
+						"buffer_size": 3605,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								75,
+								75
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110
+							],
+							"gjslint_options":
+							[
+							],
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"pep8": true,
+							"pep8_ignore":
+							[
+								"E501"
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"sublimelinter": true,
+							"sublimelinter_delay": 2,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": false,
+							"sublimelinter_mark_style": "outline",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 153.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 8,
 					"file": "guiSystem.py",
 					"settings":
 					{
@@ -1175,7 +1435,9 @@
 								"Ruby on Rails": "ruby"
 							},
 							"sublimelinter_wrap_find": true,
-							"syntax": "Packages/Python/Python.tmLanguage"
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
@@ -1184,19 +1446,19 @@
 					"type": "text"
 				},
 				{
-					"buffer": 7,
+					"buffer": 9,
 					"file": "shipSystem.py",
 					"settings":
 					{
-						"buffer_size": 2586,
+						"buffer_size": 3155,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2585,
-								2585
+								2600,
+								2600
 							]
 						],
 						"settings":
@@ -1293,13 +1555,13 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 306.0,
+						"translation.y": 33.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
-					"buffer": 8,
+					"buffer": 10,
 					"file": "DirectWindow.py",
 					"settings":
 					{
@@ -1414,7 +1676,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 9,
+					"buffer": 11,
 					"file": "boxes.py",
 					"settings":
 					{

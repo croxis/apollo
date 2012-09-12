@@ -115,7 +115,9 @@ if universals.runClient:
 if universals.runServer:
     import serverNet
     log.info("Setting up server network")
-    sandbox.addSystem(serverNet.NetworkSystem())
+    servnet = serverNet.NetworkSystem()
+    servnet.port = 1999
+    sandbox.addSystem(servnet)
 
 log.info("Setting up Solar System Body Simulator")
 sandbox.addSystem(solarSystem.SolarSystemSystem(solarSystem.BaryCenter, solarSystem.Body, solarSystem.Star))

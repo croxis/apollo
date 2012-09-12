@@ -1,9 +1,6 @@
-from direct.distributed.PyDatagram import PyDatagram
-
 import shipComponents
 import universals
 
-import yaml
 #Client to server even
 #Server to client odd
 #If both will probably be even
@@ -14,6 +11,8 @@ import yaml
 # ack = myIterator.getUint8()
 # acks = myIterator.getUint16()
 # hashID = myIterator.getUint16()
+# protobuf
+# When compiled: "msgID, remotePacketCount, ack, acks, hashID, protobuf"
 
 #Protocol space
 #0-99 common game elements
@@ -34,26 +33,19 @@ LOGIN = 100
 LOGIN_DENIED = 101
 LOGIN_ACCEPTED = 103
 
-SHIP_CLASSES = 104
-PLAYER_SHIPS = 105
+SHIP_CLASSES = 105
+PLAYER_SHIPS = 107
 
-REQUEST_STATIONS = 106
-CONFIRM_STATIONS = 107
+REQUEST_STATIONS = 108
+CONFIRM_STATIONS = 109
 
-ACCOUNT_REC = 110  # Requests name of account for a given id entity id
-ACCOUNT_ACK = 111
+def unpackPacket(datagram):
+    split = datagram.split(',',5)
+    return int(split[0]), int(split[1]), int(split[2]), int(split[3]), int(split[4]), split[5]
 
-
-
-def genericPacket(key, packetCount=0, protobuf=0):
-    myPyDatagram = PyDatagram()
-    myPyDatagram.addUint8(key)
-    myPyDatagram.addUint8(packetCount)
-    myPyDatagram.addUint8(0)
-    myPyDatagram.addUint16(0)
-    myPyDatagram.addUint16(0)
-    myPyDatagram.addUint8(protobuf)
-    return myPyDatagram
+def genericPacket(key, packetCount=0):
+    datagram = str(key) + ',' + '0,0,0,0'
+    return datagram
 
 #Client to server datagram generators
 
