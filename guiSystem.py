@@ -16,7 +16,7 @@ class GUISystem(sandbox.EntitySystem):
         guibox.db = playerShips
         print playerShips, dir(playerShips)
         ships = []
-        for playerShip in playerShips.playerShip:
+        for playerShip in playerShips.ship:
             ships.append(playerShip.name)
         guibox.reparentTo(sandbox.base.aspect2d)
         menu = DirectOptionMenu(text="options", items=ships)
@@ -24,14 +24,13 @@ class GUISystem(sandbox.EntitySystem):
         guibox.pack(leftbox)
         rightbox = boxes.VBox()
         guibox.checkButtons = []
-        for playerShip in playerShips.playerShip:
-            for station in playerShip.stations:
-                for stationName in universals.playerStations:
-                    checkButton = DirectCheckButton(text=stationName)
-                    if getattr(station, stationName):
-                        checkButton['state'] = DGG.DISABLED
-                    rightbox.pack(checkButton)
-                    guibox.checkButtons.append(checkButton)
+        for playerShip in playerShips.ship:
+            for stationName in universals.playerStations:
+                checkButton = DirectCheckButton(text=stationName)
+                if getattr(playerShip.stations, stationName):
+                    checkButton['state'] = DGG.DISABLED
+                rightbox.pack(checkButton)
+                guibox.checkButtons.append(checkButton)
         guibox.pack(rightbox)
         button = DirectButton(text="Select", command=self.selectShip,
             extraArgs=[menu, playerShips, guibox])
@@ -41,7 +40,7 @@ class GUISystem(sandbox.EntitySystem):
         name = menu.get()
         stations = []
         entityID = 0
-        for playerShip in playerShips.playerShip:
+        for playerShip in playerShips.ship:
             if playerShip.name == name:
                 entityID = playerShip.id
                 for checkButton in guibox.checkButtons:

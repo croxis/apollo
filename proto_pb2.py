@@ -11,7 +11,7 @@ from google.protobuf import descriptor_pb2
 DESCRIPTOR = descriptor.FileDescriptor(
   name='proto.proto',
   package='apollo',
-  serialized_pb='\n\x0bproto.proto\x12\x06\x61pollo\"g\n\tShipClass\x12\x11\n\tclassName\x18\x01 \x02(\t\x12\x0c\n\x04mass\x18\x02 \x02(\x03\x12\x12\n\nfolderName\x18\x03 \x01(\t\x12\x10\n\x08meshName\x18\x04 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x05 \x01(\t\"3\n\x0bShipClasses\x12$\n\tshipClass\x18\x01 \x03(\x0b\x32\x11.apollo.ShipClass\"|\n\x0cShipStations\x12\x12\n\nmainScreen\x18\x01 \x01(\x08\x12\x12\n\nnavigation\x18\x02 \x01(\x08\x12\x0f\n\x07weapons\x18\x03 \x01(\x08\x12\x13\n\x0b\x65ngineering\x18\x04 \x01(\x08\x12\x0f\n\x07science\x18\x05 \x01(\x08\x12\r\n\x05\x63omms\x18\x06 \x01(\x08\"a\n\nPlayerShip\x12\n\n\x02id\x18\x01 \x02(\x05\x12&\n\x08stations\x18\x10 \x03(\x0b\x32\x14.apollo.ShipStations\x12\x0c\n\x04name\x18\x11 \x01(\t\x12\x11\n\tclassName\x18\x12 \x01(\t\"5\n\x0bPlayerShips\x12&\n\nplayerShip\x18\x01 \x03(\x0b\x32\x12.apollo.PlayerShip')
+  serialized_pb='\n\x0bproto.proto\x12\x06\x61pollo\"g\n\tShipClass\x12\x11\n\tclassName\x18\x01 \x02(\t\x12\x0c\n\x04mass\x18\x02 \x02(\x03\x12\x12\n\nfolderName\x18\x03 \x01(\t\x12\x10\n\x08meshName\x18\x04 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x05 \x01(\t\"3\n\x0bShipClasses\x12$\n\tshipClass\x18\x01 \x03(\x0b\x32\x11.apollo.ShipClass\"|\n\x0cShipStations\x12\x12\n\nmainScreen\x18\x01 \x01(\x08\x12\x12\n\nnavigation\x18\x02 \x01(\x08\x12\x0f\n\x07weapons\x18\x03 \x01(\x08\x12\x13\n\x0b\x65ngineering\x18\x04 \x01(\x08\x12\x0f\n\x07science\x18\x05 \x01(\x08\x12\r\n\x05\x63omms\x18\x06 \x01(\x08\"\xa0\x01\n\x04Ship\x12\n\n\x02id\x18\x01 \x02(\x05\x12\t\n\x01x\x18\x02 \x01(\x01\x12\t\n\x01z\x18\x03 \x01(\x01\x12\t\n\x01h\x18\x04 \x01(\x02\x12\n\n\x02\x64x\x18\x05 \x01(\x01\x12\n\n\x02\x64z\x18\x06 \x01(\x01\x12\n\n\x02\x64h\x18\x07 \x01(\x02\x12&\n\x08stations\x18\x10 \x01(\x0b\x32\x14.apollo.ShipStations\x12\x0c\n\x04name\x18\x11 \x01(\t\x12\x11\n\tclassName\x18\x12 \x01(\t\"#\n\x05Ships\x12\x1a\n\x04ship\x18\x01 \x03(\x0b\x32\x0c.apollo.Ship')
 
 
 
@@ -163,36 +163,78 @@ _SHIPSTATIONS = descriptor.Descriptor(
 )
 
 
-_PLAYERSHIP = descriptor.Descriptor(
-  name='PlayerShip',
-  full_name='apollo.PlayerShip',
+_SHIP = descriptor.Descriptor(
+  name='Ship',
+  full_name='apollo.Ship',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     descriptor.FieldDescriptor(
-      name='id', full_name='apollo.PlayerShip.id', index=0,
+      name='id', full_name='apollo.Ship.id', index=0,
       number=1, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
-      name='stations', full_name='apollo.PlayerShip.stations', index=1,
-      number=16, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
+      name='x', full_name='apollo.Ship.x', index=1,
+      number=2, type=1, cpp_type=5, label=1,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
-      name='name', full_name='apollo.PlayerShip.name', index=2,
+      name='z', full_name='apollo.Ship.z', index=2,
+      number=3, type=1, cpp_type=5, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='h', full_name='apollo.Ship.h', index=3,
+      number=4, type=2, cpp_type=6, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='dx', full_name='apollo.Ship.dx', index=4,
+      number=5, type=1, cpp_type=5, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='dz', full_name='apollo.Ship.dz', index=5,
+      number=6, type=1, cpp_type=5, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='dh', full_name='apollo.Ship.dh', index=6,
+      number=7, type=2, cpp_type=6, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='stations', full_name='apollo.Ship.stations', index=7,
+      number=16, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='name', full_name='apollo.Ship.name', index=8,
       number=17, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
-      name='className', full_name='apollo.PlayerShip.className', index=3,
+      name='className', full_name='apollo.Ship.className', index=9,
       number=18, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
@@ -207,20 +249,20 @@ _PLAYERSHIP = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=307,
-  serialized_end=404,
+  serialized_start=308,
+  serialized_end=468,
 )
 
 
-_PLAYERSHIPS = descriptor.Descriptor(
-  name='PlayerShips',
-  full_name='apollo.PlayerShips',
+_SHIPS = descriptor.Descriptor(
+  name='Ships',
+  full_name='apollo.Ships',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     descriptor.FieldDescriptor(
-      name='playerShip', full_name='apollo.PlayerShips.playerShip', index=0,
+      name='ship', full_name='apollo.Ships.ship', index=0,
       number=1, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -235,18 +277,18 @@ _PLAYERSHIPS = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=406,
-  serialized_end=459,
+  serialized_start=470,
+  serialized_end=505,
 )
 
 _SHIPCLASSES.fields_by_name['shipClass'].message_type = _SHIPCLASS
-_PLAYERSHIP.fields_by_name['stations'].message_type = _SHIPSTATIONS
-_PLAYERSHIPS.fields_by_name['playerShip'].message_type = _PLAYERSHIP
+_SHIP.fields_by_name['stations'].message_type = _SHIPSTATIONS
+_SHIPS.fields_by_name['ship'].message_type = _SHIP
 DESCRIPTOR.message_types_by_name['ShipClass'] = _SHIPCLASS
 DESCRIPTOR.message_types_by_name['ShipClasses'] = _SHIPCLASSES
 DESCRIPTOR.message_types_by_name['ShipStations'] = _SHIPSTATIONS
-DESCRIPTOR.message_types_by_name['PlayerShip'] = _PLAYERSHIP
-DESCRIPTOR.message_types_by_name['PlayerShips'] = _PLAYERSHIPS
+DESCRIPTOR.message_types_by_name['Ship'] = _SHIP
+DESCRIPTOR.message_types_by_name['Ships'] = _SHIPS
 
 class ShipClass(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
@@ -266,16 +308,16 @@ class ShipStations(message.Message):
   
   # @@protoc_insertion_point(class_scope:apollo.ShipStations)
 
-class PlayerShip(message.Message):
+class Ship(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _PLAYERSHIP
+  DESCRIPTOR = _SHIP
   
-  # @@protoc_insertion_point(class_scope:apollo.PlayerShip)
+  # @@protoc_insertion_point(class_scope:apollo.Ship)
 
-class PlayerShips(message.Message):
+class Ships(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _PLAYERSHIPS
+  DESCRIPTOR = _SHIPS
   
-  # @@protoc_insertion_point(class_scope:apollo.PlayerShips)
+  # @@protoc_insertion_point(class_scope:apollo.Ships)
 
 # @@protoc_insertion_point(module_scope)

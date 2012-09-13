@@ -3,3 +3,4 @@ class CameraComponent(object):
 
 class RenderComponent(object):
     mesh = None
+    visible = True

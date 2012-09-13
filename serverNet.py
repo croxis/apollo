@@ -22,7 +22,7 @@ class NetworkSystem(sandbox.UDPNetworkSystem):
         self.accept("broadcastData", self.broadcastData)
         self.accept("confirmPlayerStations", self.confirmPlayerStations)
         self.activePlayers = []  # PlayerComponent
-        self.activeConnections = {}  # {NetAddress : PlayerComponent}
+        
         #self.shipMap = {} # {ShipID: {CONSOL: Netaddress}}
         #self.accept("shipGenerated", self.shipGenerated)
 
@@ -53,14 +53,14 @@ class NetworkSystem(sandbox.UDPNetworkSystem):
             self.activeConnections[component.address] = component
             print self.activeConnections
         elif msgID == protocol.REQUEST_STATIONS:
-            entity = sandbox.entities[data.playerShip[0].id]
+            entity = sandbox.entities[data.ship[0].id]
             info = entity.getComponent(shipComponents.InfoComponent)
             player = entity.getComponent(shipComponents.PlayerComponent)
-            stations = data.playerShip[0].stations
+            stations = data.ship[0].stations
             for stationName in universals.playerStations:
                 if getattr(player, stationName) != 0:
                     print "Resend ship select window"
-                sandbox.send('setPlayerStations', [address, data.playerShip[0].id, stations])
+            sandbox.send('setPlayerStations', [address, data.ship[0].id, stations])
         '''
         el'''
         '''if username not in accountEntities:
@@ -96,8 +96,8 @@ class NetworkSystem(sandbox.UDPNetworkSystem):
         for addr in self.activeConnections.keys():
             self.sendData(datagram, addr)
 
-    def confirmPlayerStations(self, netAddress, stations):
-        datagram = protocol.confirmStations(stations)
+    def confirmPlayerStations(self, netAddress, shipid, stations):
+        datagram = protocol.confirmStations(shipid, stations)
         self.sendData(datagram, netAddress)
 
 

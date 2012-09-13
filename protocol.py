@@ -49,11 +49,12 @@ CONFIRM_STATIONS = 109
 
 # protobuf parsers
 def readProto(msgID, message):
-    if msgID == LOGIN:
+    if msgID == CONFIRM_STATIONS:
+        data = proto.Ship()
+    elif msgID == LOGIN:
         return
     elif msgID == PLAYER_SHIPS or msgID == REQUEST_STATIONS:
-        print "yes", msgID
-        data = proto.PlayerShips()
+        data = proto.Ships()
     elif msgID == SHIP_CLASSES:
         data = proto.ShipClasses()
     else:
@@ -64,10 +65,11 @@ def readProto(msgID, message):
 
 #Client to server datagram generators
 def requestStations(shipid, stations):
-    playerShips = proto.PlayerShips()
-    playerShip = playerShips.playerShip.add()
+    playerShips = proto.Ships()
+    playerShip = playerShips.ship.add()
     playerShip.id = shipid
-    shipStations = playerShip.stations.add()
+    #shipStations = playerShip.stations.add()
+    shipStations = playerShip.stations
     for station in stations:
         setattr(shipStations, station, 1)
     return sandbox.generatePacket(REQUEST_STATIONS, playerShips)
@@ -83,11 +85,25 @@ def requestStations(shipid, stations):
     return datagram'''
 
 
-def confirmStations(stations):
-    shipStations = proto.ShipStations()
+def confirmStations(shipid, stations):
+    ship = proto.Ship()
+    ship.id = shipid
+    shipEntity = sandbox.entities[shipid]
+    info = shipEntity.getComponent(shipComponents.InfoComponent)
+    ship.name = info.name
+    ship.className = info.shipClass
+    physics = shipEntity.getComponent(shipComponents.BulletPhysicsComponent)
+    ship.x = physics.nodePath.getX()
+    ship.z = physics.nodePath.getZ()
+    ship.h = physics.nodePath.getH()
+    ship.dx = physics.node.getLinearVelocity()[0]
+    ship.dz = physics.node.getLinearVelocity()[2]
+    ship.dh = physics.node.getAngularVelocity()[0]
+    #shipStations = ship.stations.add()
+    shipStations = ship.stations
     for station in stations:
         setattr(shipStations, station, 1)
-    datagram = sandbox.generatePacket(CONFIRM_STATIONS, shipStations)
+    datagram = sandbox.generatePacket(CONFIRM_STATIONS, ship)
     return datagram
 
 
@@ -105,41 +121,22 @@ def shipClasses(db):
 
 def playerShipStations():
     shipSys = sandbox.getSystem(shipSystem.ShipSystem)
-    playerShips = proto.PlayerShips()
+    playerShips = proto.Ships()
     entities = shipSys.getPlayerShipEntities()
     for entity in entities:
-        playerShip = playerShips.playerShip.add()
+        playerShip = playerShips.ship.add()
         info = entity.getComponent(shipComponents.InfoComponent)
         playerShip.name = info.name
         playerShip.className = info.shipClass
         playerShip.id = entity.id
         player = entity.getComponent(shipComponents.PlayerComponent)
-        shipStations = playerShip.stations.add()
+        #shipStations = playerShip.stations.add()
+        shipStations = playerShip.stations
+        #print type(shipStations)
         stations = vars(player)
-        for stationName, status in stations:
+        for stationName, status in stations.items():
             if status == 0:
                 setattr(shipStations, stationName, 0)
             else:
                 setattr(shipStations, stationName, 1)
     return sandbox.generatePacket(PLAYER_SHIPS, playerShips)
-
-# Depreciate. Move to a universal ship entering sensorrange, even if
-# Ship spawns inside sensors
-def newShip(ship):
-    datagram = genericPacket(NEW_SHIP)
-    datagram.addUint8(ship.id)
-    datagram.addString(ship.getComponent(ships.InfoComponent).name)
-    datagram.addUint8(ship.getComponent(ships.InfoComponent).health)
-    datagram.addFloat32(ship.getComponent(ships.BulletPhysicsComponent).nodePath.getX())
-    datagram.addFloat32(ship.getComponent(ships.BulletPhysicsComponent).nodePath.getY())
-    datagram.addFloat32(ship.getComponent(ships.BulletPhysicsComponent).nodePath.getZ())
-    datagram.addFloat32(ship.getComponent(ships.BulletPhysicsComponent).node.getLinearVelocity().x)
-    datagram.addFloat32(ship.getComponent(ships.BulletPhysicsComponent).node.getLinearVelocity().y)
-    datagram.addFloat32(ship.getComponent(ships.BulletPhysicsComponent).node.getLinearVelocity().z)
-    datagram.addFloat32(ship.getComponent(ships.BulletPhysicsComponent).nodePath.getH())
-    datagram.addFloat32(ship.getComponent(ships.BulletPhysicsComponent).nodePath.getP())
-    datagram.addFloat32(ship.getComponent(ships.BulletPhysicsComponent).nodePath.getR())
-    datagram.addFloat32(ship.getComponent(ships.BulletPhysicsComponent).node.getAngularVelocity().x)
-    datagram.addFloat32(ship.getComponent(ships.BulletPhysicsComponent).node.getAngularVelocity().y)
-    datagram.addFloat32(ship.getComponent(ships.BulletPhysicsComponent).node.getAngularVelocity().z)
-    return datagram

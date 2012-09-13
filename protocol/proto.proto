@@ -21,13 +21,19 @@ message ShipStations {
     optional bool comms = 6;
 }
 
-message PlayerShip {
+message Ship {
     required int32 id = 1;
+    optional double x = 2;
+    optional double z = 3;
+    optional float h = 4;
+    optional double dx = 5;
+    optional double dz = 6;
+    optional float dh = 7;
     optional ShipStations stations = 16;
     optional string name = 17;
     optional string className = 18;
 }
 
-message PlayerShips {
-    repeated PlayerShip playerShip = 1;
+message Ships {
+    repeated Ship ship = 1;
 }

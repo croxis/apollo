@@ -154,7 +154,7 @@ if universals.runClient:
     sandbox.base.taskMgr.doMethodLater(1, loginDebug, "Login Debug")
 
 if universals.runServer:
-    shipSystem.newShip("The Hype", "Hyperion", True)
+    shipSystem.spawnShip("The Hype", "Hyperion", True)
 
 
 log.info("Setup complete.")
