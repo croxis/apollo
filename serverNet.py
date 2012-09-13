@@ -7,23 +7,15 @@ loadPrcFileData("", "notify-level-ITF-ServerNetwork debug")
 from direct.directnotify.DirectNotify import DirectNotify
 log = DirectNotify().newCategory("ITF-ServerNetwork")
 
-import datetime
-import socket
-
 import protocol
 import shipComponents
 import universals
 import shipSystem
 
-import yaml
-
-from direct.distributed.PyDatagram import PyDatagram
-from direct.distributed.PyDatagramIterator import PyDatagramIterator
-
-from panda3d.core import ConnectionWriter, NetDatagram, QueuedConnectionManager, QueuedConnectionReader
 
 class AccountComponent(object):
     address = None
+
 
 class NetworkSystem(sandbox.UDPNetworkSystem):
     def init2(self):
@@ -41,7 +33,7 @@ class NetworkSystem(sandbox.UDPNetworkSystem):
             return
         data = protocol.readProto(msgID, serialized)
         if data == None and msgID != protocol.LOGIN:
-            universals.log.error("Package reading error: " + str(msgID) + " " + serialized)
+            log.error("Package reading error: " + str(msgID) + " " + serialized)
             return
 
         #Order of these will need to be optimized later
@@ -108,6 +100,7 @@ class NetworkSystem(sandbox.UDPNetworkSystem):
         datagram = protocol.confirmStations(stations)
         self.sendData(datagram, netAddress)
 
+
 class ClientComponent:
-    """Theoretical component that stores which clients are 
+    """Theoretical component that stores which clients are
     also tracking this entity as well as last update"""
