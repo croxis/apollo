@@ -1,50 +1,53 @@
 import sandbox
-import DirectWindow
+#import DirectWindow
 import boxes
+import universals
 from direct.gui.DirectGui import *
+
 
 class GUISystem(sandbox.EntitySystem):
     def init(self):
         self.accept("shipSelectScreen", self.shipSelectScreen)
 
-    def shipSelectScreen(self, db):
+    def shipSelectScreen(self, playerShips):
         guibox = boxes.HBox()
         leftbox = boxes.VBox()
         guibox.setScale(0.1)
-        guibox.db = db
+        guibox.db = playerShips
+        print playerShips, dir(playerShips)
         ships = []
-        for entityid in db:
-            ships.append(db[entityid]['name'])
+        for playerShip in playerShips.playerShip:
+            ships.append(playerShip.name)
         guibox.reparentTo(sandbox.base.aspect2d)
         menu = DirectOptionMenu(text="options", items=ships)
         leftbox.pack(menu)
-        
-        
         guibox.pack(leftbox)
         rightbox = boxes.VBox()
         guibox.checkButtons = []
-        for entityid in db:
-            for station, status in db[entityid]['stations'].items():
-                checkButton = DirectCheckButton(text=station)
-                if status != 0:
-                    checkButton['state'] = DGG.DISABLED
-                rightbox.pack(checkButton)
-                guibox.checkButtons.append(checkButton)
+        for playerShip in playerShips.playerShip:
+            for station in playerShip.stations:
+                for stationName in universals.playerStations:
+                    checkButton = DirectCheckButton(text=stationName)
+                    if getattr(station, stationName):
+                        checkButton['state'] = DGG.DISABLED
+                    rightbox.pack(checkButton)
+                    guibox.checkButtons.append(checkButton)
         guibox.pack(rightbox)
         button = DirectButton(text="Select", command=self.selectShip,
-            extraArgs=[menu, db, guibox])
+            extraArgs=[menu, playerShips, guibox])
         guibox.pack(button)
 
-    def selectShip(self, menu, db, guibox):
+    def selectShip(self, menu, playerShips, guibox):
         name = menu.get()
         stations = []
-        for entityid in db:
-            if db[entityid]['name'] == name:
+        entityID = 0
+        for playerShip in playerShips.playerShip:
+            if playerShip.name == name:
+                entityID = playerShip.id
                 for checkButton in guibox.checkButtons:
                     if checkButton['indicatorValue']:
                         stations.append(checkButton['text'])
         if not stations:
             return
         guibox.destroy()
-        print stations
-        sandbox.send('requestStations', [name, stations])
+        sandbox.send('requestStations', [entityID, stations])
