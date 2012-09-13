@@ -20,15 +20,22 @@ loadPrcFileData("", "notify-level-ITF-ShipSystem debug")
 from direct.directnotify.DirectNotify import DirectNotify
 log = DirectNotify().newCategory("ITF-ShipSystem")
 
+
 class ShipSystem(sandbox.EntitySystem):
     def init(self):
         self.accept("setPlayerStations", self.setPlayerStation)
+        self.accept("setShipID", self.setShipID)
         self.accept('shipClassList', self.checkClasses)
         self.accept('shipUpdate', self.shipUpdate)
         self.shipClasses = {}
+        self.shipid = None  # This is for clients to id who the controlling
+        # ship is for quick lookup
 
     def process(self, entity):
         pass
+
+    def setShipID(self, data):
+        self.shipid = data.id
 
     def checkClasses(self, shipClasses):
         for ship in shipClasses.shipClass:
