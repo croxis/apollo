@@ -1,9 +1,13 @@
-from direct.distributed.PyDatagram import PyDatagram
-
+import proto_pb2 as proto
 import shipComponents
+import shipSystem
 import universals
 
-import yaml
+import sandbox
+
+# The proto file shouldn't be accessed directly, it should be handled in
+# This file
+
 #Client to server even
 #Server to client odd
 #If both will probably be even
@@ -14,6 +18,8 @@ import yaml
 # ack = myIterator.getUint8()
 # acks = myIterator.getUint16()
 # hashID = myIterator.getUint16()
+# protobuf
+# When compiled: "msgID, remotePacketCount, ack, acks, hashID, protobuf"
 
 #Protocol space
 #0-99 common game elements
@@ -34,50 +40,88 @@ LOGIN = 100
 LOGIN_DENIED = 101
 LOGIN_ACCEPTED = 103
 
-SHIP_CLASSES = 104
-PLAYER_SHIPS = 105
+SHIP_CLASSES = 105
+PLAYER_SHIPS = 107
 
-REQUEST_STATIONS = 106
-CONFIRM_STATIONS = 107
-
-ACCOUNT_REC = 110  # Requests name of account for a given id entity id
-ACCOUNT_ACK = 111
+REQUEST_STATIONS = 108
+CONFIRM_STATIONS = 109
 
 
+# protobuf parsers
+def readProto(msgID, message):
+    if msgID == LOGIN:
+        return
+    elif msgID == PLAYER_SHIPS or msgID == REQUEST_STATIONS:
+        print "yes", msgID
+        data = proto.PlayerShips()
+    elif msgID == SHIP_CLASSES:
+        data = proto.ShipClasses()
+    else:
+        return
+    data.ParseFromString(message)
+    return data
 
-def genericPacket(key, packetCount=0, protobuf=0):
-    myPyDatagram = PyDatagram()
-    myPyDatagram.addUint8(key)
-    myPyDatagram.addUint8(packetCount)
-    myPyDatagram.addUint8(0)
-    myPyDatagram.addUint16(0)
-    myPyDatagram.addUint16(0)
-    myPyDatagram.addUint8(protobuf)
-    return myPyDatagram
 
 #Client to server datagram generators
-
-def requestStations(name, stations):
-    datagram = genericPacket(REQUEST_STATIONS)
-    datagram.addString(name)
-    datagram.addString(yaml.dump(stations))
-    return datagram
+def requestStations(shipid, stations):
+    playerShips = proto.PlayerShips()
+    playerShip = playerShips.playerShip.add()
+    playerShip.id = shipid
+    shipStations = playerShip.stations.add()
+    for station in stations:
+        setattr(shipStations, station, 1)
+    return sandbox.generatePacket(REQUEST_STATIONS, playerShips)
 
 
 #Server to client datagram generators
 
 
-def loginAccepted(x):
+'''def loginAccepted(x):
     datagram = genericPacket(LOGIN_ACCEPTED)
     datagram.addUint8(x)  # entity id of user
     datagram.addFloat32(universals.day)
-    return datagram
+    return datagram'''
+
 
 def confirmStations(stations):
-    datagram = genericPacket(CONFIRM_STATIONS)
-    datagram.addString(yaml.dump(stations))
+    shipStations = proto.ShipStations()
+    for station in stations:
+        setattr(shipStations, station, 1)
+    datagram = sandbox.generatePacket(CONFIRM_STATIONS, shipStations)
     return datagram
 
+
+def shipClasses(db):
+    shipClasses = proto.ShipClasses()
+    for shipClass in db:
+        ship = shipClasses.shipClass.add()
+        ship.className = db[shipClass]['class']
+        ship.mass = int(db[shipClass]['mass'])
+        ship.meshName = db[shipClass]['mesh']
+        ship.folderName = db[shipClass]['folder']
+    datagram = sandbox.generatePacket(SHIP_CLASSES, shipClasses)
+    return datagram
+
+
+def playerShipStations():
+    shipSys = sandbox.getSystem(shipSystem.ShipSystem)
+    playerShips = proto.PlayerShips()
+    entities = shipSys.getPlayerShipEntities()
+    for entity in entities:
+        playerShip = playerShips.playerShip.add()
+        info = entity.getComponent(shipComponents.InfoComponent)
+        playerShip.name = info.name
+        playerShip.className = info.shipClass
+        playerShip.id = entity.id
+        player = entity.getComponent(shipComponents.PlayerComponent)
+        shipStations = playerShip.stations.add()
+        stations = vars(player)
+        for stationName, status in stations:
+            if status == 0:
+                setattr(shipStations, stationName, 0)
+            else:
+                setattr(shipStations, stationName, 1)
+    return sandbox.generatePacket(PLAYER_SHIPS, playerShips)
 
 # Depreciate. Move to a universal ship entering sensorrange, even if
 # Ship spawns inside sensors
@@ -98,10 +142,4 @@ def newShip(ship):
     datagram.addFloat32(ship.getComponent(ships.BulletPhysicsComponent).node.getAngularVelocity().x)
     datagram.addFloat32(ship.getComponent(ships.BulletPhysicsComponent).node.getAngularVelocity().y)
     datagram.addFloat32(ship.getComponent(ships.BulletPhysicsComponent).node.getAngularVelocity().z)
-    return datagram
-
-
-def shipClasses(db):
-    datagram = genericPacket(SHIP_CLASSES)
-    datagram.addString(yaml.dump(db))
     return datagram

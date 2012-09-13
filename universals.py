@@ -28,3 +28,5 @@ day = 9131.25
 
 # Keeps track of the user name of the client
 username = "Moofoo"
+
+playerStations = ['navigation']

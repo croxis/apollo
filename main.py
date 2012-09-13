@@ -22,6 +22,7 @@ import getopt
 import sys
 from pandac.PandaModules import loadPrcFileData
 loadPrcFileData("", "notify-level-ITF debug")
+#loadPrcFileData("", "extended-exceptions 1")
 import universals
 from universals import log
 
@@ -109,13 +110,17 @@ if universals.runClient:
     import clientNet
     import guiSystem
     log.info("Setting up client network")
-    sandbox.addSystem(clientNet.NetworkSystem())
+    clinet = clientNet.NetworkSystem()
+    clinet.serverAddress = '127.0.0.1'
+    sandbox.addSystem(clinet)
     log.info("Setting up gui system")
     sandbox.addSystem(guiSystem.GUISystem())
 if universals.runServer:
     import serverNet
     log.info("Setting up server network")
-    sandbox.addSystem(serverNet.NetworkSystem())
+    servnet = serverNet.NetworkSystem()
+    servnet.port = 1999
+    sandbox.addSystem(servnet)
 
 log.info("Setting up Solar System Body Simulator")
 sandbox.addSystem(solarSystem.SolarSystemSystem(solarSystem.BaryCenter, solarSystem.Body, solarSystem.Star))
@@ -124,7 +129,10 @@ log.info("Setting up dynamic physics")
 sandbox.addSystem(physics.PhysicsSystem(shipComponents.BulletPhysicsComponent))
 
 log.info("Setting up ship interface system")
-sandbox.addSystem(shipSystem.ShipSystem(shipComponents.PlayerComponent))
+shipSystem = shipSystem.ShipSystem(shipComponents.PlayerComponent)
+sandbox.addSystem(shipSystem)
+shipSystem.loadShipClasses()
+
 
 #log.info("Setting up player-ship interface system")
 #sandbox.addSystem(shipSystem.PlayerShipsSystem(ships.PlayerComponent))
@@ -138,17 +146,16 @@ def planetPositionDebug(task):
 
 
 def loginDebug(task):
-    sandbox.getSystem(clientNet.NetworkSystem).sendLogin(universals.username, "Hash Password")
+    #sandbox.getSystem(clientNet.NetworkSystem).sendLogin(universals.username, "Hash Password")
+    sandbox.send('login', [('127.0.0.1', 1999)])
 
-sandbox.base.taskMgr.doMethodLater(10, planetPositionDebug, "Position Debug")
+#sandbox.base.taskMgr.doMethodLater(10, planetPositionDebug, "Position Debug")
 if universals.runClient:
     sandbox.base.taskMgr.doMethodLater(1, loginDebug, "Login Debug")
 
 if universals.runServer:
-    shipSystem = sandbox.getSystem(shipSystem.ShipSystem)
-    shipSystem.loadShipClasses()
-    shipSystem.newShip("The hype", "hyperion", True)
-    
+    shipSystem.newShip("The Hype", "Hyperion", True)
+
 
 log.info("Setup complete.")
 sandbox.run()

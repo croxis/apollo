@@ -1,0 +1,33 @@
+package apollo;
+
+message ShipClass {
+    required string className = 1;
+    required int64 mass = 2;
+    optional string folderName = 3;
+    optional string meshName = 4;
+    optional string description = 5;
+}
+
+message ShipClasses {
+    repeated ShipClass shipClass = 1;
+}
+
+message ShipStations {
+    optional bool mainScreen = 1;
+    optional bool navigation = 2;
+    optional bool weapons = 3;
+    optional bool engineering = 4;
+    optional bool science = 5;
+    optional bool comms = 6;
+}
+
+message PlayerShip {
+    required int32 id = 1;
+    optional ShipStations stations = 16;
+    optional string name = 17;
+    optional string className = 18;
+}
+
+message PlayerShips {
+    repeated PlayerShip playerShip = 1;
+}
