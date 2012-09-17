@@ -27,6 +27,7 @@ class ShipSystem(sandbox.EntitySystem):
         self.accept("setShipID", self.setShipID)
         self.accept('shipClassList', self.checkClasses)
         self.accept('shipUpdate', self.shipUpdate)
+        self.accept('playerDisconnected', self.playerDisconnected)
         self.shipClasses = {}
         self.shipid = None  # This is for clients to id who the controlling
         # ship is for quick lookup
@@ -120,3 +121,12 @@ class ShipSystem(sandbox.EntitySystem):
                     setattr(playerComponent, stationName, netAddress)
                     acceptedStations.append(stationName)
         sandbox.send("confirmPlayerStations", [netAddress, shipid, acceptedStations])
+
+    def playerDisconnected(self, address):
+        shipids = self.getPlayerShipEntities()
+        for shipid in shipids:
+            playerComponent = sandbox.entities[shipid].getComponent(shipComponents.PlayerComponent)
+            for stationName in universals.playerStations:
+                if getattr(playerComponent, stationName) == address:
+                    setattr(playerComponent, stationName, 0)
+                    sandbox.send('stationEmptied', [shipid, stationName])

@@ -5,6 +5,7 @@ import shipComponents
 import shipSystem
 import universals
 from direct.gui.DirectGui import *
+from direct.gui.DirectGuiGlobals import VERTICAL
 from pandac.PandaModules import Spotlight,PerspectiveLens,Fog,OrthographicLens
 from direct.gui.OnscreenText import OnscreenText
 
@@ -78,3 +79,14 @@ class GUISystem(sandbox.EntitySystem):
         sandbox.base.cam.node().setLens(lens)
         self.text['xyz'] = OnscreenText(text="Standby", pos=(-0.95, 0.95),
             scale=0.07, fg=(1, 0.5, 0.5, 1), align=TextNode.ACenter, mayChange=1)
+        throttlebox = boxes.VBox()
+        throttlebox.setScale(0.1)
+        throttlebox.setPos(-1, 0, -0.75)
+        throttleLable = DirectLabel(text="Throttle")
+        throttlebox.pack(throttleLable)
+        self.throttle = DirectSlider(range=(-100, 100), value=0,
+            pageSize=1, command=self.setThrottle, orientation=VERTICAL)
+        throttlebox.pack(self.throttle)
+
+    def setThrottle(self):
+        print self.throttle['value']
