@@ -27,7 +27,7 @@ import sandbox
 
 ACK = 0
 POS_UPDATE = 1  # Position update for a given ship.  1 - 10 times a second
-THRUST_REQ = 2
+#THRUST_REQ = 2
 POS_PHYS_UPDATE = 3   # Full physics update for a given ship.
 # 1 per second unless a non predictive force (ie non gravity) is applied
 DATE_UPDATE = 5  # 1 per 5 seconds
@@ -35,6 +35,8 @@ CHAT = 6
 
 NEW_SHIP = 9  # A ship has entered sensor range. All data is sent in this packet
 NEW_STATION = 11  # A station has entered sensor range.
+
+SET_THROTTLE = 12
 
 LOGIN = 100
 LOGIN_DENIED = 101
@@ -73,6 +75,11 @@ def requestStations(shipid, stations):
     for station in stations:
         setattr(shipStations, station, 1)
     return sandbox.generatePacket(REQUEST_STATIONS, playerShips)
+
+def requestThrottle(throttle):
+    t = proto.Throttle()
+    t.normal = throttle
+    return sandbox.generatePacket(SET_THROTTLE, t)
 
 
 #Server to client datagram generators

@@ -84,9 +84,20 @@ class GUISystem(sandbox.EntitySystem):
         throttlebox.setPos(-1, 0, -0.75)
         throttleLable = DirectLabel(text="Throttle")
         throttlebox.pack(throttleLable)
+        '''self.throttle = DirectSlider(range=(-100, 100), value=0,
+            pageSize=1, command=self.setThrottle, orientation=VERTICAL)'''
         self.throttle = DirectSlider(range=(-100, 100), value=0,
-            pageSize=1, command=self.setThrottle, orientation=VERTICAL)
+            pageSize=1, orientation=VERTICAL)
         throttlebox.pack(self.throttle)
+        self.throt = 0
+        sandbox.base.taskMgr.doMethodLater(0.2, self.checkThrottle, 'throttle')
 
     def setThrottle(self):
         print self.throttle['value']
+
+    def checkThrottle(self, task):
+        if self.throt != self.throttle['value']:
+            self.throt = self.throttle['value']
+            sandbox.send("requestThrottle", [self.throttle['value']])
+            print self.throttle['value']
+        return task.again

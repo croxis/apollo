@@ -17,6 +17,7 @@ class NetworkSystem(sandbox.UDPNetworkSystem):
         self.packetCount = 0
         self.accept('login', self.sendLogin)
         self.accept('requestStations', self.requestStations)
+        self.accept('requestThrottle', self.requestThrottle)
 
     def processPacket(self, msgID, remotePacketCount, ack, acks, hashID, serialized, address):
         #If not in our protocol range then we just reject
@@ -41,6 +42,10 @@ class NetworkSystem(sandbox.UDPNetworkSystem):
 
     def requestStations(self, shipid, stations):
         datagram = protocol.requestStations(shipid, stations)
+        self.send(datagram)
+
+    def requestThrottle(self, throttle):
+        datagram = protocol.requestThrottle(throttle)
         self.send(datagram)
 
     def send(self, datagram):

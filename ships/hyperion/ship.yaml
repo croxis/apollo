@@ -1,3 +1,16 @@
 mesh: hyperion
 mass: 8.4e+9
 class: Hyperion
+engines:
+  - x: 0
+    y: 0
+    z: 0
+    thrust: 1.3e+14
+  - x: 0
+    y: 0
+    z: 0
+    thrust: 1.3e+14
+  - x: 0
+    y: 0
+    z: 0
+    thrust: 1.3e+14

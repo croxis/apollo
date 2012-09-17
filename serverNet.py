@@ -21,8 +21,9 @@ class NetworkSystem(sandbox.UDPNetworkSystem):
     def init2(self):
         self.accept("broadcastData", self.broadcastData)
         self.accept("confirmPlayerStations", self.confirmPlayerStations)
+        elf.accept('playerDisconnected', self.playerDisconnected)
         self.activePlayers = []  # PlayerComponent
-        
+        self.playerMap = {} # {Address: Shipid}
         #self.shipMap = {} # {ShipID: {CONSOL: Netaddress}}
         #self.accept("shipGenerated", self.shipGenerated)
 
@@ -61,8 +62,8 @@ class NetworkSystem(sandbox.UDPNetworkSystem):
                 if getattr(player, stationName) != 0:
                     print "Resend ship select window"
             sandbox.send('setPlayerStations', [address, data.ship[0].id, stations])
-        '''
-        el'''
+        elif msgID == protocol.SET_THROTTLE:
+            sandbox.send('setThrottle', [self.playerMap[address], data])
         '''if username not in accountEntities:
             entity = sandbox.createEntity()
             component = AccountComponent()
@@ -96,7 +97,11 @@ class NetworkSystem(sandbox.UDPNetworkSystem):
         for addr in self.activeConnections.keys():
             self.sendData(datagram, addr)
 
+    def playerDisconnected(self, address):
+        del self.playerMap[address]
+
     def confirmPlayerStations(self, netAddress, shipid, stations):
+        self.playerMap[netAddress] = shipid
         datagram = protocol.confirmStations(shipid, stations)
         self.sendData(datagram, netAddress)
 

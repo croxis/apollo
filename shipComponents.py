@@ -5,6 +5,7 @@ class BulletPhysicsComponent(object):
     bulletShape = None
     node = None
     nodePath = None
+    currentThrust = 0
 
 class AIPilotComponent(object):
     ai = None
@@ -16,7 +17,7 @@ class PlayerComponent(object):
 class ThrustComponent(object):
     '''Maximum thrust values, in newtons'''
     forward = 1
-    backwars = 1
+    backwards = 1
     lateral = 1
     pitch = 1
     yaw = 1

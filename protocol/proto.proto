@@ -37,3 +37,11 @@ message Ship {
 message Ships {
     repeated Ship ship = 1;
 }
+
+message Throttle{
+    optional float normal = 1;
+    optional float warp = 2;
+    optional bool jump = 3;
+    optional double bsgjumpx = 4;
+    optional double bsgjumpz = 5;
+}

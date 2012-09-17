@@ -92,6 +92,8 @@ class ShipSystem(sandbox.EntitySystem):
         component.node.setLinearVelocity(Vec3(0, 7.72983, 0))
         ship.addComponent(component)
         component = shipComponents.ThrustComponent()
+        for engine in self.shipClasses[shipClass]['engines']:
+            component.forward += engine['thrust']
         ship.addComponent(component)
         component = shipComponents.InfoComponent()
         component.shipClass = shipClass
@@ -130,3 +132,4 @@ class ShipSystem(sandbox.EntitySystem):
                 if getattr(playerComponent, stationName) == address:
                     setattr(playerComponent, stationName, 0)
                     sandbox.send('stationEmptied', [shipid, stationName])
+
