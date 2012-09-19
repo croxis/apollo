@@ -21,11 +21,13 @@ class NetworkSystem(sandbox.UDPNetworkSystem):
     def init2(self):
         self.accept("broadcastData", self.broadcastData)
         self.accept("confirmPlayerStations", self.confirmPlayerStations)
-        elf.accept('playerDisconnected', self.playerDisconnected)
+        self.accept('playerDisconnected', self.playerDisconnected)
         self.activePlayers = []  # PlayerComponent
         self.playerMap = {} # {Address: Shipid}
         #self.shipMap = {} # {ShipID: {CONSOL: Netaddress}}
         #self.accept("shipGenerated", self.shipGenerated)
+        if universals.runServer and not universals.runClient:
+            sandbox.base.taskMgr.doMethodLater(0.2, self.sendShipUpdates, 'shipUpdates')
 
     def processPacket(self, msgID, remotePacketCount,
             ack, acks, hashID, serialized, address):
@@ -96,6 +98,12 @@ class NetworkSystem(sandbox.UDPNetworkSystem):
             #sandbox.entities[accountID].getComponent()
         for addr in self.activeConnections.keys():
             self.sendData(datagram, addr)
+
+    def sendShipUpdates(self, task):
+        ships = sandbox.getSystem(shipSystem.ShipSystem).getPlayerShipEntities()
+        ships += sandbox.getEntitiesByComponentType(shipComponents.AIPilotComponent)
+        self.broadcastData(protocol.sendShipUpdates(ships))
+        return task.again
 
     def playerDisconnected(self, address):
         del self.playerMap[address]

@@ -30,9 +30,10 @@ class NetworkSystem(sandbox.UDPNetworkSystem):
             sandbox.send('navigationScreen')
         elif msgID == protocol.PLAYER_SHIPS:
             sandbox.send('shipSelectScreen', [data])
+        elif msgID == protocol.POS_PHYS_UPDATE:
+            sandbox.send('shipUpdates', [data])
         elif msgID == protocol.SHIP_CLASSES:
             sandbox.send('shipClassList', [data])
-        return
 
     def sendLogin(self, serverAddress):
         self.serverAddress = serverAddress

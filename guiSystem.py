@@ -1,6 +1,7 @@
 import sandbox
 #import DirectWindow
 import boxes
+import graphicsComponents
 import shipComponents
 import shipSystem
 import universals
@@ -26,6 +27,8 @@ class GUISystem(sandbox.EntitySystem):
                 physics = sandbox.entities[shipid].getComponent(shipComponents.BulletPhysicsComponent)
                 text = "X: " + str(physics.nodePath.getX()) + ", Z: " + str(physics.nodePath.getZ()) + ", H: " + str(physics.nodePath.getH())
                 self.text['xyz'].setText(text)
+                gfx = sandbox.entities[shipid].getComponent(graphicsComponents.RenderComponent)
+                gfx.mesh.setPos(physics.nodePath.getPos())
 
     def shipSelectScreen(self, playerShips):
         guibox = boxes.HBox()
@@ -71,12 +74,12 @@ class GUISystem(sandbox.EntitySystem):
 
     def navigationUI(self):
         self.mode = 'navigation'
-        sandbox.base.disableMouse()
-        sandbox.base.camera.setPos(0, 0, 5000)
-        sandbox.base.camera.setHpr(0, -90, 0)
+        #sandbox.base.disableMouse()
+        #sandbox.base.camera.setPos(0, 0, 5000)
+        #sandbox.base.camera.setHpr(0, -90, 0)
         lens = OrthographicLens()
         lens.setFilmSize(2000)
-        sandbox.base.cam.node().setLens(lens)
+        #sandbox.base.cam.node().setLens(lens)
         self.text['xyz'] = OnscreenText(text="Standby", pos=(-0.95, 0.95),
             scale=0.07, fg=(1, 0.5, 0.5, 1), align=TextNode.ACenter, mayChange=1)
         throttlebox = boxes.VBox()
@@ -92,12 +95,8 @@ class GUISystem(sandbox.EntitySystem):
         self.throt = 0
         sandbox.base.taskMgr.doMethodLater(0.2, self.checkThrottle, 'throttle')
 
-    def setThrottle(self):
-        print self.throttle['value']
-
     def checkThrottle(self, task):
         if self.throt != self.throttle['value']:
             self.throt = self.throttle['value']
             sandbox.send("requestThrottle", [self.throttle['value']])
-            print self.throttle['value']
         return task.again

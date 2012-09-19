@@ -1,5 +1,6 @@
 '''Ship components'''
 
+
 class BulletPhysicsComponent(object):
     '''Contains reference to bullet shape and node'''
     bulletShape = None
@@ -7,12 +8,15 @@ class BulletPhysicsComponent(object):
     nodePath = None
     currentThrust = 0
 
+
 class AIPilotComponent(object):
     ai = None
+
 
 class PlayerComponent(object):
     '''These are given NetAddresses'''
     navigation = 0
+
 
 class ThrustComponent(object):
     '''Maximum thrust values, in newtons'''
@@ -22,6 +26,7 @@ class ThrustComponent(object):
     pitch = 1
     yaw = 1
     roll = 1
+
 
 class InfoComponent(object):
     health = 100

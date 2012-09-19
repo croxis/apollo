@@ -26,24 +26,28 @@ class PhysicsSystem(sandbox.EntitySystem):
         #self.accept("addSpaceship", self.addSpaceship)
         self.accept('setThrottle', self.setThrottle)
         self.world = BulletWorld()
-
-    def begin(self):
-        dt = sandbox.base.globalClock.getDt()
-        self.world.doPhysics(dt)
-        #world.doPhysics(dt, 10, 1.0/180.0)
+        self.world.setGravity((0, 0, 0))
+        self.counter = 0
 
     def process(self, entity):
         shipPhysics = entity.getComponent(shipComponents.BulletPhysicsComponent)
-        shipPhysics.node.applyCentralForce((0, shipPhysics.currentThrust, 0))
+        if not shipPhysics.node.is_active():
+            shipPhysics.node.setActive(True)
+        shipPhysics.node.applyCentralForce(Vec3(shipPhysics.currentThrust, 0, 0))
+
+    def end(self):
+        dt = globalClock.getDt()
+        self.world.doPhysics(dt)
+        #self.world.doPhysics(dt, 10, 1.0 / 180.0)
 
     def setThrottle(self, shipid, data):
         if abs(data.normal) > 100:
+            print "Invalid"
             return
         ship = sandbox.entities[shipid]
         shipPhysics = ship.getComponent(shipComponents.BulletPhysicsComponent)
         shipThrust = ship.getComponent(shipComponents.ThrustComponent)
-        shipPhysics.currentThrust = shipThrust.forward * data.normal
-        #ship.getComponent(shipComponents.BulletPhysicsComponent).node.applyCentralForce((0, force, 0))
+        shipPhysics.currentThrust = shipThrust.forward / 100.0 * data.normal
 
     '''def addSpaceship(self, component, accountName, position, linearVelcocity):
         component.bulletShape = BulletSphereShape(5)

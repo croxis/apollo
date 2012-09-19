@@ -27,10 +27,11 @@ class ShipSystem(sandbox.EntitySystem):
         self.accept("setShipID", self.setShipID)
         self.accept('shipClassList', self.checkClasses)
         self.accept('shipUpdate', self.shipUpdate)
+        self.accept('shipUpdates', self.shipUpdates)
         self.accept('playerDisconnected', self.playerDisconnected)
         self.shipClasses = {}
         self.shipid = None  # This is for clients to id who the controlling
-        # ship is for quick lookup
+        # ship is for quick lookup      
 
     def process(self, entity):
         pass
@@ -71,8 +72,21 @@ class ShipSystem(sandbox.EntitySystem):
     def shipUpdate(self, ship, playerShip=False):
         if ship.id not in sandbox.entities:
             self.spawnShip(ship.name, ship.className, playerShip=False, entityid=ship.id)
+            #TODO: Request for full info from server and just return if no name or class?
+        physicsComponent = sandbox.entities[ship.id].getComponent(shipComponents.BulletPhysicsComponent)
+        physicsComponent.nodePath.setPos(ship.x, 0, ship.z)
+        physicsComponent.nodePath.setHpr(ship.h, 0, 0)
+        physicsComponent.node.setLinearVelocity((ship.dx, 0, ship.dz))
+        physicsComponent.node.setAngularVelocity((ship.dh, 0, 0))
+        physicsComponent.currentThrust = ship.thrust
+
+    def shipUpdates(self, ships):
+        for ship in ships.ship:
+            self.shipUpdate(ship)
 
     def spawnShip(self, shipName, shipClass, playerShip=False, entityid=-1):
+        if shipName == '' or shipClass == '':
+            return
         if entityid == -1:
             ship = sandbox.createEntity()
         else:
@@ -84,12 +98,13 @@ class ShipSystem(sandbox.EntitySystem):
         component.bulletShape = BulletSphereShape(5)
         component.node = BulletRigidBodyNode(shipName)
         component.node.setMass(self.shipClasses[shipClass]['mass'])
+        #component.node.setMass(10e+1)
         component.node.addShape(component.bulletShape)
         component.nodePath = universals.solarSystemRoot.attachNewNode(component.node)
         physics.addBody(component.node)
-        position = sandbox.getSystem(solarSystem.SolarSystemSystem).solarSystemRoot.find("**/Earth").getPos()
-        component.nodePath.setPos(position + Point3(6671, 0, 0))
-        component.node.setLinearVelocity(Vec3(0, 7.72983, 0))
+        #position = sandbox.getSystem(solarSystem.SolarSystemSystem).solarSystemRoot.find("**/Earth").getPos()
+        #component.nodePath.setPos(position + Point3(6671, 0, 0))
+        #component.node.setLinearVelocity(Vec3(0, 7.72983, 0))
         ship.addComponent(component)
         component = shipComponents.ThrustComponent()
         for engine in self.shipClasses[shipClass]['engines']:
@@ -103,6 +118,7 @@ class ShipSystem(sandbox.EntitySystem):
             component = graphics.RenderComponent()
             component.mesh = sandbox.base.loader.loadModel('ships/' + self.shipClasses[shipClass]['path'])
             component.mesh.reparentTo(sandbox.base.render)
+            ship.addComponent(component)
         sandbox.send("shipGenerated", [ship])
         log.info("Ship spawned: " + shipName + " " + shipClass)
         #messenger.send("putPlayerOnShip", [accountEntity.id, ship.id])

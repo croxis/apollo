@@ -55,8 +55,10 @@ def readProto(msgID, message):
         data = proto.Ship()
     elif msgID == LOGIN:
         return
-    elif msgID == PLAYER_SHIPS or msgID == REQUEST_STATIONS:
+    elif msgID == PLAYER_SHIPS or msgID == REQUEST_STATIONS or msgID == POS_PHYS_UPDATE:
         data = proto.Ships()
+    elif msgID == SET_THROTTLE:
+        data = proto.Throttle()
     elif msgID == SHIP_CLASSES:
         data = proto.ShipClasses()
     else:
@@ -147,3 +149,21 @@ def playerShipStations():
             else:
                 setattr(shipStations, stationName, 1)
     return sandbox.generatePacket(PLAYER_SHIPS, playerShips)
+
+
+def sendShipUpdates(shipEntities):
+    ships = proto.Ships()
+    for shipEntity in shipEntities:
+        ship = ships.ship.add()
+        ship.id = shipEntity.id
+        component = shipEntity.getComponent(shipComponents.BulletPhysicsComponent)
+        ship.x = component.nodePath.getX()
+        ship.z = component.nodePath.getZ()
+        ship.h = component.nodePath.getH()
+        ship.dx = component.node.getLinearVelocity()[0]
+        ship.dz = component.node.getLinearVelocity()[2]
+        ship.dh = component.node.getAngularVelocity()[0]
+        ship.thrust = component.currentThrust
+        ship.name = shipEntity.getComponent(shipComponents.InfoComponent).name
+        ship.className = shipEntity.getComponent(shipComponents.InfoComponent).shipClass
+    return sandbox.generatePacket(POS_PHYS_UPDATE, ships)
