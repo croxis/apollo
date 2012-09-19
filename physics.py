@@ -33,7 +33,7 @@ class PhysicsSystem(sandbox.EntitySystem):
         shipPhysics = entity.getComponent(shipComponents.BulletPhysicsComponent)
         if not shipPhysics.node.is_active():
             shipPhysics.node.setActive(True)
-        shipPhysics.node.applyCentralForce(Vec3(shipPhysics.currentThrust, 0, 0))
+        shipPhysics.node.applyCentralForce(Vec3(0, shipPhysics.currentThrust, 0))
 
     def end(self):
         dt = globalClock.getDt()

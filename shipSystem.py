@@ -5,7 +5,7 @@ from direct.stdpy.file import *
 from panda3d.bullet import BulletRigidBodyNode, BulletSphereShape
 from panda3d.core import Point3, Vec3
 
-import graphics
+import graphicsComponents
 import physics
 import shipComponents
 import solarSystem
@@ -74,9 +74,9 @@ class ShipSystem(sandbox.EntitySystem):
             self.spawnShip(ship.name, ship.className, playerShip=False, entityid=ship.id)
             #TODO: Request for full info from server and just return if no name or class?
         physicsComponent = sandbox.entities[ship.id].getComponent(shipComponents.BulletPhysicsComponent)
-        physicsComponent.nodePath.setPos(ship.x, 0, ship.z)
+        physicsComponent.nodePath.setPos(ship.x, ship.y, 0)
         physicsComponent.nodePath.setHpr(ship.h, 0, 0)
-        physicsComponent.node.setLinearVelocity((ship.dx, 0, ship.dz))
+        physicsComponent.node.setLinearVelocity((ship.dx, ship.dy, 0))
         physicsComponent.node.setAngularVelocity((ship.dh, 0, 0))
         physicsComponent.currentThrust = ship.thrust
 
@@ -98,7 +98,6 @@ class ShipSystem(sandbox.EntitySystem):
         component.bulletShape = BulletSphereShape(5)
         component.node = BulletRigidBodyNode(shipName)
         component.node.setMass(self.shipClasses[shipClass]['mass'])
-        #component.node.setMass(10e+1)
         component.node.addShape(component.bulletShape)
         component.nodePath = universals.solarSystemRoot.attachNewNode(component.node)
         physics.addBody(component.node)
@@ -115,13 +114,12 @@ class ShipSystem(sandbox.EntitySystem):
         component.name = shipName
         ship.addComponent(component)
         if universals.runClient:
-            component = graphics.RenderComponent()
+            component = graphicsComponents.RenderComponent()
             component.mesh = sandbox.base.loader.loadModel('ships/' + self.shipClasses[shipClass]['path'])
             component.mesh.reparentTo(sandbox.base.render)
             ship.addComponent(component)
         sandbox.send("shipGenerated", [ship])
         log.info("Ship spawned: " + shipName + " " + shipClass)
-        #messenger.send("putPlayerOnShip", [accountEntity.id, ship.id])
         #TODO Transmit player's ship data
         #TODO Broadcast new ship data
         #TODO Prioritize updating new client of surroundings
@@ -148,4 +146,3 @@ class ShipSystem(sandbox.EntitySystem):
                 if getattr(playerComponent, stationName) == address:
                     setattr(playerComponent, stationName, 0)
                     sandbox.send('stationEmptied', [shipid, stationName])
-

@@ -24,10 +24,10 @@ message ShipStations {
 message Ship {
     required int32 id = 1;
     optional double x = 2;
-    optional double z = 3;
+    optional double y = 3;
     optional float h = 4;
     optional double dx = 5;
-    optional double dz = 6;
+    optional double dy = 6;
     optional float dh = 7;
     optional float thrust = 8;
     optional ShipStations stations = 16;

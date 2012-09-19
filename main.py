@@ -95,11 +95,7 @@ else:
 log.debug("Loading sandbox")
 import sandbox
 
-if universals.runClient and not universals.runServer:
-    sandbox.base.setSleep(0.001)
-if not universals.runClient and universals.runServer:
-    sandbox.base.setSleep(0.001)
-
+sandbox.base.setSleep(0.001)
 #sandbox.base.disableMouse()
 
 import physics

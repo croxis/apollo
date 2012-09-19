@@ -78,6 +78,7 @@ def requestStations(shipid, stations):
         setattr(shipStations, station, 1)
     return sandbox.generatePacket(REQUEST_STATIONS, playerShips)
 
+
 def requestThrottle(throttle):
     t = proto.Throttle()
     t.normal = throttle
@@ -101,13 +102,8 @@ def confirmStations(shipid, stations):
     info = shipEntity.getComponent(shipComponents.InfoComponent)
     ship.name = info.name
     ship.className = info.shipClass
-    physics = shipEntity.getComponent(shipComponents.BulletPhysicsComponent)
-    ship.x = physics.nodePath.getX()
-    ship.z = physics.nodePath.getZ()
-    ship.h = physics.nodePath.getH()
-    ship.dx = physics.node.getLinearVelocity()[0]
-    ship.dz = physics.node.getLinearVelocity()[2]
-    ship.dh = physics.node.getAngularVelocity()[0]
+    shipPhysics = shipEntity.getComponent(shipComponents.BulletPhysicsComponent)
+    packFullPhysics(shipPhysics, ship)
     #shipStations = ship.stations.add()
     shipStations = ship.stations
     for station in stations:
@@ -128,6 +124,16 @@ def shipClasses(db):
     return datagram
 
 
+def packFullPhysics(shipPhysics, ship):
+    ship.x = shipPhysics.nodePath.getX()
+    ship.y = shipPhysics.nodePath.getY()
+    ship.h = shipPhysics.nodePath.getH()
+    ship.dx = shipPhysics.node.getLinearVelocity()[0]
+    ship.dy = shipPhysics.node.getLinearVelocity()[1]
+    ship.dh = shipPhysics.node.getAngularVelocity()[0]
+    ship.thrust = shipPhysics.currentThrust
+
+
 def playerShipStations():
     shipSys = sandbox.getSystem(shipSystem.ShipSystem)
     playerShips = proto.Ships()
@@ -135,13 +141,13 @@ def playerShipStations():
     for entity in entities:
         playerShip = playerShips.ship.add()
         info = entity.getComponent(shipComponents.InfoComponent)
+        shipPhysics = entity.getComponent(shipComponents.BulletPhysicsComponent)
         playerShip.name = info.name
         playerShip.className = info.shipClass
         playerShip.id = entity.id
+        packFullPhysics(shipPhysics, playerShip)
         player = entity.getComponent(shipComponents.PlayerComponent)
-        #shipStations = playerShip.stations.add()
         shipStations = playerShip.stations
-        #print type(shipStations)
         stations = vars(player)
         for stationName, status in stations.items():
             if status == 0:
@@ -157,13 +163,7 @@ def sendShipUpdates(shipEntities):
         ship = ships.ship.add()
         ship.id = shipEntity.id
         component = shipEntity.getComponent(shipComponents.BulletPhysicsComponent)
-        ship.x = component.nodePath.getX()
-        ship.z = component.nodePath.getZ()
-        ship.h = component.nodePath.getH()
-        ship.dx = component.node.getLinearVelocity()[0]
-        ship.dz = component.node.getLinearVelocity()[2]
-        ship.dh = component.node.getAngularVelocity()[0]
-        ship.thrust = component.currentThrust
+        packFullPhysics(component, ship)
         ship.name = shipEntity.getComponent(shipComponents.InfoComponent).name
         ship.className = shipEntity.getComponent(shipComponents.InfoComponent).shipClass
     return sandbox.generatePacket(POS_PHYS_UPDATE, ships)

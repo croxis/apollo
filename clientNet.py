@@ -29,6 +29,7 @@ class NetworkSystem(sandbox.UDPNetworkSystem):
             sandbox.send('setShipID', [data])
             sandbox.send('navigationScreen')
         elif msgID == protocol.PLAYER_SHIPS:
+            sandbox.send('shipUpdates', [data])
             sandbox.send('shipSelectScreen', [data])
         elif msgID == protocol.POS_PHYS_UPDATE:
             sandbox.send('shipUpdates', [data])
