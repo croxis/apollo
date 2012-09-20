@@ -6,7 +6,10 @@ class BulletPhysicsComponent(object):
     bulletShape = None
     node = None
     nodePath = None
+    debugNode = None
+    debugNodePath = None
     currentThrust = 0
+    currentTorque = 0
 
 
 class AIPilotComponent(object):
@@ -19,11 +22,11 @@ class PlayerComponent(object):
 
 
 class ThrustComponent(object):
-    '''Maximum thrust values, in newtons'''
+    '''Maximum thrust values, in newtons. Rotational in Newton Meters'''
     forward = 1
     backwards = 1
     lateral = 1
-    pitch = 1
+    heading = 1
     yaw = 1
     roll = 1
 

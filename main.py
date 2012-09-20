@@ -81,10 +81,9 @@ if not universals.runClient:
     # Don't open a graphics window on the server.  (Open a window only
     # if we're running a normal client, not one of the server
     # processes.)
-    print "Boo"
     loadPrcFileData('', 'window-type none\naudio-library-name null')
+    #pass
 else:
-    print "Test"
     loadPrcFileData('', 'frame-rate-meter-scale 0.035')
     loadPrcFileData('', 'frame-rate-meter-side-margin 0.1')
     loadPrcFileData('', 'show-frame-rate-meter 1')

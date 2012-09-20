@@ -11,7 +11,7 @@ from google.protobuf import descriptor_pb2
 DESCRIPTOR = descriptor.FileDescriptor(
   name='proto.proto',
   package='apollo',
-  serialized_pb='\n\x0bproto.proto\x12\x06\x61pollo\"g\n\tShipClass\x12\x11\n\tclassName\x18\x01 \x02(\t\x12\x0c\n\x04mass\x18\x02 \x02(\x03\x12\x12\n\nfolderName\x18\x03 \x01(\t\x12\x10\n\x08meshName\x18\x04 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x05 \x01(\t\"3\n\x0bShipClasses\x12$\n\tshipClass\x18\x01 \x03(\x0b\x32\x11.apollo.ShipClass\"|\n\x0cShipStations\x12\x12\n\nmainScreen\x18\x01 \x01(\x08\x12\x12\n\nnavigation\x18\x02 \x01(\x08\x12\x0f\n\x07weapons\x18\x03 \x01(\x08\x12\x13\n\x0b\x65ngineering\x18\x04 \x01(\x08\x12\x0f\n\x07science\x18\x05 \x01(\x08\x12\r\n\x05\x63omms\x18\x06 \x01(\x08\"\xb0\x01\n\x04Ship\x12\n\n\x02id\x18\x01 \x02(\x05\x12\t\n\x01x\x18\x02 \x01(\x01\x12\t\n\x01y\x18\x03 \x01(\x01\x12\t\n\x01h\x18\x04 \x01(\x02\x12\n\n\x02\x64x\x18\x05 \x01(\x01\x12\n\n\x02\x64y\x18\x06 \x01(\x01\x12\n\n\x02\x64h\x18\x07 \x01(\x02\x12\x0e\n\x06thrust\x18\x08 \x01(\x02\x12&\n\x08stations\x18\x10 \x01(\x0b\x32\x14.apollo.ShipStations\x12\x0c\n\x04name\x18\x11 \x01(\t\x12\x11\n\tclassName\x18\x12 \x01(\t\"#\n\x05Ships\x12\x1a\n\x04ship\x18\x01 \x03(\x0b\x32\x0c.apollo.Ship\"Z\n\x08Throttle\x12\x0e\n\x06normal\x18\x01 \x01(\x02\x12\x0c\n\x04warp\x18\x02 \x01(\x02\x12\x0c\n\x04jump\x18\x03 \x01(\x08\x12\x10\n\x08\x62sgjumpx\x18\x04 \x01(\x01\x12\x10\n\x08\x62sgjumpz\x18\x05 \x01(\x01')
+  serialized_pb='\n\x0bproto.proto\x12\x06\x61pollo\"g\n\tShipClass\x12\x11\n\tclassName\x18\x01 \x02(\t\x12\x0c\n\x04mass\x18\x02 \x02(\x03\x12\x12\n\nfolderName\x18\x03 \x01(\t\x12\x10\n\x08meshName\x18\x04 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x05 \x01(\t\"3\n\x0bShipClasses\x12$\n\tshipClass\x18\x01 \x03(\x0b\x32\x11.apollo.ShipClass\"|\n\x0cShipStations\x12\x12\n\nmainScreen\x18\x01 \x01(\x08\x12\x12\n\nnavigation\x18\x02 \x01(\x08\x12\x0f\n\x07weapons\x18\x03 \x01(\x08\x12\x13\n\x0b\x65ngineering\x18\x04 \x01(\x08\x12\x0f\n\x07science\x18\x05 \x01(\x08\x12\r\n\x05\x63omms\x18\x06 \x01(\x08\"\xc0\x01\n\x04Ship\x12\n\n\x02id\x18\x01 \x02(\x05\x12\t\n\x01x\x18\x02 \x01(\x01\x12\t\n\x01y\x18\x03 \x01(\x01\x12\t\n\x01h\x18\x04 \x01(\x02\x12\n\n\x02\x64x\x18\x05 \x01(\x01\x12\n\n\x02\x64y\x18\x06 \x01(\x01\x12\n\n\x02\x64h\x18\x07 \x01(\x02\x12\x0e\n\x06thrust\x18\x08 \x01(\x02\x12\x0e\n\x06torque\x18\t \x01(\x02\x12&\n\x08stations\x18\x10 \x01(\x0b\x32\x14.apollo.ShipStations\x12\x0c\n\x04name\x18\x11 \x01(\t\x12\x11\n\tclassName\x18\x12 \x01(\t\"#\n\x05Ships\x12\x1a\n\x04ship\x18\x01 \x03(\x0b\x32\x0c.apollo.Ship\"k\n\x08Throttle\x12\x0e\n\x06normal\x18\x01 \x01(\x02\x12\x0c\n\x04warp\x18\x02 \x01(\x02\x12\x0c\n\x04jump\x18\x03 \x01(\x08\x12\x10\n\x08\x62sgjumpx\x18\x04 \x01(\x01\x12\x10\n\x08\x62sgjumpz\x18\x05 \x01(\x01\x12\x0f\n\x07heading\x18\x06 \x01(\x02')
 
 
 
@@ -227,21 +227,28 @@ _SHIP = descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
-      name='stations', full_name='apollo.Ship.stations', index=8,
+      name='torque', full_name='apollo.Ship.torque', index=8,
+      number=9, type=2, cpp_type=6, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='stations', full_name='apollo.Ship.stations', index=9,
       number=16, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
-      name='name', full_name='apollo.Ship.name', index=9,
+      name='name', full_name='apollo.Ship.name', index=10,
       number=17, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
-      name='className', full_name='apollo.Ship.className', index=10,
+      name='className', full_name='apollo.Ship.className', index=11,
       number=18, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=unicode("", "utf-8"),
       message_type=None, enum_type=None, containing_type=None,
@@ -257,7 +264,7 @@ _SHIP = descriptor.Descriptor(
   is_extendable=False,
   extension_ranges=[],
   serialized_start=308,
-  serialized_end=484,
+  serialized_end=500,
 )
 
 
@@ -284,8 +291,8 @@ _SHIPS = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=486,
-  serialized_end=521,
+  serialized_start=502,
+  serialized_end=537,
 )
 
 
@@ -331,6 +338,13 @@ _THROTTLE = descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    descriptor.FieldDescriptor(
+      name='heading', full_name='apollo.Throttle.heading', index=5,
+      number=6, type=2, cpp_type=6, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -340,8 +354,8 @@ _THROTTLE = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=523,
-  serialized_end=613,
+  serialized_start=539,
+  serialized_end=646,
 )
 
 _SHIPCLASSES.fields_by_name['shipClass'].message_type = _SHIPCLASS

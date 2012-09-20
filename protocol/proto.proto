@@ -30,6 +30,7 @@ message Ship {
     optional double dy = 6;
     optional float dh = 7;
     optional float thrust = 8;
+    optional float torque = 9;
     optional ShipStations stations = 16;
     optional string name = 17;
     optional string className = 18;
@@ -45,4 +46,5 @@ message Throttle{
     optional bool jump = 3;
     optional double bsgjumpx = 4;
     optional double bsgjumpz = 5;
+    optional float heading = 6;
 }

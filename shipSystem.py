@@ -2,7 +2,7 @@ import sandbox
 
 from direct.stdpy.file import *
 
-from panda3d.bullet import BulletRigidBodyNode, BulletSphereShape
+from panda3d.bullet import BulletDebugNode, BulletRigidBodyNode, BulletSphereShape
 from panda3d.core import Point3, Vec3
 
 import graphicsComponents
@@ -31,7 +31,7 @@ class ShipSystem(sandbox.EntitySystem):
         self.accept('playerDisconnected', self.playerDisconnected)
         self.shipClasses = {}
         self.shipid = None  # This is for clients to id who the controlling
-        # ship is for quick lookup      
+        # ship is for quick lookup
 
     def process(self, entity):
         pass
@@ -79,6 +79,7 @@ class ShipSystem(sandbox.EntitySystem):
         physicsComponent.node.setLinearVelocity((ship.dx, ship.dy, 0))
         physicsComponent.node.setAngularVelocity((ship.dh, 0, 0))
         physicsComponent.currentThrust = ship.thrust
+        physicsComponent.currentTorque = ship.torque
 
     def shipUpdates(self, ships):
         for ship in ships.ship:
@@ -99,6 +100,13 @@ class ShipSystem(sandbox.EntitySystem):
         component.node = BulletRigidBodyNode(shipName)
         component.node.setMass(self.shipClasses[shipClass]['mass'])
         component.node.addShape(component.bulletShape)
+        component.debugNode = BulletDebugNode(shipName + "_debug")
+        component.debugNode.showWireframe(True)
+        component.debugNode.showConstraints(True)
+        component.debugNode.showBoundingBoxes(True)
+        component.debugNode.showNormals(True)
+        component.debugNodePath = sandbox.base.render.attachNewNode(component.debugNode)
+        component.debugNodePath.show()
         component.nodePath = universals.solarSystemRoot.attachNewNode(component.node)
         physics.addBody(component.node)
         #position = sandbox.getSystem(solarSystem.SolarSystemSystem).solarSystemRoot.find("**/Earth").getPos()
@@ -108,6 +116,7 @@ class ShipSystem(sandbox.EntitySystem):
         component = shipComponents.ThrustComponent()
         for engine in self.shipClasses[shipClass]['engines']:
             component.forward += engine['thrust']
+        component.heading = self.shipClasses[shipClass]['torque']
         ship.addComponent(component)
         component = shipComponents.InfoComponent()
         component.shipClass = shipClass

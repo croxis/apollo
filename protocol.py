@@ -79,9 +79,10 @@ def requestStations(shipid, stations):
     return sandbox.generatePacket(REQUEST_STATIONS, playerShips)
 
 
-def requestThrottle(throttle):
+def requestThrottle(throttle, heading):
     t = proto.Throttle()
     t.normal = throttle
+    t.heading = heading
     return sandbox.generatePacket(SET_THROTTLE, t)
 
 
@@ -132,6 +133,7 @@ def packFullPhysics(shipPhysics, ship):
     ship.dy = shipPhysics.node.getLinearVelocity()[1]
     ship.dh = shipPhysics.node.getAngularVelocity()[0]
     ship.thrust = shipPhysics.currentThrust
+    ship.torque = shipPhysics.currentTorque
 
 
 def playerShipStations():

@@ -34,6 +34,8 @@ class PhysicsSystem(sandbox.EntitySystem):
         if not shipPhysics.node.is_active():
             shipPhysics.node.setActive(True)
         shipPhysics.node.applyCentralForce(Vec3(0, shipPhysics.currentThrust, 0))
+        shipPhysics.node.applyTorque(Vec3(0, 0, -shipPhysics.currentTorque))
+        self.world.setDebugNode(shipPhysics.debugNode)
 
     def end(self):
         dt = globalClock.getDt()
@@ -41,13 +43,14 @@ class PhysicsSystem(sandbox.EntitySystem):
         #self.world.doPhysics(dt, 10, 1.0 / 180.0)
 
     def setThrottle(self, shipid, data):
-        if abs(data.normal) > 100:
+        if abs(data.normal) > 100 or abs(data.heading) > 100:
             print "Invalid"
             return
         ship = sandbox.entities[shipid]
         shipPhysics = ship.getComponent(shipComponents.BulletPhysicsComponent)
         shipThrust = ship.getComponent(shipComponents.ThrustComponent)
         shipPhysics.currentThrust = shipThrust.forward / 100.0 * data.normal
+        shipPhysics.currentTorque = shipThrust.heading / 100.0 * data.heading
 
     '''def addSpaceship(self, component, accountName, position, linearVelcocity):
         component.bulletShape = BulletSphereShape(5)

@@ -46,8 +46,8 @@ class NetworkSystem(sandbox.UDPNetworkSystem):
         datagram = protocol.requestStations(shipid, stations)
         self.send(datagram)
 
-    def requestThrottle(self, throttle):
-        datagram = protocol.requestThrottle(throttle)
+    def requestThrottle(self, throttle, heading):
+        datagram = protocol.requestThrottle(throttle, heading)
         self.send(datagram)
 
     def send(self, datagram):

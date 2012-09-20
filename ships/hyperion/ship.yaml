@@ -1,6 +1,7 @@
 mesh: hyperion
 mass: 8.4e+9
 class: Hyperion
+torque: 1.3e+10
 engines:
   - x: 0
     y: 0

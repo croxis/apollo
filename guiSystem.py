@@ -29,6 +29,7 @@ class GUISystem(sandbox.EntitySystem):
                 self.text['xyz'].setText(text)
                 gfx = sandbox.entities[shipid].getComponent(graphicsComponents.RenderComponent)
                 gfx.mesh.setPos(physics.nodePath.getPos())
+                gfx.mesh.setHpr(physics.nodePath.getHpr())
 
     def shipSelectScreen(self, playerShips):
         guibox = boxes.HBox()
@@ -93,10 +94,24 @@ class GUISystem(sandbox.EntitySystem):
             pageSize=1, orientation=VERTICAL)
         throttlebox.pack(self.throttle)
         self.throt = 0
+
+        headingbox = boxes.VBox()
+        headingbox.setScale(0.1)
+        headingbox.setPos(0, 0, -0.75)
+        headingLable = DirectLabel(text="Heading")
+        headingbox.pack(headingLable)
+        '''self.throttle = DirectSlider(range=(-100, 100), value=0,
+            pageSize=1, command=self.setThrottle, orientation=VERTICAL)'''
+        self.heading = DirectSlider(range=(-100, 100), value=0,
+            pageSize=1)
+        headingbox.pack(self.heading)
+        self.head = 0
+
         sandbox.base.taskMgr.doMethodLater(0.2, self.checkThrottle, 'throttle')
 
     def checkThrottle(self, task):
-        if self.throt != self.throttle['value']:
+        if self.throt != self.throttle['value'] or self.head != self.heading['value']:
             self.throt = self.throttle['value']
-            sandbox.send("requestThrottle", [self.throttle['value']])
+            self.head = self.heading['value']
+            sandbox.send("requestThrottle", [self.throttle['value'], self.heading['value']])
         return task.again
