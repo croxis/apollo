@@ -25,8 +25,10 @@ class GUISystem(sandbox.EntitySystem):
             if sandbox.getSystem(shipSystem.ShipSystem).shipid != None:
                 shipid = sandbox.getSystem(shipSystem.ShipSystem).shipid
                 physics = sandbox.entities[shipid].getComponent(shipComponents.BulletPhysicsComponent)
-                text = "X: " + str(physics.nodePath.getX()) + ", Z: " + str(physics.nodePath.getZ()) + ", H: " + str(physics.nodePath.getH())
+                text = "X: " + str(round(physics.nodePath.getX(), 1)) + ", Y: " + str(round(physics.nodePath.getY(), 1)) + ", H: " + str(round(physics.nodePath.getH(), 1))
                 self.text['xyz'].setText(text)
+                speedText = "Speed: " + str(round(physics.node.getLinearVelocity().length(), 1)) + " km/s"
+                self.text['speed'].setText(speedText)
                 gfx = sandbox.entities[shipid].getComponent(graphicsComponents.RenderComponent)
                 gfx.mesh.setPos(physics.nodePath.getPos())
                 gfx.mesh.setHpr(physics.nodePath.getHpr())
@@ -36,7 +38,6 @@ class GUISystem(sandbox.EntitySystem):
         leftbox = boxes.VBox()
         guibox.setScale(0.1)
         guibox.db = playerShips
-        print playerShips, dir(playerShips)
         ships = []
         for playerShip in playerShips.ship:
             ships.append(playerShip.name)
@@ -82,6 +83,8 @@ class GUISystem(sandbox.EntitySystem):
         lens.setFilmSize(2000)
         #sandbox.base.cam.node().setLens(lens)
         self.text['xyz'] = OnscreenText(text="Standby", pos=(-0.95, 0.95),
+            scale=0.07, fg=(1, 0.5, 0.5, 1), align=TextNode.ACenter, mayChange=1)
+        self.text['speed'] = OnscreenText(text="Standby", pos=(-0.95, 0.9),
             scale=0.07, fg=(1, 0.5, 0.5, 1), align=TextNode.ACenter, mayChange=1)
         throttlebox = boxes.VBox()
         throttlebox.setScale(0.1)

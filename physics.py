@@ -21,7 +21,10 @@ def addBody(body):
 
 
 class PhysicsSystem(sandbox.EntitySystem):
-    """System that interacts with the Bullet physics world"""
+    """System that interacts with the Bullet physics world.
+    Configuration files and meshes are made in standard SI (meters, newtons).
+    Internally we autoscale down to km. A factor of 1000.
+    IE 1 blender unit = 1 m. 1 panda unit = 1 km"""
     def init(self):
         #self.accept("addSpaceship", self.addSpaceship)
         self.accept('setThrottle', self.setThrottle)
@@ -33,7 +36,11 @@ class PhysicsSystem(sandbox.EntitySystem):
         shipPhysics = entity.getComponent(shipComponents.BulletPhysicsComponent)
         if not shipPhysics.node.is_active():
             shipPhysics.node.setActive(True)
-        shipPhysics.node.applyCentralForce(Vec3(0, shipPhysics.currentThrust, 0))
+        thrust = universals.solarSystemRoot.getRelativeVector(shipPhysics.nodePath,
+            (0, shipPhysics.currentThrust, 0))
+        #print "thrust", thrust, type(thrust)
+        #shipPhysics.node.applyCentralForce(Vec3(0, thrust, 0))
+        shipPhysics.node.applyCentralForce(thrust / 1000)
         shipPhysics.node.applyTorque(Vec3(0, 0, -shipPhysics.currentTorque))
         self.world.setDebugNode(shipPhysics.debugNode)
 
@@ -49,7 +56,10 @@ class PhysicsSystem(sandbox.EntitySystem):
         ship = sandbox.entities[shipid]
         shipPhysics = ship.getComponent(shipComponents.BulletPhysicsComponent)
         shipThrust = ship.getComponent(shipComponents.ThrustComponent)
-        shipPhysics.currentThrust = shipThrust.forward / 100.0 * data.normal
+        shipPhysics.currentThrust = shipThrust.forward / (100.0 * 4) * data.normal
+        # Divide thrust by 400 as max thrust should be when engineering overloads
+        # Power to engines. Current max overload is 400%
+        # TODO: Revisit caulculation when enginerring power is added
         shipPhysics.currentTorque = shipThrust.heading / 100.0 * data.heading
 
     '''def addSpaceship(self, component, accountName, position, linearVelcocity):

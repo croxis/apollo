@@ -126,6 +126,7 @@ class ShipSystem(sandbox.EntitySystem):
             component = graphicsComponents.RenderComponent()
             component.mesh = sandbox.base.loader.loadModel('ships/' + self.shipClasses[shipClass]['path'])
             component.mesh.reparentTo(sandbox.base.render)
+            component.mesh.setScale(0.001)
             ship.addComponent(component)
         sandbox.send("shipGenerated", [ship])
         log.info("Ship spawned: " + shipName + " " + shipClass)
@@ -148,9 +149,9 @@ class ShipSystem(sandbox.EntitySystem):
         sandbox.send("confirmPlayerStations", [netAddress, shipid, acceptedStations])
 
     def playerDisconnected(self, address):
-        shipids = self.getPlayerShipEntities()
-        for shipid in shipids:
-            playerComponent = sandbox.entities[shipid].getComponent(shipComponents.PlayerComponent)
+        ships = self.getPlayerShipEntities()
+        for ship in ships:
+            playerComponent = sandbox.entities[ship.id].getComponent(shipComponents.PlayerComponent)
             for stationName in universals.playerStations:
                 if getattr(playerComponent, stationName) == address:
                     setattr(playerComponent, stationName, 0)
