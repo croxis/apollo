@@ -2,7 +2,8 @@
 
 
 class BulletPhysicsComponent(object):
-    '''Contains reference to bullet shape and node'''
+    '''Contains reference to bullet shape and node as well as SOI for
+    planetary gravitational influence'''
     bulletShape = None
     node = None
     nodePath = None
@@ -10,6 +11,7 @@ class BulletPhysicsComponent(object):
     debugNodePath = None
     currentThrust = 0
     currentTorque = 0
+    currentSOI = None  # EntityID
 
 
 class AIPilotComponent(object):

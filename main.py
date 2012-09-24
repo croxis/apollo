@@ -118,7 +118,7 @@ if universals.runServer:
     sandbox.addSystem(servnet)
 
 log.info("Setting up Solar System Body Simulator")
-sandbox.addSystem(solarSystem.SolarSystemSystem(solarSystem.BaryCenter, solarSystem.Body, solarSystem.Star))
+sandbox.addSystem(solarSystem.SolarSystemSystem(solarSystem.CelestialComponent))
 
 log.info("Setting up dynamic physics")
 sandbox.addSystem(physics.PhysicsSystem(shipComponents.BulletPhysicsComponent))
@@ -127,10 +127,6 @@ log.info("Setting up ship interface system")
 shipSystem = shipSystem.ShipSystem(shipComponents.PlayerComponent)
 sandbox.addSystem(shipSystem)
 shipSystem.loadShipClasses()
-
-
-#log.info("Setting up player-ship interface system")
-#sandbox.addSystem(shipSystem.PlayerShipsSystem(ships.PlayerComponent))
 
 
 def planetPositionDebug(task):
@@ -143,6 +139,7 @@ def planetPositionDebug(task):
 def loginDebug(task):
     #sandbox.getSystem(clientNet.NetworkSystem).sendLogin(universals.username, "Hash Password")
     sandbox.send('login', [('127.0.0.1', 1999)])
+    return task.again
 
 #sandbox.base.taskMgr.doMethodLater(10, planetPositionDebug, "Position Debug")
 if universals.runClient:

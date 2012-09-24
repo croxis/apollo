@@ -3,10 +3,14 @@ log = DirectNotify().newCategory("ITF")
 
 from panda3d.core import NodePath
 
+# Physics constants
+G = 6.67e-11
+
 runClient = False
 runServer = False
 
 solarSystemRoot = NodePath("SystemCenter")
+defaultSOIid = None
 # Connivance constant, number of seconds in an Earth day
 SECONDSINDAY = 86400
 

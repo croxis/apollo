@@ -108,6 +108,18 @@ class ShipSystem(sandbox.EntitySystem):
         component.debugNodePath = sandbox.base.render.attachNewNode(component.debugNode)
         component.debugNodePath.show()
         component.nodePath = universals.solarSystemRoot.attachNewNode(component.node)
+        component.currentSOI = universals.defaultSOIid
+        #physics.addBody(component.node)
+        if playerShip:
+            earth = universals.solarSystemRoot.find('**/Earth')
+            #ePos = sandbox.getSystem(solarSystem.SolarSystemSystem).get2DBodyPosition(earth, universals.day)
+            ePos = earth.getPos()
+            spawn = ePos + Point3(6771, 0, 0)
+            #spawn = Point3(6771, 0, 0)
+            print "Spawn", spawn
+            velocity = Vec3(0, 7.67254, 0)
+            component.nodePath.setPos(spawn)
+            component.node.setLinearVelocity(velocity)
         physics.addBody(component.node)
         #position = sandbox.getSystem(solarSystem.SolarSystemSystem).solarSystemRoot.find("**/Earth").getPos()
         #component.nodePath.setPos(position + Point3(6671, 0, 0))

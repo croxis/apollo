@@ -36,11 +36,42 @@ class PhysicsSystem(sandbox.EntitySystem):
         shipPhysics = entity.getComponent(shipComponents.BulletPhysicsComponent)
         if not shipPhysics.node.is_active():
             shipPhysics.node.setActive(True)
+        bodies = sandbox.getEntitiesByComponentType(solarSystem.CelestialComponent)
+        # Probably very expensive. Will need optimization later
+        # We assume a single star solar system. Will need to update the
+        # solary system structure for multiple star solar systems
+        soi = False
+        previousR = 0
+        for body in bodies:
+            bodyComponent = body.getComponent(solarSystem.CelestialComponent)
+            distance = (bodyComponent.nodePath.getPos() - shipPhysics.nodePath.getPos()).length()
+            if distance < bodyComponent.soi:
+                if not soi:
+                    previousR = distance
+                    soi = True
+                    shipPhysics.currentSOI = body.id
+                elif distance < previousR:
+                    shipPhysics.currentSOI = body.id
+        if not soi:
+            shipPhysics.currentSOI = universals.defaultSOIid
+
+        body = sandbox.entities[shipPhysics.currentSOI]
+        celestial = body.getComponent(solarSystem.CelestialComponent)
+        vector = celestial.nodePath.getPos() - shipPhysics.nodePath.getPos()
+        distance = vector.length()
+        if not distance:
+            return
+        gravity = universals.G * celestial.mass * shipPhysics.node.getMass() / distance ** 2
+        gravityForce = vector * -gravity
+
         thrust = universals.solarSystemRoot.getRelativeVector(shipPhysics.nodePath,
             (0, shipPhysics.currentThrust, 0))
-        #print "thrust", thrust, type(thrust)
+
+        force = gravityForce + thrust / 1000.0
+
+        #print "Force:", thrust, gravityForce, force, shipPhysics.nodePath.getPos()
         #shipPhysics.node.applyCentralForce(Vec3(0, thrust, 0))
-        shipPhysics.node.applyCentralForce(thrust / 1000)
+        shipPhysics.node.applyCentralForce(force)
         shipPhysics.node.applyTorque(Vec3(0, 0, -shipPhysics.currentTorque))
         self.world.setDebugNode(shipPhysics.debugNode)
 
