@@ -11,6 +11,8 @@ runServer = False
 
 solarSystemRoot = NodePath("SystemCenter")
 defaultSOIid = None
+shipid = None
+
 # Connivance constant, number of seconds in an Earth day
 SECONDSINDAY = 86400
 

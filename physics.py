@@ -1,5 +1,5 @@
 from panda3d.bullet import BulletRigidBodyNode, BulletSphereShape, BulletWorld
-from panda3d.core import Point3, Vec3
+from panda3d.core import Vec3
 
 import sandbox
 
@@ -58,22 +58,24 @@ class PhysicsSystem(sandbox.EntitySystem):
         body = sandbox.entities[shipPhysics.currentSOI]
         celestial = body.getComponent(solarSystem.CelestialComponent)
         vector = celestial.nodePath.getPos() - shipPhysics.nodePath.getPos()
-        distance = vector.length()
-        if not distance:
-            return
-        gravity = universals.G * celestial.mass * shipPhysics.node.getMass() / distance ** 2
-        gravityForce = vector * -gravity
+        distance = vector.length() * 1000
+        gravityForce = Vec3(0, 0, 0)
+        if distance:
+            gravity = universals.G * celestial.mass * shipPhysics.node.getMass() / distance ** 2
+            #print "Gravity", universals.G, celestial.mass, shipPhysics.node.getMass(), distance, gravity
+            gravityForce = vector * -gravity
 
         thrust = universals.solarSystemRoot.getRelativeVector(shipPhysics.nodePath,
             (0, shipPhysics.currentThrust, 0))
 
-        force = gravityForce + thrust / 1000.0
-
-        #print "Force:", thrust, gravityForce, force, shipPhysics.nodePath.getPos()
-        #shipPhysics.node.applyCentralForce(Vec3(0, thrust, 0))
+        #force = (gravityForce + thrust) / 1000.0
+        #print gravityForce, thrust / 1000.0
+        force = thrust / 1000.0
         shipPhysics.node.applyCentralForce(force)
         shipPhysics.node.applyTorque(Vec3(0, 0, -shipPhysics.currentTorque))
-        self.world.setDebugNode(shipPhysics.debugNode)
+        #print "beat", shipPhysics.nodePath.getHpr(), shipPhysics.node.getAngularVelocity()
+        #print "Physics", shipPhysics.nodePath.getHpr(), shipPhysics.currentTorque, shipPhysics.node.getAngularVelocity()
+        #self.world.setDebugNode(shipPhysics.debugNode)
 
     def end(self):
         dt = globalClock.getDt()
@@ -91,17 +93,5 @@ class PhysicsSystem(sandbox.EntitySystem):
         # Divide thrust by 400 as max thrust should be when engineering overloads
         # Power to engines. Current max overload is 400%
         # TODO: Revisit caulculation when enginerring power is added
-        shipPhysics.currentTorque = shipThrust.heading / 100.0 * data.heading
-
-    '''def addSpaceship(self, component, accountName, position, linearVelcocity):
-        component.bulletShape = BulletSphereShape(5)
-        component.node = BulletRigidBodyNode(accountName)
-        component.node.setMass(1.0)
-        component.node.addShape(component.bulletShape)
-        component.nodePath = universals.solarSystemRoot.attachNewNode(component.node)
-        addBody(component.node)
-        position = sandbox.getSystem(solarSystem.SolarSystemSystem).solarSystemRoot.find("**/Earth").getPos()
-        #component.nodePath.setPos(position + Point3(6671, 0, 0))
-        component.nodePath.setPos(position)
-        #component.node.setLinearVelocity(Vec3(0, 7.72983, 0))
-        component.node.setLinearVelocity(linearVelcocity)'''
+        shipPhysics.currentTorque = shipThrust.heading / (100.0 * 4) * data.heading
+        print "SetPhysics", shipPhysics.nodePath.getHpr(), shipPhysics.currentTorque, shipPhysics.node.getAngularVelocity()

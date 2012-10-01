@@ -131,7 +131,7 @@ def packFullPhysics(shipPhysics, ship):
     ship.h = shipPhysics.nodePath.getH()
     ship.dx = shipPhysics.node.getLinearVelocity()[0]
     ship.dy = shipPhysics.node.getLinearVelocity()[1]
-    ship.dh = shipPhysics.node.getAngularVelocity()[0]
+    ship.dh = shipPhysics.node.getAngularVelocity()[2]
     ship.thrust = shipPhysics.currentThrust
     ship.torque = shipPhysics.currentTorque
 

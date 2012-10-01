@@ -19,12 +19,14 @@ Options:
 If no options are specified, the default is to run a solo client-server."""
 
 import getopt
+import os
 import sys
 from pandac.PandaModules import loadPrcFileData
 loadPrcFileData("", "notify-level-ITF debug")
 #loadPrcFileData("", "extended-exceptions 1")
 import universals
 from universals import log
+
 
 def usage(code, msg=''):
     print >> sys.stderr, usageText % {'prog': os.path.split(sys.argv[0])[1]}
@@ -103,13 +105,17 @@ import shipComponents
 import solarSystem
 if universals.runClient:
     import clientNet
+    import graphicsComponents
     import guiSystem
+    import renderSystem
     log.info("Setting up client network")
     clinet = clientNet.NetworkSystem()
     clinet.serverAddress = '127.0.0.1'
     sandbox.addSystem(clinet)
     log.info("Setting up gui system")
     sandbox.addSystem(guiSystem.GUISystem())
+    log.info("Setting up render system")
+    sandbox.addSystem(renderSystem.RenderSystem(graphicsComponents.RenderComponent))
 if universals.runServer:
     import serverNet
     log.info("Setting up server network")
@@ -139,14 +145,19 @@ def planetPositionDebug(task):
 def loginDebug(task):
     #sandbox.getSystem(clientNet.NetworkSystem).sendLogin(universals.username, "Hash Password")
     sandbox.send('login', [('127.0.0.1', 1999)])
-    return task.again
+    #return task.again
+    return task.done
+
+
+def spawnDebug(task):
+    shipSystem.spawnShip("The Hype", "Hyperion", True)
 
 #sandbox.base.taskMgr.doMethodLater(10, planetPositionDebug, "Position Debug")
 if universals.runClient:
     sandbox.base.taskMgr.doMethodLater(1, loginDebug, "Login Debug")
 
 if universals.runServer:
-    shipSystem.spawnShip("The Hype", "Hyperion", True)
+    sandbox.base.taskMgr.doMethodLater(1, spawnDebug, "Spawn Debug")
 
 
 log.info("Setup complete.")

@@ -38,6 +38,7 @@ class ShipSystem(sandbox.EntitySystem):
 
     def setShipID(self, data):
         self.shipid = data.id
+        universals.shipid = data.id
 
     def checkClasses(self, shipClasses):
         for ship in shipClasses.shipClass:
@@ -77,7 +78,7 @@ class ShipSystem(sandbox.EntitySystem):
         physicsComponent.nodePath.setPos(ship.x, ship.y, 0)
         physicsComponent.nodePath.setHpr(ship.h, 0, 0)
         physicsComponent.node.setLinearVelocity((ship.dx, ship.dy, 0))
-        physicsComponent.node.setAngularVelocity((ship.dh, 0, 0))
+        physicsComponent.node.setAngularVelocity((0, 0, ship.dh))
         physicsComponent.currentThrust = ship.thrust
         physicsComponent.currentTorque = ship.torque
 
@@ -100,13 +101,13 @@ class ShipSystem(sandbox.EntitySystem):
         component.node = BulletRigidBodyNode(shipName)
         component.node.setMass(self.shipClasses[shipClass]['mass'])
         component.node.addShape(component.bulletShape)
-        component.debugNode = BulletDebugNode(shipName + "_debug")
+        '''component.debugNode = BulletDebugNode(shipName + "_debug")
         component.debugNode.showWireframe(True)
         component.debugNode.showConstraints(True)
         component.debugNode.showBoundingBoxes(True)
         component.debugNode.showNormals(True)
         component.debugNodePath = sandbox.base.render.attachNewNode(component.debugNode)
-        component.debugNodePath.show()
+        component.debugNodePath.show()'''
         component.nodePath = universals.solarSystemRoot.attachNewNode(component.node)
         component.currentSOI = universals.defaultSOIid
         #physics.addBody(component.node)
@@ -121,9 +122,6 @@ class ShipSystem(sandbox.EntitySystem):
             component.nodePath.setPos(spawn)
             component.node.setLinearVelocity(velocity)
         physics.addBody(component.node)
-        #position = sandbox.getSystem(solarSystem.SolarSystemSystem).solarSystemRoot.find("**/Earth").getPos()
-        #component.nodePath.setPos(position + Point3(6671, 0, 0))
-        #component.node.setLinearVelocity(Vec3(0, 7.72983, 0))
         ship.addComponent(component)
         component = shipComponents.ThrustComponent()
         for engine in self.shipClasses[shipClass]['engines']:

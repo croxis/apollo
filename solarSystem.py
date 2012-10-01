@@ -7,6 +7,7 @@ import yaml
 from direct.stdpy.file import *
 from panda3d.core import NodePath, Point3
 
+import graphicsComponents
 import universals
 
 #from pandac.PandaModules import loadPrcFileData
@@ -175,6 +176,11 @@ class SolarSystemSystem(sandbox.EntitySystem):
         component.nodePath = body
         self.bodies.append(component)
         bodyEntity.addComponent(component)
+        
+
+
+
+
         log.info(name + " set Up")
 
         if 'bodies' in DB:

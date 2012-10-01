@@ -29,9 +29,6 @@ class GUISystem(sandbox.EntitySystem):
                 self.text['xyz'].setText(text)
                 speedText = "Speed: " + str(round(physics.node.getLinearVelocity().length(), 1)) + " km/s"
                 self.text['speed'].setText(speedText)
-                gfx = sandbox.entities[shipid].getComponent(graphicsComponents.RenderComponent)
-                gfx.mesh.setPos(physics.nodePath.getPos())
-                gfx.mesh.setHpr(physics.nodePath.getHpr())
 
     def shipSelectScreen(self, playerShips):
         guibox = boxes.HBox()
