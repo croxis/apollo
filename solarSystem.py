@@ -5,9 +5,11 @@ import sandbox
 import yaml
 
 from direct.stdpy.file import *
-from panda3d.core import NodePath, Point3
+from panda3d.core import LPoint3d, NodePath, Point3, PointLight, Shader
+from panda3d.core import Texture, TextureStage,  TexGenAttrib
 
 import graphicsComponents
+import shapeGenerator
 import universals
 
 #from pandac.PandaModules import loadPrcFileData
@@ -44,6 +46,7 @@ class Star(Body):
 
 class CelestialComponent(object):
     nodePath = None
+    truePos = LPoint3d(0, 0, 0)
     mass = 0
     soi = 0
     kind = None
@@ -65,7 +68,7 @@ class SolarSystemSystem(sandbox.EntitySystem):
         E = M + e * sin(M) * (1.0 + e * cos(M))
         if degrees(E) > 0.05:
             E = self.computeE(E, M, e)
-        # http:#stjarnhimlen.se/comp/tutorial.html
+        # http://stjarnhimlen.se/comp/tutorial.html
         # Compute distance and true anomaly
         xv = a * (cos(E) - e)
         yv = a * (sqrt(1.0 - e * e) * sin(E))
@@ -74,7 +77,7 @@ class SolarSystemSystem(sandbox.EntitySystem):
         xh = r * (cos(N) * cos(v + w) - sin(N) * sin(v + w) * cos(i))
         yh = r * (sin(N) * cos(v + w) + cos(N) * sin(v + w) * cos(i))
         zh = r * (sin(v + w) * sin(i))
-        position = Point3(xh, yh, zh)
+        position = LPoint3d(xh, yh, zh)
         # If we are not a moon then our orbits are done in au.
         # Our units in panda are km, so we convert to km
         # FIXME: Add moon body type
@@ -95,7 +98,6 @@ class SolarSystemSystem(sandbox.EntitySystem):
         E = M + e * sin(M) * (1.0 + e * cos(M))
         if degrees(E) > 0.05:
             E = self.computeE(E, M, e)
-        # http:#stjarnhimlen.se/comp/tutorial.html
         # Compute distance and true anomaly
         xv = a * (cos(E) - e)
         yv = a * (sqrt(1.0 - e * e) * sin(E))
@@ -103,7 +105,7 @@ class SolarSystemSystem(sandbox.EntitySystem):
         r = sqrt(xv * xv + yv * yv)
         xh = r * (cos(N) * cos(v + w) - sin(N) * sin(v + w) * cos(i))
         yh = r * (sin(N) * cos(v + w) + cos(N) * sin(v + w) * cos(i))
-        position = Point3(xh, yh, 0)
+        position = LPoint3d(xh, yh, 0)
         # If we are not a moon then our orbits are done in au.
         # We need to convert to km
         # FIXME: Add moon body type
@@ -125,7 +127,8 @@ class SolarSystemSystem(sandbox.EntitySystem):
         component = entity.getComponent(CelestialComponent)
         if component.orbit:
             #print component.nodePath, self.get2DBodyPosition(component.nodePath, universals.day)
-            component.nodePath.setPos(self.get2DBodyPosition(component, universals.day))
+            #component.nodePath.setPos(self.get2DBodyPosition(component, universals.day))
+            component.truePos = self.get2DBodyPosition(component, universals.day)
 
     def init(self, name='Sol'):
         log.debug("Loading Solar System Bodies")
@@ -133,6 +136,7 @@ class SolarSystemSystem(sandbox.EntitySystem):
         self.bodies = []
         solarDB = yaml.load(stream)
         stream.close()
+        #self.sphere = shapeGenerator.Sphere(1, 128)
         #self.solarSystemRoot = NodePath(name)
         for bodyName, bodyDB in solarDB[name].items():
             self.generateNode(bodyName, bodyDB, universals.solarSystemRoot)
@@ -163,7 +167,10 @@ class SolarSystemSystem(sandbox.EntitySystem):
         if 'orbit' in DB:
             component.orbit = DB['orbit']
             body.period = DB['period']
-            body.setPos(self.get2DBodyPosition(component, universals.day))
+            #body.setPos(self.get2DBodyPosition(component, universals.day))
+            component.truePos = self.get2DBodyPosition(component, universals.day)
+            if name == "Earth":
+                universals.spawn = component.truePos + LPoint3d(6771, 0, 0)
 
         if parentNode == universals.solarSystemRoot:
             universals.defaultSOIid = bodyEntity.id
@@ -176,11 +183,74 @@ class SolarSystemSystem(sandbox.EntitySystem):
         component.nodePath = body
         self.bodies.append(component)
         bodyEntity.addComponent(component)
-        
 
+        if universals.runClient and DB['type'] == 'star':
+            component = graphicsComponents.RenderComponent()
+            component.mesh = NodePath(name)
+            #self.sphere.copyTo(component.mesh)
+            component.mesh = shapeGenerator.Sphere(body.radius, 128)
+            #component.mesh.setScale(body.radius)
+            component.mesh.reparentTo(sandbox.base.render)
+            texture = sandbox.base.loader.loadTexture('planets/' + DB['texture'])
+            texture.setMinfilter(Texture.FTLinearMipmapLinear)
+            component.mesh.setTexture(texture, 1)
+            component.light = sandbox.base.render.attachNewNode(PointLight("sunPointLight"))
+            render.setLight(component.light)
 
+        if universals.runClient and (DB['type'] == 'solid' or DB['type'] == 'moon'):
+            component = graphicsComponents.RenderComponent()
+            component.mesh = shapeGenerator.Sphere(body.radius, 128)
+            #component.mesh.setScale(body.radius)
+            component.mesh.reparentTo(render)
+            if '#' in DB['texture']:
+                component.mesh.setTexGen(TextureStage.getDefault(), TexGenAttrib.MWorldPosition)
+                component.mesh.setTexProjector(TextureStage.getDefault(), sandbox.base.render, component.mesh)
+                component.mesh.setTexScale(TextureStage.getDefault(), 1,  1, -1)
+                component.mesh.setTexHpr(TextureStage.getDefault(), 90, -18, 90)
+                #self.mesh.setHpr(0, 90, 0)
+                texture = loader.loadCubeMap('planets/' + DB['texture'])
+            else:
+                texture = sandbox.base.loader.loadTexture('planets/' + DB['texture'])
+            #texture.setMinfilter(Texture.FTLinearMipmapLinear)
+            component.mesh.setTexture(texture, 1)
+            '''if "atmosphere" in DB:
+                component.atmosphere = shapeGenerator.Sphere(-1, 128)
+                component.atmosphere.reparentTo(render)
+                component.atmosphere.setScale(body.radius * 1.025)
+                outerRadius = component.atmosphere.getScale().getX()
+                scale = 1 / (outerRadius - component.body.getScale().getX())
+                component.atmosphere.setShaderInput("fOuterRadius", outerRadius)
+                component.atmosphere.setShaderInput("fInnerRadius", component.mesh.getScale().getX())
+                component.atmosphere.setShaderInput("fOuterRadius2", outerRadius * outerRadius)
+                component.atmosphere.setShaderInput("fInnerRadius2",
+                    component.mesh.getScale().getX()
+                    * component.mesh.getScale().getX())
 
+                component.atmosphere.setShaderInput("fKr4PI",
+                    0.000055 * 4 * 3.14159)
+                component.atmosphere.setShaderInput("fKm4PI",
+                    0.000015 * 4 * 3.14159)
 
+                component.atmosphere.setShaderInput("fScale", scale)
+                component.atmosphere.setShaderInput("fScaleDepth", 0.25)
+                component.atmosphere.setShaderInput("fScaleOverScaleDepth", scale / 0.25)
+
+                # Currently hard coded in shader
+                component.atmosphere.setShaderInput("fSamples", 10.0)
+                component.atmosphere.setShaderInput("nSamples", 10)
+                # These do sunsets and sky colors
+                # Brightness of sun
+                ESun = 15
+                # Reyleight Scattering (Main sky colors)
+                component.atmosphere.setShaderInput("fKrESun", 0.000055 * ESun)
+                # Mie Scattering -- Haze and sun halos
+                component.atmosphere.setShaderInput("fKmESun", 0.000015 * ESun)
+                # Color of sun
+                component.atmosphere.setShaderInput("v3InvWavelength", 1.0 / math.pow(0.650, 4),
+                                                  1.0 / math.pow(0.570, 4),
+                                                  1.0 / math.pow(0.465, 4))
+                #component.atmosphere.setShader(Shader.load("atmo.cg"))'''
+            bodyEntity.addComponent(component)
         log.info(name + " set Up")
 
         if 'bodies' in DB:

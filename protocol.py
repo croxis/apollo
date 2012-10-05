@@ -126,8 +126,8 @@ def shipClasses(db):
 
 
 def packFullPhysics(shipPhysics, ship):
-    ship.x = shipPhysics.nodePath.getX()
-    ship.y = shipPhysics.nodePath.getY()
+    ship.x = shipPhysics.getTruePos().getX()
+    ship.y = shipPhysics.getTruePos().getY()
     ship.h = shipPhysics.nodePath.getH()
     ship.dx = shipPhysics.node.getLinearVelocity()[0]
     ship.dy = shipPhysics.node.getLinearVelocity()[1]

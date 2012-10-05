@@ -1,5 +1,5 @@
 from panda3d.bullet import BulletRigidBodyNode, BulletSphereShape, BulletWorld
-from panda3d.core import Vec3
+from panda3d.core import NodePath, Point3, Vec3
 
 import sandbox
 
@@ -7,17 +7,129 @@ import shipComponents
 import solarSystem
 import universals
 
+from pandac.PandaModules import loadPrcFileData
+loadPrcFileData("", "notify-level-ITF-PhysicsSystem debug")
+from direct.directnotify.DirectNotify import DirectNotify
+log = DirectNotify().newCategory("ITF-PhysicsSystem")
+
+# Size of the bulletworld. We keep to positive just for the sake of sanity
+ZONESIZE = 1000000
+
+'''worlds[x][y] = (BulletWorld(), NodePath())
+Each world is 1 million x 1 million km'''
+worlds = {}
+
+
+def setZone(component, truex, truey):
+    '''Sets the zone for the component if different than current based on new coords'''
+    zonex, zoney, subx, suby = computeZonePos(truex, truey)
+    if zonex != component.zonex or zoney is not component.zoney:
+        currentX = component.zonex
+        currentY = component.zoney
+        velocity = component.node.getLinearVelocity()
+        spin = component.node.getAngularVelocity()
+        oldzone = getZone(currentX, currentY)
+        oldzone[0].removeRigidBody(component.node)
+        zone = getZone(zonex, zoney)
+        zone[0].attachRigidBody(component.node)
+        component.nodePath.reparentTo(zone[1])
+        component.node.setLinearVelocity(velocity)
+        component.node.setAngularVelocity(spin)
+        component.nodePath.setPos(subx, suby, 0)
+        component.zonex = zonex
+        component.zoney = zoney
+        log.debug("Moved zone: " + component.nodePath.getName() + " from " + str(currentX) + ", " + str(currentY) + " to " + str(zonex) + ", " + str(zoney))
+
+
+def checkZone(component):
+    '''Returns boolean if the component needs to change zones'''
+    changeZone = False
+    pos = component.getTruePos()
+    if pos.getX() >= ZONESIZE:
+        changeZone = True
+    elif pos.getX() < 0:
+        changeZone = True
+    if pos.getY() >= ZONESIZE:
+        changeZone = True
+    elif pos.getY() < 0:
+        changeZone = True
+    return changeZone
+
+
+def changeZone(component):
+    '''Checks if the zone needs to be changed based on current position, then
+    changes it if it should'''
+    if checkZone(component):
+        pos = component.getTruePos()
+        setZone(component, pos.getX(), pos.getY())
+
+
+def computeZonePos(truex, truey):
+    '''Converts the true position into zone x, y and the local zone coords'''
+    zonex = int(truex / ZONESIZE)
+    if zonex < 0:
+        zonex -= 1
+    zoney = int(truey / ZONESIZE)
+    if zoney < 0:
+        zoney -= 1
+    #subx = truex % ZONESIZE
+    #suby = truey % ZONESIZE
+    subx = truex - zonex * ZONESIZE
+    suby = truey - zoney * ZONESIZE
+    return zonex, zoney, subx, suby
+
+
+def getZone(zonex, zoney):
+    if zonex not in worlds:
+        worlds[zonex] = {}
+    if zoney not in worlds[zonex]:
+        worlds[zonex][zoney] = (BulletWorld(), NodePath('Zone ' + str(zonex) + str(zoney)))
+        worlds[zonex][zoney][0].setGravity((0, 0, 0))
+        log.debug("Zone added: " + str(zonex) + ", " + str(zoney))
+    return worlds[zonex][zoney]
+
+
+def addNewBody(name, shape, mass, truex=0, truey=0, velocity=Vec3(0, 0, 0)):
+    '''Adds a new BulletRidgedBody at position truex and truey.
+    shape is a BulletShape, mass in kg
+
+    Returns BulletPhysicsComponent'''
+    zonex, zoney, subx, suby = computeZonePos(truex, truey)
+    zone = getZone(zonex, zoney)
+    component = shipComponents.BulletPhysicsComponent()
+    component.bulletShape = shape
+    component.node = BulletRigidBodyNode(name)
+    component.node.setMass(mass)
+    component.node.addShape(component.bulletShape)
+    component.nodePath = zone[1].attachNewNode(component.node)
+    component.currentSOI = universals.defaultSOIid
+    component.nodePath.setPos(subx, suby, 0)
+    component.node.setLinearVelocity(velocity)
+    zone[0].attachRigidBody(component.node)
+    '''component.debugNode = BulletDebugNode(shipName + "_debug")
+    component.debugNode.showWireframe(True)
+    component.debugNode.showConstraints(True)
+    component.debugNode.showBoundingBoxes(True)
+    component.debugNode.showNormals(True)
+    component.debugNodePath = sandbox.base.render.attachNewNode(component.debugNode)
+    component.debugNodePath.show()'''
+    component.zonex = zonex
+    component.zoney = zoney
+    log.debug("Component added: " + name + " at " + str(truex) + ", " + str(truey))
+    log.debug("Component verification: " + str(component.getTruePos()))
+    return component
+
 
 def getPhysics():
     return sandbox.getSystem(PhysicsSystem)
 
 
-def getPhysicsWorld():
+'''def getPhysicsWorld():
     return sandbox.getSystem(PhysicsSystem).world
 
 
 def addBody(body):
-    getPhysicsWorld().attachRigidBody(body)
+    getPhysicsWorld().attachRigidBody(body)'''
 
 
 class PhysicsSystem(sandbox.EntitySystem):
@@ -28,8 +140,6 @@ class PhysicsSystem(sandbox.EntitySystem):
     def init(self):
         #self.accept("addSpaceship", self.addSpaceship)
         self.accept('setThrottle', self.setThrottle)
-        self.world = BulletWorld()
-        self.world.setGravity((0, 0, 0))
         self.counter = 0
 
     def process(self, entity):
@@ -44,7 +154,7 @@ class PhysicsSystem(sandbox.EntitySystem):
         previousR = 0
         for body in bodies:
             bodyComponent = body.getComponent(solarSystem.CelestialComponent)
-            distance = (bodyComponent.nodePath.getPos() - shipPhysics.nodePath.getPos()).length()
+            distance = (bodyComponent.truePos - shipPhysics.getTruePos()).length()
             if distance < bodyComponent.soi:
                 if not soi:
                     previousR = distance
@@ -57,7 +167,7 @@ class PhysicsSystem(sandbox.EntitySystem):
 
         body = sandbox.entities[shipPhysics.currentSOI]
         celestial = body.getComponent(solarSystem.CelestialComponent)
-        vector = celestial.nodePath.getPos() - shipPhysics.nodePath.getPos()
+        vector = celestial.truePos - shipPhysics.getTruePos()
         distance = vector.length() * 1000
         gravityForce = Vec3(0, 0, 0)
         if distance:
@@ -75,11 +185,14 @@ class PhysicsSystem(sandbox.EntitySystem):
         shipPhysics.node.applyTorque(Vec3(0, 0, -shipPhysics.currentTorque))
         #print "beat", shipPhysics.nodePath.getHpr(), shipPhysics.node.getAngularVelocity()
         #print "Physics", shipPhysics.nodePath.getHpr(), shipPhysics.currentTorque, shipPhysics.node.getAngularVelocity()
+        #print "Physics", shipPhysics.nodePath.getPos(), shipPhysics.node.getLinier
         #self.world.setDebugNode(shipPhysics.debugNode)
 
     def end(self):
         dt = globalClock.getDt()
-        self.world.doPhysics(dt)
+        for zonex in worlds:
+            for zoney in worlds[zonex]:
+                worlds[zonex][zoney][0].doPhysics(dt)
         #self.world.doPhysics(dt, 10, 1.0 / 180.0)
 
     def setThrottle(self, shipid, data):
@@ -94,4 +207,5 @@ class PhysicsSystem(sandbox.EntitySystem):
         # Power to engines. Current max overload is 400%
         # TODO: Revisit caulculation when enginerring power is added
         shipPhysics.currentTorque = shipThrust.heading / (100.0 * 4) * data.heading
-        print "SetPhysics", shipPhysics.nodePath.getHpr(), shipPhysics.currentTorque, shipPhysics.node.getAngularVelocity()
+        #print "SetPhysics", shipPhysics.nodePath.getHpr(), shipPhysics.currentTorque, shipPhysics.node.getAngularVelocity()
+        #print shipPhysics.nodePath.getPos(), shipPhysics.node.getLinearVelocity()

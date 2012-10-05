@@ -49,9 +49,9 @@ Sol:
                 rotation: 1
                 period: 365.256363004
                 axis: 23.439166666666665
-                #texture: earth_1k_tex.jpg
-                texture: earth#.png
-                normal: Earth_NormalMap_2.jpg
+                texture: earth_1k_tex.jpg
+                #texture: "earth_#.png"
+                #normal: Earth_NormalMap_2.jpg
                 #glow: earth_glow.png
                 orbit:
                     i:   "lambda d: -0.00054346 + -0.0001337178 * d"

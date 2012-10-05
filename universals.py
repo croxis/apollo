@@ -1,7 +1,7 @@
 from direct.directnotify.DirectNotify import DirectNotify
 log = DirectNotify().newCategory("ITF")
 
-from panda3d.core import NodePath
+from panda3d.core import LPoint3d, NodePath
 
 # Physics constants
 G = 6.67e-11
@@ -12,6 +12,8 @@ runServer = False
 solarSystemRoot = NodePath("SystemCenter")
 defaultSOIid = None
 shipid = None
+
+spawn = LPoint3d(0, 0, 0)
 
 # Connivance constant, number of seconds in an Earth day
 SECONDSINDAY = 86400

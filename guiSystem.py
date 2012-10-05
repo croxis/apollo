@@ -10,7 +10,11 @@ from direct.gui.DirectGuiGlobals import VERTICAL
 from pandac.PandaModules import Spotlight,PerspectiveLens,Fog,OrthographicLens
 from direct.gui.OnscreenText import OnscreenText
 
-from panda3d.core import TextNode
+from panda3d.core import Point3, TextNode
+
+
+def convertPos(point):
+    return Point3(point.getX(), point.getY(), point.getZ())
 
 
 class GUISystem(sandbox.EntitySystem):
@@ -25,8 +29,10 @@ class GUISystem(sandbox.EntitySystem):
             if sandbox.getSystem(shipSystem.ShipSystem).shipid != None:
                 shipid = sandbox.getSystem(shipSystem.ShipSystem).shipid
                 physics = sandbox.entities[shipid].getComponent(shipComponents.BulletPhysicsComponent)
-                text = "X: " + str(round(physics.nodePath.getX(), 1)) + ", Y: " + str(round(physics.nodePath.getY(), 1)) + ", H: " + str(round(physics.nodePath.getH(), 1))
+                text = "X: " + str(round(physics.getTruePos().getX(), 1)) + ", Y: " + str(round(physics.getTruePos().getY(), 1)) + ", H: " + str(round(physics.nodePath.getH(), 1))
                 self.text['xyz'].setText(text)
+                localtext = "X: " + str(round(physics.nodePath.getX(), 1)) + ", Y: " + str(round(physics.nodePath.getY(), 1))
+                self.text['localxyz'].setText(localtext)
                 speedText = "Speed: " + str(round(physics.node.getLinearVelocity().length(), 1)) + " km/s"
                 self.text['speed'].setText(speedText)
 
@@ -79,10 +85,12 @@ class GUISystem(sandbox.EntitySystem):
         lens = OrthographicLens()
         lens.setFilmSize(2000)
         #sandbox.base.cam.node().setLens(lens)
-        self.text['xyz'] = OnscreenText(text="Standby", pos=(-0.95, 0.95),
-            scale=0.07, fg=(1, 0.5, 0.5, 1), align=TextNode.ACenter, mayChange=1)
-        self.text['speed'] = OnscreenText(text="Standby", pos=(-0.95, 0.9),
-            scale=0.07, fg=(1, 0.5, 0.5, 1), align=TextNode.ACenter, mayChange=1)
+        self.text['xyz'] = OnscreenText(text="Standby", pos=(-1, 0.95),
+            scale=0.06, fg=(1, 0.5, 0.5, 1), align=TextNode.ALeft, mayChange=1)
+        self.text['localxyz'] = OnscreenText(text="Standby", pos=(-1, 0.9),
+            scale=0.06, fg=(1, 0.5, 0.5, 1), align=TextNode.ALeft, mayChange=1)
+        self.text['speed'] = OnscreenText(text="Standby", pos=(-1, 0.85),
+            scale=0.06, fg=(1, 0.5, 0.5, 1), align=TextNode.ALeft, mayChange=1)
         throttlebox = boxes.VBox()
         throttlebox.setScale(0.1)
         throttlebox.setPos(-1, 0, -0.75)

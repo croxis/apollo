@@ -75,7 +75,7 @@ class ShipSystem(sandbox.EntitySystem):
             self.spawnShip(ship.name, ship.className, playerShip=False, entityid=ship.id)
             #TODO: Request for full info from server and just return if no name or class?
         physicsComponent = sandbox.entities[ship.id].getComponent(shipComponents.BulletPhysicsComponent)
-        physicsComponent.nodePath.setPos(ship.x, ship.y, 0)
+        physicsComponent.setTruePos(ship.x, ship.y)
         physicsComponent.nodePath.setHpr(ship.h, 0, 0)
         physicsComponent.node.setLinearVelocity((ship.dx, ship.dy, 0))
         physicsComponent.node.setAngularVelocity((0, 0, ship.dh))
@@ -96,32 +96,18 @@ class ShipSystem(sandbox.EntitySystem):
         if playerShip:
             component = shipComponents.PlayerComponent()
             ship.addComponent(component)
-        component = shipComponents.BulletPhysicsComponent()
-        component.bulletShape = BulletSphereShape(5)
-        component.node = BulletRigidBodyNode(shipName)
-        component.node.setMass(self.shipClasses[shipClass]['mass'])
-        component.node.addShape(component.bulletShape)
-        '''component.debugNode = BulletDebugNode(shipName + "_debug")
-        component.debugNode.showWireframe(True)
-        component.debugNode.showConstraints(True)
-        component.debugNode.showBoundingBoxes(True)
-        component.debugNode.showNormals(True)
-        component.debugNodePath = sandbox.base.render.attachNewNode(component.debugNode)
-        component.debugNodePath.show()'''
-        component.nodePath = universals.solarSystemRoot.attachNewNode(component.node)
-        component.currentSOI = universals.defaultSOIid
-        #physics.addBody(component.node)
+        shape = BulletSphereShape(5)
+        velocity = Vec3(0, 0, 0)
+        truex = 0
+        truey = 0
         if playerShip:
-            earth = universals.solarSystemRoot.find('**/Earth')
-            #ePos = sandbox.getSystem(solarSystem.SolarSystemSystem).get2DBodyPosition(earth, universals.day)
-            ePos = earth.getPos()
-            spawn = ePos + Point3(6771, 0, 0)
-            #spawn = Point3(6771, 0, 0)
-            print "Spawn", spawn
-            velocity = Vec3(0, 7.67254, 0)
-            component.nodePath.setPos(spawn)
-            component.node.setLinearVelocity(velocity)
-        physics.addBody(component.node)
+            '''ePos = universals.solarSystemRoot.find('**/Earth').truePos
+            spawn = ePos - Point3(6771, 0, 0)
+            #velocity = Vec3(0, 7.67254, 0)'''
+            spawn = universals.spawn
+            truex = spawn.getX()
+            truey = spawn.getY()
+        component = physics.addNewBody(shipName, shape, self.shipClasses[shipClass]['mass'], truex, truey, velocity)
         ship.addComponent(component)
         component = shipComponents.ThrustComponent()
         for engine in self.shipClasses[shipClass]['engines']:
@@ -165,4 +151,4 @@ class ShipSystem(sandbox.EntitySystem):
             for stationName in universals.playerStations:
                 if getattr(playerComponent, stationName) == address:
                     setattr(playerComponent, stationName, 0)
-                    sandbox.send('stationEmptied', [shipid, stationName])
+                    sandbox.send('stationEmptied', [ship.id, stationName])
