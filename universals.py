@@ -32,7 +32,8 @@ SECONDSINDAY = 86400
 TIMEFACTOR = 100.0
 
 # Julian day based on J2000.
-day = 9131.25
+#day = 9131.25
+day = 9031.25
 
 # Keeps track of the user name of the client
 username = "Moofoo"

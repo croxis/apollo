@@ -108,6 +108,7 @@ class ShipSystem(sandbox.EntitySystem):
             truex = spawn.getX()
             truey = spawn.getY()
         component = physics.addNewBody(shipName, shape, self.shipClasses[shipClass]['mass'], truex, truey, velocity)
+        #component = physics.addNewBody(shipName, shape, self.shipClasses[shipClass]['mass'], truex, -700000, velocity)
         ship.addComponent(component)
         component = shipComponents.ThrustComponent()
         for engine in self.shipClasses[shipClass]['engines']:

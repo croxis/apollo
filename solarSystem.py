@@ -5,7 +5,7 @@ import sandbox
 import yaml
 
 from direct.stdpy.file import *
-from panda3d.core import LPoint3d, NodePath, Point3, PointLight, Shader
+from panda3d.core import LPoint3d, NodePath, Point3, PointLight, Shader, Vec4
 from panda3d.core import Texture, TextureStage,  TexGenAttrib
 
 import graphicsComponents
@@ -186,20 +186,27 @@ class SolarSystemSystem(sandbox.EntitySystem):
 
         if universals.runClient and DB['type'] == 'star':
             component = graphicsComponents.RenderComponent()
-            component.mesh = NodePath(name)
+            #component.mesh = NodePath(name)
             #self.sphere.copyTo(component.mesh)
-            component.mesh = shapeGenerator.Sphere(body.radius, 128)
+            component.mesh = shapeGenerator.Sphere(body.radius, 128, name)
             #component.mesh.setScale(body.radius)
             component.mesh.reparentTo(sandbox.base.render)
+            sandbox.send('makePickable', [component.mesh])
             texture = sandbox.base.loader.loadTexture('planets/' + DB['texture'])
             texture.setMinfilter(Texture.FTLinearMipmapLinear)
-            component.mesh.setTexture(texture, 1)
-            component.light = sandbox.base.render.attachNewNode(PointLight("sunPointLight"))
-            render.setLight(component.light)
+            ts1 = TextureStage('textures1')
+            ts1.setMode(TextureStage.MGlow)
+            component.mesh.setTexture(ts1, texture)
+            #component.mesh.setTexture(texture, 1)
+            component.light = component.mesh.attachNewNode(PointLight("sunPointLight"))
+            component.light.node().setColor(Vec4(1, 1, 1, 1))
+            sandbox.base.render.setLight(component.light)
+            bodyEntity.addComponent(component)
 
         if universals.runClient and (DB['type'] == 'solid' or DB['type'] == 'moon'):
             component = graphicsComponents.RenderComponent()
-            component.mesh = shapeGenerator.Sphere(body.radius, 128)
+            component.mesh = shapeGenerator.Sphere(body.radius, 128, name)
+            sandbox.send('makePickable', [component.mesh])
             #component.mesh.setScale(body.radius)
             component.mesh.reparentTo(render)
             if '#' in DB['texture']:
@@ -252,7 +259,6 @@ class SolarSystemSystem(sandbox.EntitySystem):
                 #component.atmosphere.setShader(Shader.load("atmo.cg"))'''
             bodyEntity.addComponent(component)
         log.info(name + " set Up")
-
         if 'bodies' in DB:
             for bodyName, bodyDB in DB['bodies'].items():
                 self.generateNode(bodyName, bodyDB, body)

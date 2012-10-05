@@ -412,9 +412,10 @@ class Pyramid(Geometry):
     topSphere = self.addGeometry(SphereData(radius=radius, widthSegments=sides+1, heightSegments=3, angle=180))
     bottom    = self.addGeometry(CircleData(outerRadius=radius, innerRadius=0.0, radiusSegments=sides+1, inverted=True))
 
+
 class Sphere(Geometry):
-  def __init__(self, radius=.5, segements=16):
+  def __init__(self, radius=.5, segements=16, name='Geometry'):
     Geometry.__init__(self)
     self.radius = radius
     sphere = self.addGeometry(SphereData(radius=radius, widthSegments=segements, heightSegments=segements, angle=360))
-
+    self.setName(name)
