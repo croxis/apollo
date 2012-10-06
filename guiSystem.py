@@ -1,47 +1,52 @@
 import sandbox
-#import DirectWindow
+
 import boxes
 import graphicsComponents
+import picker
 import shipComponents
 import shipSystem
 import universals
 
+from direct.fsm.FSM import FSM
 from direct.gui.DirectGui import *
 from direct.gui.DirectGuiGlobals import VERTICAL
-from pandac.PandaModules import Spotlight,PerspectiveLens,Fog,OrthographicLens
+from pandac.PandaModules import OrthographicLens
 from direct.gui.OnscreenText import OnscreenText
-from direct.showbase import DirectObject
-from pandac.PandaModules import CollisionTraverser,CollisionHandlerQueue,CollisionNode,CollisionRay,GeomNode
 
-from panda3d.core import Point3, TextNode
-import math
+from panda3d.core import PerspectiveLens, Point3, TextNode
+
+
+def debugView():
+    fsm.request('Debug')
+
+
+def navView():
+    fsm.request('Nav')
+
+
+text = {}
+widgets = {}
+tasks = {}
+stations = boxes.HBox()
+stations.setScale(0.1)
+stations.pack(DirectButton(text="DebugView", command=debugView))
+stations.pack(DirectButton(text="Nav", command=navView))
+stations.setPos(sandbox.base.a2dLeft, 0, sandbox.base.a2dTop)
+stations.hide()
+
+pick = picker.Picker()
 
 
 def convertPos(point):
     return Point3(point.getX(), point.getY(), point.getZ())
 
 
-class GUISystem(sandbox.EntitySystem):
-    def init(self):
-        self.accept("shipSelectScreen", self.shipSelectScreen)
-        self.accept("navigationScreen", self.navigationUI)
-        self.mode = ''
-        self.text = {}
-        self.picker = Picker()
+class GUIFSM(FSM):
+    def __init__(self):
+        FSM.__init__(self, 'GUIFSM')
 
-    def begin(self):
-        if self.mode == 'navigation':
-            if sandbox.getSystem(shipSystem.ShipSystem).shipid != None:
-                shipid = sandbox.getSystem(shipSystem.ShipSystem).shipid
-                physics = sandbox.entities[shipid].getComponent(shipComponents.BulletPhysicsComponent)
-                text = "X: " + str(round(physics.getTruePos().getX(), 1)) + ", Y: " + str(round(physics.getTruePos().getY(), 1)) + ", H: " + str(round(physics.nodePath.getH(), 1))
-                self.text['xyz'].setText(text)
-                localtext = "X: " + str(round(physics.nodePath.getX(), 1)) + ", Y: " + str(round(physics.nodePath.getY(), 1))
-                self.text['localxyz'].setText(localtext)
-                speedText = "Speed: " + str(round(physics.node.getLinearVelocity().length(), 1)) + " km/s"
-                self.text['speed'].setText(speedText)
-
-    def shipSelectScreen(self, playerShips):
+    def enterStationSelect(self, playerShips):
+        stations.hide()
         guibox = boxes.HBox()
         leftbox = boxes.VBox()
         guibox.setScale(0.1)
@@ -63,39 +68,36 @@ class GUISystem(sandbox.EntitySystem):
                 rightbox.pack(checkButton)
                 guibox.checkButtons.append(checkButton)
         guibox.pack(rightbox)
-        button = DirectButton(text="Select", command=self.selectShip,
+        button = DirectButton(text="Select", command=selectShip,
             extraArgs=[menu, playerShips, guibox])
         guibox.pack(button)
 
-    def selectShip(self, menu, playerShips, guibox):
-        name = menu.get()
-        stations = []
-        entityID = 0
-        for playerShip in playerShips.ship:
-            if playerShip.name == name:
-                entityID = playerShip.id
-                for checkButton in guibox.checkButtons:
-                    if checkButton['indicatorValue']:
-                        stations.append(checkButton['text'])
-        if not stations:
-            return
-        guibox.destroy()
-        sandbox.send('requestStations', [entityID, stations])
+    def exitStationSelect(self):
+        pass
 
-    def navigationUI(self):
-        self.mode = 'navigation'
-        #sandbox.base.disableMouse()
-        #sandbox.base.camera.setPos(0, 0, 5000)
-        #sandbox.base.camera.setHpr(0, -90, 0)
+    def enterDebug(self):
+        stations.show()
+        sandbox.base.enableMouse()
+        lens = PerspectiveLens()
+        sandbox.base.cam.node().setLens(lens)
+
+    def exitDebug(self):
+        pass
+
+    def enterNav(self):
+        stations.show()
+        sandbox.base.disableMouse()
+        sandbox.base.camera.setPos(0, 0, 5000)
+        sandbox.base.camera.setHpr(0, -90, 0)
         lens = OrthographicLens()
         lens.setFilmSize(2000)
-        #sandbox.base.cam.node().setLens(lens)
-        self.text['xyz'] = OnscreenText(text="Standby", pos=(-1, 0.95),
-            scale=0.06, fg=(1, 0.5, 0.5, 1), align=TextNode.ALeft, mayChange=1)
-        self.text['localxyz'] = OnscreenText(text="Standby", pos=(-1, 0.9),
-            scale=0.06, fg=(1, 0.5, 0.5, 1), align=TextNode.ALeft, mayChange=1)
-        self.text['speed'] = OnscreenText(text="Standby", pos=(-1, 0.85),
-            scale=0.06, fg=(1, 0.5, 0.5, 1), align=TextNode.ALeft, mayChange=1)
+        sandbox.base.cam.node().setLens(lens)
+        text['xyz'] = OnscreenText(text="Standby", pos=(sandbox.base.a2dLeft, 0.85),
+            scale=0.05, fg=(1, 0.5, 0.5, 1), align=TextNode.ALeft, mayChange=1)
+        text['localxyz'] = OnscreenText(text="Standby", pos=(sandbox.base.a2dLeft, 0.81),
+            scale=0.05, fg=(1, 0.5, 0.5, 1), align=TextNode.ALeft, mayChange=1)
+        text['speed'] = OnscreenText(text="Standby", pos=(sandbox.base.a2dLeft, 0.77),
+            scale=0.05, fg=(1, 0.5, 0.5, 1), align=TextNode.ALeft, mayChange=1)
         throttlebox = boxes.VBox()
         throttlebox.setScale(0.1)
         throttlebox.setPos(-1, 0, -0.75)
@@ -103,10 +105,10 @@ class GUISystem(sandbox.EntitySystem):
         throttlebox.pack(throttleLable)
         '''self.throttle = DirectSlider(range=(-100, 100), value=0,
             pageSize=1, command=self.setThrottle, orientation=VERTICAL)'''
-        self.throttle = DirectSlider(range=(-100, 100), value=0,
+        widgets['throttle'] = DirectSlider(range=(-100, 100), value=0,
             pageSize=1, orientation=VERTICAL)
-        throttlebox.pack(self.throttle)
-        self.throt = 0
+        throttlebox.pack(widgets['throttle'])
+        widgets['throt'] = 0
 
         headingbox = boxes.VBox()
         headingbox.setScale(0.1)
@@ -115,128 +117,69 @@ class GUISystem(sandbox.EntitySystem):
         headingbox.pack(headingLable)
         '''self.throttle = DirectSlider(range=(-100, 100), value=0,
             pageSize=1, command=self.setThrottle, orientation=VERTICAL)'''
-        self.heading = DirectSlider(range=(-100, 100), value=0,
+        widgets['heading'] = DirectSlider(range=(-100, 100), value=0,
             pageSize=1)
-        headingbox.pack(self.heading)
-        self.head = 0
+        headingbox.pack(widgets['heading'])
+        widgets['head'] = 0
 
-        sandbox.base.taskMgr.doMethodLater(0.2, self.checkThrottle, 'throttle')
+        tasks['throttle'] = sandbox.base.taskMgr.doMethodLater(0.2, checkThrottle, 'throttle')
 
-    def checkThrottle(self, task):
-        if self.throt != self.throttle['value'] or self.head != self.heading['value']:
-            self.throt = self.throttle['value']
-            self.head = self.heading['value']
-            sandbox.send("requestThrottle", [self.throttle['value'], self.heading['value']])
-        return task.again
+    def exitNav(self):
+        pass
+        #text['xyz'].removeNode()
+        #text['localxyz'].removeNode()
+        #text['speed'].removeNode()
+        #widgets['throttle'].removeNode()
+        #widgets['heading'].removeNode()
+        #sandbox.base.taskMgr.remove(tasks['throttle'])
 
 
-class Picker(DirectObject.DirectObject):
-    '''
-    Mouse controller.
-    '''
-    def __init__(self):
-        self.accept('makePickable', self.makePickable)
-        self.accept('switchLevelRequest', self.switchLevel)
-        self.level = 0
-        #create traverser
-        base.cTrav = CollisionTraverser()
-        #create collision ray
-        self.createRay(self, sandbox.base.camera, name="mouseRay", show=True)
-        #initialize mousePick
-        #self.accept('mouse1-up', self.mousePick, [1,self.queue])
-        self.accept('mouse1', self.mousePick, [1, self.queue])
-        #initialize mouseRightPick
-        #self.accept('mouse3', self.mousePick, [3, self.queue])
-
-    def switchLevel(self, level):
-        self.level = level
-
-    def mouseRight(self, pickedObj, pickedPoint):
-        contextDict = {}
-        if pickedObj == None:
-            pass
-        else:
-            #get cell from pickedpoint
-            cell = (int(math.floor(pickedPoint[0])), int(math.floor(pickedPoint[1])), self.level)
-            contextDict['cell'] = cell
-        messenger.send('buildContextMenu', [contextDict])
-
-    def mouseLeft(self, pickedObj, pickedPoint):
-        if pickedObj == None:
-            print "No object clicked on"
-            return
-        print "mouseLeft", pickedObj, pickedObj.getPos(), pickedPoint
+def selectShip(menu, playerShips, guibox):
+    name = menu.get()
+    stations = []
+    entityID = 0
+    for playerShip in playerShips.ship:
+        if playerShip.name == name:
+            entityID = playerShip.id
+            for checkButton in guibox.checkButtons:
+                if checkButton['indicatorValue']:
+                    stations.append(checkButton['text'])
+    if not stations:
         return
-        cell = (int(math.floor(pickedPoint[0])), int(math.floor(pickedPoint[1])), self.level)
-        #print cell
-        if database.terrain[cell[2]][cell[0]][cell[1]]['structure']:
-            messenger.send('structureClick', [cell, ])
+    guibox.destroy()
+    sandbox.send('requestStations', [entityID, stations])
 
-    def getMouseCell(self):
-        """Returns terrain cell coordinates (x,y) at mouse pointer"""
-        #get mouse coords
-        if base.mouseWatcherNode.hasMouse()==False: return
-        mpos=base.mouseWatcherNode.getMouse()
-        #locate ray from camera lens to mouse coords
-        self.ray.setFromLens(base.camNode, mpos.getX(),mpos.getY())
-        #get collision: picked obj and point
-        pickedObj,pickedPoint=self.getCollision(self.queue)
-        #call appropiate mouse function (left or right)
-        if pickedObj==None:  return
-        cell=(int(math.floor(pickedPoint[0])),int(math.floor(pickedPoint[1])))
-        return cell  
 
-    def mousePick(self, but, queue):
-        """mouse pick""" 
-        #print "Mousepick"
-        #get mouse coords
-        if base.mouseWatcherNode.hasMouse()==False: return
-        mpos=base.mouseWatcherNode.getMouse()
-        #locate ray from camera lens to mouse coords
-        self.ray.setFromLens(base.camNode, mpos.getX(),mpos.getY())
-        #get collision: picked obj and point
-        pickedObj,pickedPoint=self.getCollision(queue)
-        #call appropiate mouse function (left or right)
-        if but==1:self.mouseLeft(pickedObj,pickedPoint)
-        if but==3:self.mouseRight(pickedObj,pickedPoint)
+def checkThrottle(task):
+    if widgets['throt'] != widgets['throttle']['value'] or widgets['head'] != widgets['heading']['value']:
+        widgets['throt'] = widgets['throttle']['value']
+        widgets['head'] = widgets['heading']['value']
+        sandbox.send("requestThrottle", [widgets['throttle']['value'], widgets['heading']['value']])
+    return task.again
 
-    """Returns the picked nodepath and the picked 3d point"""
-    def getCollision(self, queue):
-        #do the traverse
-        base.cTrav.traverse(render)
-        #process collision entries in queue
-        if queue.getNumEntries() > 0:
-            queue.sortEntries()
-            for i in range(queue.getNumEntries()):
-                collisionEntry=queue.getEntry(i)
-                pickedObj=collisionEntry.getIntoNodePath()
-                #iterate up in model hierarchy to found a pickable tag
-                parent=pickedObj.getParent()
-                for n in range(1):
-                    if parent.getTag('pickable')!="" or parent==render: break
-                    parent=parent.getParent()
-                #return appropiate picked object
-                if parent.getTag('pickable')!="":
-                    pickedObj=parent
-                    pickedPoint = collisionEntry.getSurfacePoint(pickedObj)
-                    #pickedNormal = collisionEntry.getSurfaceNormal(self.ancestor.worldNode)
-                    #pickedDistance=pickedPoint.lengthSquared()#distance between your object and the collision
-                    return pickedObj,pickedPoint         
-        return None,None
 
-    def makePickable(self,newObj,tag='true'):
-        """sets nodepath pickable state"""
-        newObj.setTag('pickable',tag)
-        #print "Pickable: ",newObj,"as",tag
-    
-    """creates a ray for detecting collisions"""
-    def createRay(self,obj,ent,name,show=False,x=0,y=0,z=0,dx=0,dy=0,dz=-1):
-        #create queue
-        obj.queue=CollisionHandlerQueue()
-        #create ray  
-        obj.rayNP=ent.attachNewNode(CollisionNode(name))
-        obj.ray=CollisionRay(x,y,z,dx,dy,dz)
-        obj.rayNP.node().addSolid(obj.ray)
-        obj.rayNP.node().setFromCollideMask(GeomNode.getDefaultCollideMask())
-        base.cTrav.addCollider(obj.rayNP, obj.queue) 
-        if show: obj.rayNP.show()
+fsm = GUIFSM()
+
+
+class GUISystem(sandbox.EntitySystem):
+    def init(self):
+        self.accept("shipSelectScreen", self.shipSelectScreen)
+        self.accept("navigationScreen", self.navigationUI)
+
+    def begin(self):
+        if fsm.state == 'Nav':
+            if sandbox.getSystem(shipSystem.ShipSystem).shipid != None:
+                shipid = sandbox.getSystem(shipSystem.ShipSystem).shipid
+                physics = sandbox.entities[shipid].getComponent(shipComponents.BulletPhysicsComponent)
+                t = "X: " + str(round(physics.getTruePos().getX(), 1)) + ", Y: " + str(round(physics.getTruePos().getY(), 1)) + ", H: " + str(round(physics.nodePath.getH(), 1))
+                text['xyz'].setText(t)
+                localtext = "X: " + str(round(physics.nodePath.getX(), 1)) + ", Y: " + str(round(physics.nodePath.getY(), 1))
+                text['localxyz'].setText(localtext)
+                speedText = "Speed: " + str(round(physics.node.getLinearVelocity().length(), 1)) + " km/s"
+                text['speed'].setText(speedText)
+
+    def shipSelectScreen(self, playerShips):
+        fsm.request('StationSelect', playerShips)
+
+    def navigationUI(self):
+        fsm.request('Nav')

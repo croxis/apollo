@@ -5,6 +5,7 @@ import math
 from panda3d.core import Point3
 
 import graphicsComponents
+import shapeGenerator
 import shipComponents
 import solarSystem
 import universals
@@ -16,7 +17,10 @@ def convertPos(point):
 
 class RenderSystem(sandbox.EntitySystem):
     def init(self):
-        pass
+        self.skybox = shapeGenerator.Sphere(-50000, 128, 'Skysphere')
+        texture = sandbox.base.loader.loadTexture('galaxy.jpg')
+        self.skybox.setTexture(texture, 1)
+        self.skybox.reparentTo(sandbox.base.render)
 
     def begin(self):
         pass
@@ -37,6 +41,11 @@ class RenderSystem(sandbox.EntitySystem):
             diff = playerPhysics.getTruePos() - pos
             #near = sandbox.base.camLens.getFar() / 2.0
             scale = 1.0 / math.sqrt(diff.length())
+            #if gfx.mesh.getName() == "Sol":
+            #    print "Sol", gfx.mesh.getScale()
+            #TODO: LOD sphers to some other sort. Imposters maybe?
+            #if scale < 0.001:
+            #    scale = 0.001
             diff = diff * scale
             gfx.mesh.setPos(Point3(0, 0, 0) - convertPos(diff))
             gfx.mesh.setScale(scale)
