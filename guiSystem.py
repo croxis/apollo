@@ -10,10 +10,9 @@ import universals
 from direct.fsm.FSM import FSM
 from direct.gui.DirectGui import *
 from direct.gui.DirectGuiGlobals import VERTICAL
-from pandac.PandaModules import OrthographicLens
 from direct.gui.OnscreenText import OnscreenText
 
-from panda3d.core import PerspectiveLens, Point3, TextNode
+from panda3d.core import CardMaker, Point3, TextNode, TransparencyAttrib
 
 
 def debugView():
@@ -77,21 +76,15 @@ class GUIFSM(FSM):
 
     def enterDebug(self):
         stations.show()
-        sandbox.base.enableMouse()
-        lens = PerspectiveLens()
-        sandbox.base.cam.node().setLens(lens)
+        sandbox.send('perspective')
+        sandbox.send('showBG')
 
     def exitDebug(self):
         pass
 
     def enterNav(self):
         stations.show()
-        sandbox.base.disableMouse()
-        sandbox.base.camera.setPos(0, 0, 5000)
-        sandbox.base.camera.setHpr(0, -90, 0)
-        lens = OrthographicLens()
-        lens.setFilmSize(2000)
-        sandbox.base.cam.node().setLens(lens)
+        sandbox.send('orthographic')
         text['xyz'] = OnscreenText(text="Standby", pos=(sandbox.base.a2dLeft, 0.85),
             scale=0.05, fg=(1, 0.5, 0.5, 1), align=TextNode.ALeft, mayChange=1)
         text['localxyz'] = OnscreenText(text="Standby", pos=(sandbox.base.a2dLeft, 0.81),
@@ -121,8 +114,18 @@ class GUIFSM(FSM):
             pageSize=1)
         headingbox.pack(widgets['heading'])
         widgets['head'] = 0
-
         tasks['throttle'] = sandbox.base.taskMgr.doMethodLater(0.2, checkThrottle, 'throttle')
+
+        texture = sandbox.base.loader.loadTexture("protractor.png")
+        cm = CardMaker('protractor')
+        widgets['protractor'] = sandbox.base.aspect2d.attachNewNode(cm.generate())
+        widgets['protractor'].setTexture(texture)
+        #widgets['protractor'].setTransparency(TransparencyAttrib.MBinary)
+        widgets['protractor'].setTransparency(TransparencyAttrib.MAlpha)
+        widgets['protractor'].setPos(-0.5, 0, -0.5)
+        widgets['protractor'].setScale(1.5)
+        sandbox.send('makePickable', [widgets['protractor']])
+        sandbox.send('hideBG')
 
     def exitNav(self):
         pass
@@ -131,6 +134,7 @@ class GUIFSM(FSM):
         #text['speed'].removeNode()
         #widgets['throttle'].removeNode()
         #widgets['heading'].removeNode()
+        widgets['protractor'].removeNode()
         #sandbox.base.taskMgr.remove(tasks['throttle'])
 
 

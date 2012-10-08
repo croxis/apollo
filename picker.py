@@ -109,7 +109,7 @@ class Picker(DirectObject.DirectObject):
     def makePickable(self,newObj,tag='true'):
         """sets nodepath pickable state"""
         newObj.setTag('pickable',tag)
-        #print "Pickable: ",newObj,"as",tag
+        print "Pickable: ",newObj,"as",tag
     
     """creates a ray for detecting collisions"""
     def createRay(self,obj,ent,name,show=False,x=0,y=0,z=0,dx=0,dy=0,dz=-1):

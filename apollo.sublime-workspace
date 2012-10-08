@@ -4,6 +4,10 @@
 		"selected_items":
 		[
 			[
+				"picked",
+				"pickedObj	(local, instance)"
+			],
+			[
 				"zone",
 				"zoney	(attribute, instance)"
 			],
@@ -363,7 +367,7 @@
 			"file": "shipSystem.py",
 			"settings":
 			{
-				"buffer_size": 6430,
+				"buffer_size": 6592,
 				"line_ending": "Unix"
 			}
 		},
@@ -371,23 +375,15 @@
 			"file": "shipComponents.py",
 			"settings":
 			{
-				"buffer_size": 1552,
+				"buffer_size": 1556,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "physics.py",
+			"file": "solarSystem.py",
 			"settings":
 			{
-				"buffer_size": 8828,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "renderSystem.py",
-			"settings":
-			{
-				"buffer_size": 1198,
+				"buffer_size": 12128,
 				"line_ending": "Unix"
 			}
 		},
@@ -395,7 +391,15 @@
 			"file": "guiSystem.py",
 			"settings":
 			{
-				"buffer_size": 5359,
+				"buffer_size": 6573,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "picker.py",
+			"settings":
+			{
+				"buffer_size": 5050,
 				"line_ending": "Unix"
 			}
 		},
@@ -403,7 +407,7 @@
 			"file": "universals.py",
 			"settings":
 			{
-				"buffer_size": 845,
+				"buffer_size": 897,
 				"line_ending": "Unix"
 			}
 		},
@@ -419,7 +423,7 @@
 			"file": "main.py",
 			"settings":
 			{
-				"buffer_size": 4673,
+				"buffer_size": 4713,
 				"line_ending": "Unix"
 			}
 		},
@@ -440,10 +444,10 @@
 			}
 		},
 		{
-			"file": "clientNet.py",
+			"file": "shapeGenerator.py",
 			"settings":
 			{
-				"buffer_size": 2246,
+				"buffer_size": 13992,
 				"line_ending": "Unix"
 			}
 		}
@@ -480,10 +484,12 @@
 	},
 	"file_history":
 	[
+		"/home/croxis/src/apollo/physics.py",
+		"/home/croxis/src/apollo/renderSystem.py",
 		"/home/croxis/src/apollo/solarsystem.yaml",
+		"/home/croxis/src/apollo/clientNet.py",
 		"/home/croxis/src/apollo/solarSystem.py",
 		"/home/croxis/src/SandBox/sandbox/__init__.py",
-		"/home/croxis/src/apollo/clientNet.py",
 		"/home/croxis/src/apollo/protocol.py",
 		"/home/croxis/src/apollo/serverNet.py",
 		"/home/croxis/src/apollo/shipComponents.py",
@@ -493,7 +499,6 @@
 		"/home/croxis/src/apollo/windowBorders/renderSystem.py",
 		"/home/croxis/src/apollo/graphicsComponents.py",
 		"/home/croxis/src/apollo/universals.py",
-		"/home/croxis/src/apollo/physics.py",
 		"/home/croxis/src/apollo/hyperspace.py",
 		"/home/croxis/src/apollo/guiSystem.py",
 		"/home/croxis/src/apollo/test.py",
@@ -548,7 +553,7 @@
 	},
 	"find_in_files":
 	{
-		"height": 0.0,
+		"height": 90.0,
 		"where_history":
 		[
 			"<project>",
@@ -560,6 +565,9 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"setScale",
+			"SHIP ID",
+			"print",
 			"setPos",
 			"Noise",
 			"print",
@@ -590,7 +598,7 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 2,
 			"sheets":
 			[
 				{
@@ -598,15 +606,15 @@
 					"file": "shipSystem.py",
 					"settings":
 					{
-						"buffer_size": 6430,
+						"buffer_size": 6592,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2869,
-								2869
+								3495,
+								3495
 							]
 						],
 						"settings":
@@ -702,8 +710,8 @@
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
-						"translation.x": 30.0,
-						"translation.y": 1143.0,
+						"translation.x": 0.0,
+						"translation.y": 1428.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -713,15 +721,15 @@
 					"file": "shipComponents.py",
 					"settings":
 					{
-						"buffer_size": 1552,
+						"buffer_size": 1556,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								572,
-								572
+								657,
+								657
 							]
 						],
 						"settings":
@@ -819,6 +827,121 @@
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "solarSystem.py",
+					"settings":
+					{
+						"buffer_size": 12128,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								8341,
+								8341
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110
+							],
+							"gjslint_options":
+							[
+							],
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"pep8": true,
+							"pep8_ignore":
+							[
+								"E501"
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"sublimelinter": true,
+							"sublimelinter_delay": 2,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": false,
+							"sublimelinter_mark_style": "outline",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 57.0,
+						"translation.y": 3079.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -826,23 +949,23 @@
 			]
 		},
 		{
-			"selected": 2,
+			"selected": 0,
 			"sheets":
 			[
 				{
-					"buffer": 2,
-					"file": "physics.py",
+					"buffer": 3,
+					"file": "guiSystem.py",
 					"settings":
 					{
-						"buffer_size": 8828,
+						"buffer_size": 6573,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								823,
-								823
+								3001,
+								3001
 							]
 						],
 						"settings":
@@ -939,25 +1062,25 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 255.0,
+						"translation.y": 1170.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
-					"buffer": 3,
-					"file": "renderSystem.py",
+					"buffer": 4,
+					"file": "picker.py",
 					"settings":
 					{
-						"buffer_size": 1198,
+						"buffer_size": 5050,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								640,
-								640
+								14,
+								14
 							]
 						],
 						"settings":
@@ -1055,121 +1178,6 @@
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "guiSystem.py",
-					"settings":
-					{
-						"buffer_size": 5359,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1038,
-								1038
-							]
-						],
-						"settings":
-						{
-							"annotations":
-							[
-								"TODO",
-								"README",
-								"FIXME"
-							],
-							"csslint_options":
-							{
-								"adjoining-classes": "warning",
-								"box-model": true,
-								"box-sizing": "warning",
-								"compatible-vendor-prefixes": "warning",
-								"display-property-grouping": true,
-								"duplicate-background-images": "warning",
-								"duplicate-properties": true,
-								"empty-rules": true,
-								"errors": true,
-								"fallback-colors": "warning",
-								"floats": "warning",
-								"font-faces": "warning",
-								"font-sizes": "warning",
-								"gradients": "warning",
-								"ids": "warning",
-								"import": "warning",
-								"important": "warning",
-								"known-properties": true,
-								"outline-none": "warning",
-								"overqualified-elements": "warning",
-								"qualified-headings": "warning",
-								"regex-selectors": "warning",
-								"rules-count": "warning",
-								"shorthand": "warning",
-								"star-property-hack": "warning",
-								"text-indent": "warning",
-								"underscore-property-hack": "warning",
-								"unique-headings": "warning",
-								"universal-selector": "warning",
-								"vendor-prefix": true,
-								"zero-units": "warning"
-							},
-							"gjslint_ignore":
-							[
-								110
-							],
-							"gjslint_options":
-							[
-							],
-							"javascript_linter": "jshint",
-							"jshint_options":
-							{
-								"browser": true,
-								"evil": true,
-								"regexdash": true,
-								"sub": true,
-								"trailing": true,
-								"wsh": true
-							},
-							"pep8": true,
-							"pep8_ignore":
-							[
-								"E501"
-							],
-							"perl_linter": "perlcritic",
-							"pyflakes_ignore":
-							[
-							],
-							"pyflakes_ignore_import_*": true,
-							"sublimelinter": true,
-							"sublimelinter_delay": 2,
-							"sublimelinter_disable":
-							[
-							],
-							"sublimelinter_executable_map":
-							{
-							},
-							"sublimelinter_fill_outlines": false,
-							"sublimelinter_gutter_marks": false,
-							"sublimelinter_mark_style": "outline",
-							"sublimelinter_notes": false,
-							"sublimelinter_objj_check_ascii": false,
-							"sublimelinter_popup_errors_on_save": false,
-							"sublimelinter_syntax_map":
-							{
-								"Python Django": "python",
-								"Ruby on Rails": "ruby"
-							},
-							"sublimelinter_wrap_find": true,
-							"syntax": "Packages/Python/Python.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 144.0,
-						"translation.y": 207.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -1179,15 +1187,15 @@
 					"file": "universals.py",
 					"settings":
 					{
-						"buffer_size": 845,
+						"buffer_size": 897,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								792,
+								792
 							]
 						],
 						"settings":
@@ -1405,15 +1413,15 @@
 					"file": "main.py",
 					"settings":
 					{
-						"buffer_size": 4673,
+						"buffer_size": 4713,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								336,
-								336
+								3138,
+								3138
 							]
 						],
 						"settings":
@@ -1510,7 +1518,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1805.0,
+						"translation.y": 1607.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -1747,18 +1755,18 @@
 				},
 				{
 					"buffer": 10,
-					"file": "clientNet.py",
+					"file": "shapeGenerator.py",
 					"settings":
 					{
-						"buffer_size": 2246,
+						"buffer_size": 13992,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								13735,
+								13735
 							]
 						],
 						"settings":
@@ -1851,11 +1859,11 @@
 							},
 							"sublimelinter_wrap_find": true,
 							"syntax": "Packages/Python/Python.tmLanguage",
-							"tab_size": 4,
+							"tab_size": 2,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 6659.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -1869,7 +1877,7 @@
 	},
 	"input":
 	{
-		"height": 35.0
+		"height": 37.0
 	},
 	"layout":
 	{
@@ -1891,7 +1899,7 @@
 		"cols":
 		[
 			0.0,
-			0.453418220837,
+			0.454552007685,
 			1.0
 		],
 		"rows":
