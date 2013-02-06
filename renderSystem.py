@@ -12,6 +12,8 @@ import universals
 
 PERSPECTIVE = True
 
+MIN_FILM_SIZE = 5
+
 
 def orthographic():
     global PERSPECTIVE
@@ -32,6 +34,18 @@ def perspective():
     sandbox.base.cam.node().setLens(lens)
 
 
+def wheel_up():
+    if not PERSPECTIVE:
+        print sandbox.base.cam.node().getLens().getFilmSize()
+        if sandbox.base.cam.node().getLens().getFilmSize()[0] >= MIN_FILM_SIZE:
+            sandbox.base.cam.node().getLens().setFilmSize(sandbox.base.cam.node().getLens().getFilmSize() - 1)
+
+
+def wheel_down():
+    if not PERSPECTIVE:
+        sandbox.base.cam.node().getLens().setFilmSize(sandbox.base.cam.node().getLens().getFilmSize() + 1)
+
+
 def convertPos(point):
     return Point3(point.getX(), point.getY(), point.getZ())
 
@@ -46,6 +60,8 @@ class RenderSystem(sandbox.EntitySystem):
         self.accept('showBG', self.showBG)
         self.accept('perspective', perspective)
         self.accept('orthographic', orthographic)
+        self.accept('wheel_up', wheel_up)
+        self.accept('wheel_down', wheel_down)
 
     def hideBG(self):
         self.skybox.hide()

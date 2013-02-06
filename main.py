@@ -97,7 +97,7 @@ log.debug("Loading sandbox")
 import sandbox
 
 sandbox.base.setSleep(0.001)
-#sandbox.base.disableMouse()
+sandbox.base.disableMouse()
 
 import physics
 import shipSystem
@@ -157,8 +157,8 @@ def spawnDebug(task):
 if universals.runClient:
     sandbox.base.taskMgr.doMethodLater(1, loginDebug, "Login Debug")
 
-#if universals.runServer:
-#    sandbox.base.taskMgr.doMethodLater(1, spawnDebug, "Spawn Debug")
+if universals.runServer:
+    sandbox.base.taskMgr.doMethodLater(1, spawnDebug, "Spawn Debug")
 
 
 log.info("Setup complete.")

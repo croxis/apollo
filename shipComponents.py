@@ -8,7 +8,7 @@ class BulletPhysicsComponent(object):
     '''Contains reference to bullet shape and node as well as SOI for
     planetary gravitational influence.
 
-    worldx and worldy is the id of the bullet world. The true
+    zonex and zoney is the id of the bullet world. The true
     position is is worldx + nodePath.getX()'''
     bulletShape = None
     node = None

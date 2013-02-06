@@ -1,3 +1,5 @@
+import math
+
 import sandbox
 
 import boxes
@@ -200,6 +202,7 @@ class GUISystem(sandbox.EntitySystem):
     def init(self):
         self.accept("shipSelectScreen", self.shipSelectScreen)
         self.accept("navigationScreen", self.navigationUI)
+        self.accept("noSelected", self.noSelected)
 
     def begin(self):
         if fsm.state == 'Nav':
@@ -218,5 +221,25 @@ class GUISystem(sandbox.EntitySystem):
 
     def navigationUI(self):
         log.info("Switching to navigation UI")
-        print 2
         fsm.request('Nav')
+
+    def noSelected(self):
+        if fsm.state == 'Nav':
+            #x = sandbox.base.mouseWatcherNode.getMouseX()
+            #y = sandbox.base.mouseWatcherNode.getMouseY()
+            x = sandbox.base.mouseWatcherNode.getMouseY()
+            y = - sandbox.base.mouseWatcherNode.getMouseX()
+            # Rotate to screen coordinate system
+            if x != 0:
+                angle = math.degrees(math.atan2(y, x))  # - 90
+            else:
+                angle = 0
+            if angle < 0:
+                angle += 360
+            shipid = sandbox.getSystem(shipSystem.ShipSystem).shipid
+            physics = sandbox.entities[shipid].getComponent(shipComponents.BulletPhysicsComponent)
+            currentAngle = physics.nodePath.getH() % 360
+            trueDifference = abs(currentAngle - angle)
+            distance = 180 - abs(trueDifference - 180)
+
+            print math.degrees(math.atan2(y, x)), angle, physics.nodePath.getH(), currentAngle, distance

@@ -15,7 +15,7 @@ class Picker(DirectObject.DirectObject):
         self.accept('switchLevelRequest', self.switchLevel)
         self.level = 0
         #create traverser
-        base.cTrav = CollisionTraverser()
+        sandbox.base.cTrav = CollisionTraverser()
         #create collision ray
         self.createRay(self, sandbox.base.camera, name="mouseRay", show=True)
         #initialize mousePick
@@ -35,11 +35,11 @@ class Picker(DirectObject.DirectObject):
             #get cell from pickedpoint
             cell = (int(math.floor(pickedPoint[0])), int(math.floor(pickedPoint[1])), self.level)
             contextDict['cell'] = cell
-        messenger.send('buildContextMenu', [contextDict])
+        sandbox.send('buildContextMenu', [contextDict])
 
     def mouseLeft(self, pickedObj, pickedPoint):
         if pickedObj == None:
-            print "No object clicked on"
+            sandbox.send('noSelected')
             return
         print "mouseLeft", pickedObj, pickedObj.getPos(), pickedPoint
         return
@@ -51,7 +51,7 @@ class Picker(DirectObject.DirectObject):
     def getMouseCell(self):
         """Returns terrain cell coordinates (x,y) at mouse pointer"""
         #get mouse coords
-        if base.mouseWatcherNode.hasMouse() == False:
+        if sandbox.base.mouseWatcherNode.hasMouse() == False:
             return
         mpos = sandbox.base.mouseWatcherNode.getMouse()
         #locate ray from camera lens to mouse coords
@@ -68,11 +68,11 @@ class Picker(DirectObject.DirectObject):
         """mouse pick"""
         #print "Mousepick"
         #get mouse coords
-        if base.mouseWatcherNode.hasMouse() == False:
+        if sandbox.base.mouseWatcherNode.hasMouse() == False:
             return
-        mpos = base.mouseWatcherNode.getMouse()
+        mpos = sandbox.base.mouseWatcherNode.getMouse()
         #locate ray from camera lens to mouse coords
-        self.ray.setFromLens(base.camNode, mpos.getX(), mpos.getY())
+        self.ray.setFromLens(sandbox.base.camNode, mpos.getX(), mpos.getY())
         #get collision: picked obj and point
         pickedObj, pickedPoint = self.getCollision(queue)
         #call appropiate mouse function (left or right)
