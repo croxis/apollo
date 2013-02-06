@@ -14,12 +14,19 @@ from direct.gui.OnscreenText import OnscreenText
 
 from panda3d.core import CardMaker, Point3, TextNode, TransparencyAttrib
 
+from direct.directnotify.DirectNotify import DirectNotify
+log = DirectNotify().newCategory("ITF-GUISystem")
+
+
+NEWSHIP = 'New ship...'
+
 
 def debugView():
     fsm.request('Debug')
 
 
 def navView():
+    log.info("Hard Switching to navigation UI")
     fsm.request('Nav')
 
 
@@ -40,39 +47,61 @@ def convertPos(point):
     return Point3(point.getX(), point.getY(), point.getZ())
 
 
+def stationContext(item):
+    if item == NEWSHIP:
+        widgets['shipName'].show()
+        for widget in widgets['checkButtons']:
+            widget.hide()
+    else:
+        widgets['shipName'].hide()
+        for widget in widgets['checkButtons']:
+            widget.show()
+
+
 class GUIFSM(FSM):
     def __init__(self):
         FSM.__init__(self, 'GUIFSM')
 
     def enterStationSelect(self, playerShips):
         stations.hide()
-        guibox = boxes.HBox()
+        widgets['guibox'] = boxes.HBox()
         leftbox = boxes.VBox()
-        guibox.setScale(0.1)
-        guibox.db = playerShips
-        ships = []
+        widgets['guibox'].setScale(0.1)
+        widgets['guibox'].db = playerShips
+        ships = [NEWSHIP]
         for playerShip in playerShips.ship:
             ships.append(playerShip.name)
-        guibox.reparentTo(sandbox.base.aspect2d)
-        menu = DirectOptionMenu(text="options", items=ships)
+        widgets['guibox'].reparentTo(sandbox.base.aspect2d)
+        menu = DirectOptionMenu(text="options", items=ships, command=stationContext, initialitem=-1)
+        widgets['menu'] = menu
         leftbox.pack(menu)
-        guibox.pack(leftbox)
+        widgets['guibox'].pack(leftbox)
         rightbox = boxes.VBox()
-        guibox.checkButtons = []
+        widgets['checkButtons'] = []
+        shipName = DirectEntry(initialText="Ship Name here...")
+        if playerShips.ship:
+            shipName.hide()
+        widgets['shipName'] = shipName
+        rightbox.pack(shipName)
         for playerShip in playerShips.ship:
             for stationName in universals.playerStations:
                 checkButton = DirectCheckButton(text=stationName)
                 if getattr(playerShip.stations, stationName):
                     checkButton['state'] = DGG.DISABLED
                 rightbox.pack(checkButton)
-                guibox.checkButtons.append(checkButton)
-        guibox.pack(rightbox)
+                widgets['checkButtons'].append(checkButton)
+        widgets['guibox'].pack(rightbox)
         button = DirectButton(text="Select", command=selectShip,
-            extraArgs=[menu, playerShips, guibox])
-        guibox.pack(button)
+            extraArgs=[menu, playerShips])
+        widgets['guibox'].pack(button)
+        widgets['guibox'].setPos(-1, 0, 0.5)
 
     def exitStationSelect(self):
-        pass
+        widgets['guibox'].destroy()
+        del widgets['guibox']
+        del widgets['menu']
+        del widgets['checkButtons']
+        del widgets['shipName']
 
     def enterDebug(self):
         stations.show()
@@ -122,7 +151,7 @@ class GUIFSM(FSM):
         widgets['protractor'].setTexture(texture)
         #widgets['protractor'].setTransparency(TransparencyAttrib.MBinary)
         widgets['protractor'].setTransparency(TransparencyAttrib.MAlpha)
-        widgets['protractor'].setPos(-0.5, 0, -0.5)
+        widgets['protractor'].setPos(-0.75, 0, -0.75)
         widgets['protractor'].setScale(1.5)
         sandbox.send('makePickable', [widgets['protractor']])
         sandbox.send('hideBG')
@@ -138,19 +167,21 @@ class GUIFSM(FSM):
         #sandbox.base.taskMgr.remove(tasks['throttle'])
 
 
-def selectShip(menu, playerShips, guibox):
+def selectShip(menu, playerShips):
     name = menu.get()
+    if name == NEWSHIP:
+        sandbox.send('requestCreateShip', [widgets['shipName'].get(), 'Hyperion'])
+        return
     stations = []
     entityID = 0
     for playerShip in playerShips.ship:
         if playerShip.name == name:
             entityID = playerShip.id
-            for checkButton in guibox.checkButtons:
+            for checkButton in widgets['checkButtons']:
                 if checkButton['indicatorValue']:
                     stations.append(checkButton['text'])
     if not stations:
         return
-    guibox.destroy()
     sandbox.send('requestStations', [entityID, stations])
 
 
@@ -186,4 +217,6 @@ class GUISystem(sandbox.EntitySystem):
         fsm.request('StationSelect', playerShips)
 
     def navigationUI(self):
+        log.info("Switching to navigation UI")
+        print 2
         fsm.request('Nav')

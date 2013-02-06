@@ -47,11 +47,12 @@ PLAYER_SHIPS = 107
 
 REQUEST_STATIONS = 108
 CONFIRM_STATIONS = 109
+REQUEST_CREATE_SHIP = 110
 
 
 # protobuf parsers
 def readProto(msgID, message):
-    if msgID == CONFIRM_STATIONS:
+    if msgID == CONFIRM_STATIONS or msgID == REQUEST_CREATE_SHIP:
         data = proto.Ship()
     elif msgID == LOGIN:
         return
@@ -84,6 +85,14 @@ def requestThrottle(throttle, heading):
     t.normal = throttle
     t.heading = heading
     return sandbox.generatePacket(SET_THROTTLE, t)
+
+
+def requestCreateShip(name, className):
+    ship = proto.Ship()
+    ship.id = -1
+    ship.name = name
+    ship.className = className
+    return sandbox.generatePacket(REQUEST_CREATE_SHIP, ship)
 
 
 #Server to client datagram generators

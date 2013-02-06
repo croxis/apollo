@@ -54,10 +54,11 @@ class NetworkSystem(sandbox.UDPNetworkSystem):
             component.address = address
             entity.addComponent(component)
             self.activeConnections[component.address] = component
-            print self.activeConnections
+        elif msgID == protocol.REQUEST_CREATE_SHIP:
+            sandbox.send('spawnShip', [data.name, data.className, True])
         elif msgID == protocol.REQUEST_STATIONS:
             entity = sandbox.entities[data.ship[0].id]
-            info = entity.getComponent(shipComponents.InfoComponent)
+            #info = entity.getComponent(shipComponents.InfoComponent)
             player = entity.getComponent(shipComponents.PlayerComponent)
             stations = data.ship[0].stations
             for stationName in universals.playerStations:
@@ -106,12 +107,17 @@ class NetworkSystem(sandbox.UDPNetworkSystem):
         return task.again
 
     def playerDisconnected(self, address):
-        del self.playerMap[address]
+        try:
+            print "Removing", address, "from", self.playerMap
+            del self.playerMap[address]
+        except:
+            print address, "not in", self.playerMap
 
     def confirmPlayerStations(self, netAddress, shipid, stations):
         self.playerMap[netAddress] = shipid
         datagram = protocol.confirmStations(shipid, stations)
         self.sendData(datagram, netAddress)
+
 
 
 class ClientComponent:

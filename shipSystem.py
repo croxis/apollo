@@ -28,6 +28,7 @@ class ShipSystem(sandbox.EntitySystem):
         self.accept('shipClassList', self.checkClasses)
         self.accept('shipUpdate', self.shipUpdate)
         self.accept('shipUpdates', self.shipUpdates)
+        self.accept('spawnShip', self.spawnShip)
         self.accept('playerDisconnected', self.playerDisconnected)
         self.shipClasses = {}
         self.shipid = None  # This is for clients to id who the controlling
@@ -72,7 +73,9 @@ class ShipSystem(sandbox.EntitySystem):
 
     def shipUpdate(self, ship, playerShip=False):
         if ship.id not in sandbox.entities:
-            self.spawnShip(ship.name, ship.className, playerShip=False, entityid=ship.id)
+            #self.spawnShip(ship.name, ship.className, playerShip, entityid=ship.id)
+            self.spawnShip(ship.name, ship.className, True, entityid=ship.id)
+            sandbox.send('updateStationGUI')
             #TODO: Request for full info from server and just return if no name or class?
         physicsComponent = sandbox.entities[ship.id].getComponent(shipComponents.BulletPhysicsComponent)
         physicsComponent.setTruePos(ship.x, ship.y)
@@ -125,7 +128,7 @@ class ShipSystem(sandbox.EntitySystem):
             component.mesh.reparentTo(sandbox.base.render)
             component.mesh.setScale(0.001)
             ship.addComponent(component)
-        sandbox.send("shipGenerated", [ship])
+        #sandbox.send("shipGenerated", [ship, playerShip])
         log.info("Ship spawned: " + shipName + " " + shipClass)
         #TODO Transmit player's ship data
         #TODO Broadcast new ship data
