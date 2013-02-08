@@ -206,7 +206,8 @@ class SolarSystemSystem(sandbox.EntitySystem):
 
         if universals.runClient and (DB['type'] == 'solid' or DB['type'] == 'moon'):
             component = graphicsComponents.RenderComponent()
-            component.mesh = shapeGenerator.Sphere(body.radius, 128, name)
+            #component.mesh = shapeGenerator.Sphere(body.radius, 128, name)
+            component.mesh = shapeGenerator.Sphere(body.radius, 64, name)
             sandbox.send('makePickable', [component.mesh])
             #component.mesh.setScale(body.radius)
             component.mesh.reparentTo(render)

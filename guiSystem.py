@@ -28,8 +28,9 @@ def debugView():
 
 
 def navView():
-    log.info("Hard Switching to navigation UI")
-    fsm.request('Nav')
+    if fsm.state != 'Nav':
+        log.info("Hard Switching to navigation UI")
+        fsm.request('Nav')
 
 
 text = {}
@@ -127,10 +128,8 @@ class GUIFSM(FSM):
         throttlebox.setPos(-1, 0, -0.75)
         throttleLable = DirectLabel(text="Throttle")
         throttlebox.pack(throttleLable)
-        '''self.throttle = DirectSlider(range=(-100, 100), value=0,
-            pageSize=1, command=self.setThrottle, orientation=VERTICAL)'''
         widgets['throttle'] = DirectSlider(range=(-100, 100), value=0,
-            pageSize=1, orientation=VERTICAL)
+            pageSize=1, orientation=VERTICAL, frameSize=(-0.5, 0.5, -1, 1))
         throttlebox.pack(widgets['throttle'])
         widgets['throt'] = 0
 
@@ -139,12 +138,13 @@ class GUIFSM(FSM):
         headingbox.setPos(0, 0, -0.75)
         headingLable = DirectLabel(text="Heading")
         headingbox.pack(headingLable)
-        '''self.throttle = DirectSlider(range=(-100, 100), value=0,
-            pageSize=1, command=self.setThrottle, orientation=VERTICAL)'''
         widgets['heading'] = DirectSlider(range=(-100, 100), value=0,
-            pageSize=1)
+            pageSize=1, frameSize=(-1, 1, -0.5, 0.5))
         headingbox.pack(widgets['heading'])
         widgets['head'] = 0
+        stopHeading = DirectCheckButton(text="Stop Rotation")
+        headingbox.pack(stopHeading)
+        widgets['stopHeading'] = stopHeading
         tasks['throttle'] = sandbox.base.taskMgr.doMethodLater(0.2, checkThrottle, 'throttle')
 
         texture = sandbox.base.loader.loadTexture("protractor.png")
@@ -166,6 +166,8 @@ class GUIFSM(FSM):
         #widgets['throttle'].removeNode()
         #widgets['heading'].removeNode()
         widgets['protractor'].removeNode()
+        del widgets['protractor']
+        del widgets['stopHeading']
         #sandbox.base.taskMgr.remove(tasks['throttle'])
 
 
@@ -188,6 +190,25 @@ def selectShip(menu, playerShips):
 
 
 def checkThrottle(task):
+    shipid = sandbox.getSystem(shipSystem.ShipSystem).shipid
+    physicsComponent = sandbox.entities[shipid].getComponent(shipComponents.BulletPhysicsComponent)
+    #print physicsComponent.node.getAngularVelocity()
+    if widgets['stopHeading']["indicatorValue"]:
+        heading = 100
+        if abs(physicsComponent.node.getAngularVelocity()[2]) < 1:
+            heading = 50
+        if abs(physicsComponent.node.getAngularVelocity()[2]) < 0.5:
+            heading = 25
+        if abs(physicsComponent.node.getAngularVelocity()[2]) < 0.01:
+            heading = 0
+            widgets['stopHeading']["indicatorValue"] = True
+            widgets['stopHeading'].setIndicatorValue()
+        if physicsComponent.node.getAngularVelocity()[2] > 0:
+            widgets['heading']['value'] = heading
+        elif physicsComponent.node.getAngularVelocity()[2] < 0:
+            widgets['heading']['value'] = -heading
+        else:
+            widgets['heading']['value'] = 0
     if widgets['throt'] != widgets['throttle']['value'] or widgets['head'] != widgets['heading']['value']:
         widgets['throt'] = widgets['throttle']['value']
         widgets['head'] = widgets['heading']['value']
@@ -220,15 +241,16 @@ class GUISystem(sandbox.EntitySystem):
         fsm.request('StationSelect', playerShips)
 
     def navigationUI(self):
-        log.info("Switching to navigation UI")
-        fsm.request('Nav')
+        if fsm.state != 'Nav':
+            log.info("Switching to navigation UI")
+            fsm.request('Nav')
 
     def noSelected(self):
         if fsm.state == 'Nav':
             #x = sandbox.base.mouseWatcherNode.getMouseX()
             #y = sandbox.base.mouseWatcherNode.getMouseY()
             x = sandbox.base.mouseWatcherNode.getMouseY()
-            y = - sandbox.base.mouseWatcherNode.getMouseX()
+            y = -sandbox.base.mouseWatcherNode.getMouseX()
             # Rotate to screen coordinate system
             if x != 0:
                 angle = math.degrees(math.atan2(y, x))  # - 90

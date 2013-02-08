@@ -52,7 +52,8 @@ def convertPos(point):
 
 class RenderSystem(sandbox.EntitySystem):
     def init(self):
-        self.skybox = shapeGenerator.Sphere(-50000, 128, 'Skysphere')
+        #self.skybox = shapeGenerator.Sphere(-50000, 128, 'Skysphere')
+        self.skybox = shapeGenerator.Sphere(-50000, 64, 'Skysphere')
         texture = sandbox.base.loader.loadTexture('galaxy.jpg')
         self.skybox.setTexture(texture, 1)
         self.skybox.reparentTo(sandbox.base.render)

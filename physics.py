@@ -105,6 +105,7 @@ def addNewBody(name, shape, mass, truex=0, truey=0, velocity=Vec3(0, 0, 0)):
     component.currentSOI = universals.defaultSOIid
     component.nodePath.setPos(subx, suby, 0)
     component.node.setLinearVelocity(velocity)
+    component.node.setAngularSleepThreshold(0.1)
     zone[0].attachRigidBody(component.node)
     '''component.debugNode = BulletDebugNode(shipName + "_debug")
     component.debugNode.showWireframe(True)
@@ -134,9 +135,12 @@ def addBody(body):
 
 class PhysicsSystem(sandbox.EntitySystem):
     """System that interacts with the Bullet physics world.
-    Configuration files and meshes are made in standard SI (meters, newtons).
+    Meshes are made in standard SI (meters, newtons).
     Internally we autoscale down to km. A factor of 1000.
-    IE 1 blender unit = 1 m. 1 panda unit = 1 km"""
+    IE 1 blender unit = 1 m. 1 panda unit = 1 km.
+    Configuration files units are km, metric ton, kilonewtons"""
+    #TODO: Scale config to standard SI and programmaticly adjust to
+    # km metric ton and kilonewtons
     def init(self):
         #self.accept("addSpaceship", self.addSpaceship)
         self.accept('setThrottle', self.setThrottle)
@@ -180,9 +184,12 @@ class PhysicsSystem(sandbox.EntitySystem):
 
         #force = (gravityForce + thrust) / 1000.0
         #print gravityForce, thrust / 1000.0
-        force = thrust / 1000.0
+        #force = thrust / 1000.0
+        force = thrust
         shipPhysics.node.applyCentralForce(force)
         shipPhysics.node.applyTorque(Vec3(0, 0, -shipPhysics.currentTorque))
+        #shipPhysics.node.applyTorque(Vec3(0, 0, -1.3e+7))
+        print "AV:", shipPhysics.node.getAngularVelocity(), shipPhysics.currentTorque
         #print "beat", shipPhysics.nodePath.getHpr(), shipPhysics.node.getAngularVelocity()
         #print "Physics", shipPhysics.nodePath.getHpr(), shipPhysics.currentTorque, shipPhysics.node.getAngularVelocity()
         #print "Physics", shipPhysics.nodePath.getPos(), shipPhysics.node.getLinier
@@ -206,6 +213,11 @@ class PhysicsSystem(sandbox.EntitySystem):
         # Divide thrust by 400 as max thrust should be when engineering overloads
         # Power to engines. Current max overload is 400%
         # TODO: Revisit caulculation when enginerring power is added
-        shipPhysics.currentTorque = shipThrust.heading / (100.0 * 4) * data.heading
+        # Power curve should be deminishing returns, bell curve function
+        power = 1.0
+        print data.heading
+        shipPhysics.currentTorque = shipThrust.heading * power * data.heading / 100.0
+        #shipPhysics.currentTorque = 1.3e+7
+        #shipPhysics.currentTorque = shipThrust.heading / (100.0 * 4) * data.heading
         #print "SetPhysics", shipPhysics.nodePath.getHpr(), shipPhysics.currentTorque, shipPhysics.node.getAngularVelocity()
         #print shipPhysics.nodePath.getPos(), shipPhysics.node.getLinearVelocity()
