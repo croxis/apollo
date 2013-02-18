@@ -4,6 +4,22 @@
 		"selected_items":
 		[
 			[
+				"break",
+				"breakAngleDistance	(local, instance)"
+			],
+			[
+				"physic",
+				"physicsComponent	(local, instance)"
+			],
+			[
+				"A",
+				"autoTurnTarget  (variable)"
+			],
+			[
+				"current",
+				"currentTorque"
+			],
+			[
 				"tas",
 				"taskMgr"
 			],
@@ -395,7 +411,7 @@
 			"file": "guiSystem.py",
 			"settings":
 			{
-				"buffer_size": 10113,
+				"buffer_size": 13652,
 				"line_ending": "Unix"
 			}
 		},
@@ -411,7 +427,7 @@
 			"file": "solarSystem.py",
 			"settings":
 			{
-				"buffer_size": 12203,
+				"buffer_size": 12278,
 				"line_ending": "Unix"
 			}
 		},
@@ -443,7 +459,23 @@
 			"file": "shipComponents.py",
 			"settings":
 			{
-				"buffer_size": 1554,
+				"buffer_size": 1772,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "pid.py",
+			"settings":
+			{
+				"buffer_size": 2365,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "/home/croxis/.config/sublime-text-2/Packages/Default/Preferences.sublime-settings",
+			"settings":
+			{
+				"buffer_size": 13747,
 				"line_ending": "Unix"
 			}
 		},
@@ -475,7 +507,7 @@
 			"file": "renderSystem.py",
 			"settings":
 			{
-				"buffer_size": 3537,
+				"buffer_size": 3607,
 				"line_ending": "Unix"
 			}
 		},
@@ -483,7 +515,7 @@
 			"file": "physics.py",
 			"settings":
 			{
-				"buffer_size": 8844,
+				"buffer_size": 9142,
 				"line_ending": "Unix"
 			}
 		}
@@ -491,9 +523,21 @@
 	"build_system": "Packages/User/ITF server.sublime-build",
 	"command_palette":
 	{
-		"height": 75.0,
+		"height": 332.0,
 		"selected_items":
 		[
+			[
+				"Pack",
+				"Package Control: Install Package"
+			],
+			[
+				"Packa",
+				"Package Control: Upgrade Package"
+			],
+			[
+				"packa",
+				"Package Control: Install Package"
+			],
 			[
 				"Package Control: in",
 				"Package Control: Install Package"
@@ -503,7 +547,7 @@
 				"Package Control: Remove Package"
 			]
 		],
-		"width": 602.0
+		"width": 593.0
 	},
 	"console":
 	{
@@ -520,10 +564,10 @@
 	},
 	"file_history":
 	[
+		"/home/croxis/src/SandBox/sandbox/__init__.py",
 		"/home/croxis/src/apollo/clientNet.py",
 		"/home/croxis/src/apollo/shipComponents.py",
 		"/home/croxis/src/apollo/main.py",
-		"/home/croxis/src/SandBox/sandbox/__init__.py",
 		"/home/croxis/src/apollo/universals.py",
 		"/home/croxis/src/apollo/shipSystem.py",
 		"/home/croxis/src/apollo/shapeGenerator.py",
@@ -650,15 +694,15 @@
 					"file": "guiSystem.py",
 					"settings":
 					{
-						"buffer_size": 10113,
+						"buffer_size": 13652,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								4284,
-								4284
+								11138,
+								11138
 							]
 						],
 						"settings":
@@ -756,7 +800,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1934.0,
+						"translation.y": 4554.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -882,15 +926,15 @@
 					"file": "solarSystem.py",
 					"settings":
 					{
-						"buffer_size": 12203,
+						"buffer_size": 12278,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								480,
-								480
+								8329,
+								8329
 							]
 						],
 						"settings":
@@ -988,7 +1032,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 22.0,
+						"translation.y": 3133.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -1005,8 +1049,8 @@
 						"selection":
 						[
 							[
-								2726,
-								2726
+								3847,
+								3847
 							]
 						],
 						"settings":
@@ -1104,7 +1148,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1702.0,
+						"translation.y": 1549.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -1346,15 +1390,15 @@
 					"file": "shipComponents.py",
 					"settings":
 					{
-						"buffer_size": 1554,
+						"buffer_size": 1772,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1186,
-								1186
+								1719,
+								1719
 							]
 						],
 						"settings":
@@ -1452,7 +1496,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 459.0,
+						"translation.y": 350.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -1460,11 +1504,242 @@
 			]
 		},
 		{
-			"selected": 0,
+			"selected": 1,
 			"sheets":
 			[
 				{
 					"buffer": 7,
+					"file": "pid.py",
+					"settings":
+					{
+						"buffer_size": 2365,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1995,
+								1995
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110
+							],
+							"gjslint_options":
+							[
+							],
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"pep8": true,
+							"pep8_ignore":
+							[
+								"E501"
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"sublimelinter": true,
+							"sublimelinter_delay": 2,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": false,
+							"sublimelinter_mark_style": "outline",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"C++": "c",
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1326.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "/home/croxis/.config/sublime-text-2/Packages/Default/Preferences.sublime-settings",
+					"settings":
+					{
+						"buffer_size": 13747,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								12452,
+								12452
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110
+							],
+							"gjslint_options":
+							[
+							],
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"pep8": true,
+							"pep8_ignore":
+							[
+								"E501"
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"sublimelinter": true,
+							"sublimelinter_delay": 2,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": false,
+							"sublimelinter_mark_style": "outline",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"C++": "c",
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"syntax": "Packages/JavaScript/JSON.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 171.0,
+						"translation.y": 5121.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 9,
 					"file": "ships/hyperion/ship.yaml",
 					"settings":
 					{
@@ -1475,8 +1750,8 @@
 						"selection":
 						[
 							[
-								94,
-								94
+								89,
+								89
 							]
 						],
 						"settings":
@@ -1580,7 +1855,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 8,
+					"buffer": 10,
 					"file": "protocol.py",
 					"settings":
 					{
@@ -1696,7 +1971,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 9,
+					"buffer": 11,
 					"file": "serverNet.py",
 					"settings":
 					{
@@ -1812,19 +2087,19 @@
 					"type": "text"
 				},
 				{
-					"buffer": 10,
+					"buffer": 12,
 					"file": "renderSystem.py",
 					"settings":
 					{
-						"buffer_size": 3537,
+						"buffer_size": 3607,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								712,
-								712
+								1415,
+								1415
 							]
 						],
 						"settings":
@@ -1922,25 +2197,25 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 27.0,
-						"translation.y": 357.0,
+						"translation.y": 408.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
-					"buffer": 11,
+					"buffer": 13,
 					"file": "physics.py",
 					"settings":
 					{
-						"buffer_size": 8844,
+						"buffer_size": 9142,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								7279,
-								7279
+								8738,
+								8738
 							]
 						],
 						"settings":
@@ -2037,8 +2312,8 @@
 							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
-						"translation.x": 10.0,
-						"translation.y": 2655.0,
+						"translation.x": 13.0,
+						"translation.y": 2892.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"

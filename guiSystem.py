@@ -5,6 +5,7 @@ import sandbox
 import boxes
 import graphicsComponents
 import picker
+import pid
 import shipComponents
 import shipSystem
 import universals
@@ -21,6 +22,11 @@ log = DirectNotify().newCategory("ITF-GUISystem")
 
 
 NEWSHIP = 'New ship...'
+
+
+'''Move this to sandbox'''
+def clamp(value, min_value, max_value):
+    return max(min(value, max_value), min_value)
 
 
 def debugView():
@@ -142,9 +148,9 @@ class GUIFSM(FSM):
             pageSize=1, frameSize=(-1, 1, -0.5, 0.5))
         headingbox.pack(widgets['heading'])
         widgets['head'] = 0
-        stopHeading = DirectCheckButton(text="Stop Rotation")
-        headingbox.pack(stopHeading)
-        widgets['stopHeading'] = stopHeading
+        #stopHeading = DirectCheckButton(text="Stop Rotation")
+        #headingbox.pack(stopHeading)
+        #widgets['stopHeading'] = stopHeading
         tasks['throttle'] = sandbox.base.taskMgr.doMethodLater(0.2, checkThrottle, 'throttle')
 
         texture = sandbox.base.loader.loadTexture("protractor.png")
@@ -192,12 +198,11 @@ def selectShip(menu, playerShips):
 def checkThrottle(task):
     shipid = sandbox.getSystem(shipSystem.ShipSystem).shipid
     physicsComponent = sandbox.entities[shipid].getComponent(shipComponents.BulletPhysicsComponent)
-    #print physicsComponent.node.getAngularVelocity()
-    if widgets['stopHeading']["indicatorValue"]:
+    '''if widgets['stopHeading']["indicatorValue"]:
         heading = 100
-        if abs(physicsComponent.node.getAngularVelocity()[2]) < 1:
-            heading = 50
         if abs(physicsComponent.node.getAngularVelocity()[2]) < 0.5:
+            heading = 50
+        if abs(physicsComponent.node.getAngularVelocity()[2]) < 0.1:
             heading = 25
         if abs(physicsComponent.node.getAngularVelocity()[2]) < 0.01:
             heading = 0
@@ -208,7 +213,7 @@ def checkThrottle(task):
         elif physicsComponent.node.getAngularVelocity()[2] < 0:
             widgets['heading']['value'] = -heading
         else:
-            widgets['heading']['value'] = 0
+            widgets['heading']['value'] = 0'''
     if widgets['throt'] != widgets['throttle']['value'] or widgets['head'] != widgets['heading']['value']:
         widgets['throt'] = widgets['throttle']['value']
         widgets['head'] = widgets['heading']['value']
@@ -220,10 +225,17 @@ fsm = GUIFSM()
 
 
 class GUISystem(sandbox.EntitySystem):
+    #TODO: Change autoturning into a component
+    autoTurn = False
+    autoTurnTarget = 0
+    autoTurnPID = pid.PID()
+    lastPError = 0.0
+
     def init(self):
         self.accept("shipSelectScreen", self.shipSelectScreen)
         self.accept("navigationScreen", self.navigationUI)
         self.accept("noSelected", self.noSelected)
+        sandbox.base.taskMgr.add(self.autoTurnManager, "autoTurn")
 
     def begin(self):
         if fsm.state == 'Nav':
@@ -263,5 +275,101 @@ class GUISystem(sandbox.EntitySystem):
             currentAngle = physics.nodePath.getH() % 360
             trueDifference = abs(currentAngle - angle)
             distance = 180 - abs(trueDifference - 180)
+            self.autoTurn = True
+            self.autoTurnTarget = angle
+            print math.degrees(math.atan2(y, x)), angle, currentAngle, trueDifference, distance
 
-            print math.degrees(math.atan2(y, x)), angle, physics.nodePath.getH(), currentAngle, distance
+    def autoTurnManager(self, task):
+        if self.autoTurn:
+            #Break when ang_distance < 0.5 * current_ang_velocity**2 / torque
+            heading = 0
+
+            shipid = sandbox.getSystem(shipSystem.ShipSystem).shipid
+            physicsComponent = sandbox.entities[shipid].getComponent(shipComponents.BulletPhysicsComponent)
+            #thrustComponent = sandbox.entities[shipid].getComponent(shipComponents.ThrustComponent)
+            currentAngle = physicsComponent.nodePath.getH() % 360
+            #trueDifference = abs(currentAngle - self.autoTurnTarget)
+            #distance = 180 - abs(trueDifference - 180)
+            #directionDistance = distance
+
+            directionDistance = ((self.autoTurnTarget - currentAngle)
+                + 180) % 360 - 180
+
+            # To determine if the target is left or right the angles are recomputed
+            # normalized to the orientation of the ship
+            #if self.autoTurnTarget - currentAngle > 180:
+            #    directionDistance = -directionDistance
+            #elif
+
+            #print currentAngle, self.autoTurnTarget, trueDifference, distance, directionDistance
+            #print currentAngle, self.autoTurnTarget, directionDistance
+
+            #angularVelocity = physicsComponent.node.getAngularVelocity()
+
+            #self.autoTurnPID.UpdateP(error, position)
+            #self.autoTurnPID.UpdateI(error, position)
+            #self.autoTurnPID.UpdateD(error, position)
+
+            # Gaines -- tuned experimentally
+            Kp = 3
+            Ki = 0
+            Kd = 1.0
+
+            #pError = self.autoTurnTarget - currentAngle
+            pError = directionDistance
+            iError = pError * globalClock.getDt()
+            dError = (pError - self.lastPError) / globalClock.getDt()
+
+            self.lastPError = pError
+
+            torque = Kp * pError + Ki * iError + Kd * dError
+            #print "Calculated Torque:", torque, currentAngle, self.autoTurnTarget, directionDistance
+
+            '''if angularVelocity[2] == 0:
+                print "Check 0:", physicsComponent.nodePath.getH(), currentAngle, distance, trueDifference, directionDistance
+                if directionDistance > 0:
+                    print "Heading +"
+                    heading = 100
+                else:
+                    print "Heading -"
+                    heading = -100
+            else:
+                print "Check 1:", physicsComponent.nodePath.getH(), currentAngle, distance, trueDifference, directionDistance, angularVelocity[2]
+                if sameSign(directionDistance, angularVelocity[2]):
+                    if physicsComponent.currentTorque != 0:
+                        breakAngleDistance = 0.5 * angularVelocity[2] ** 2 / float(thrustComponent.heading)
+                    else:
+                        breakAngleDistance = 0.5 * angularVelocity[2] ** 2
+                    print "Check 2:", distance, breakAngleDistance, math.degrees(angularVelocity[2]) ** 2, float(thrustComponent.heading)
+                    if distance < breakAngleDistance or distance < 1:
+                        print "Break!"
+                        if angularVelocity[2] > 0:
+                            print '+'
+                            heading = -100
+                        else:
+                            print '-'
+                            heading = 100
+                    else:
+                        print "Go!"
+                        if angularVelocity[2] > 0:
+                            heading = 100
+                        else:
+                            heading = -100
+                else:
+                    print "Check 3"
+                    if angularVelocity[2] > 0:
+                        heading = 100
+                    else:
+                        heading = -100'''
+            '''if distance < 1:
+                print "Check 4"
+                self.autoTurn = False
+                heading = 0'''
+            heading = clamp(torque, -100, 100)
+            widgets['heading']['value'] = -heading
+        return task.cont
+
+
+def sameSign(x, y):
+    '''Fun little function that returns if two variables are the same sign'''
+    return ((x < 0) == (y < 0))

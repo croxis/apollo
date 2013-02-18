@@ -3,6 +3,8 @@ from panda3d.core import LPoint3d
 
 import physics
 
+'''The following represent the more "physical" components that represent a ship'''
+
 
 class BulletPhysicsComponent(object):
     '''Contains reference to bullet shape and node as well as SOI for
@@ -44,7 +46,7 @@ class PlayerComponent(object):
 
 
 class ThrustComponent(object):
-    '''Maximum thrust values, in newtons. Rotational in Newton Meters'''
+    '''Maximum thrust values, in kilonewtons. Rotational in kiloNewton kiloMeters'''
     forward = 1
     backwards = 1
     lateral = 1
@@ -57,3 +59,7 @@ class InfoComponent(object):
     health = 100
     name = "A ship"
     shipClass = ""
+
+
+'''The following components represent the stations found on a ship.
+These values are manipulated by the player or AI'''

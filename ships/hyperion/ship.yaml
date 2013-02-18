@@ -2,7 +2,7 @@ mesh: hyperion
 units: 'metric ton, km, kilonewton'
 mass: 8.4e+6
 class: Hyperion
-torque: 1.3e+7
+torque: 5.3e+5
 engines:
   - x: 0
     y: 0

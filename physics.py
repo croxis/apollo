@@ -105,7 +105,7 @@ def addNewBody(name, shape, mass, truex=0, truey=0, velocity=Vec3(0, 0, 0)):
     component.currentSOI = universals.defaultSOIid
     component.nodePath.setPos(subx, suby, 0)
     component.node.setLinearVelocity(velocity)
-    component.node.setAngularSleepThreshold(0.1)
+    component.node.setAngularSleepThreshold(0.01)
     zone[0].attachRigidBody(component.node)
     '''component.debugNode = BulletDebugNode(shipName + "_debug")
     component.debugNode.showWireframe(True)
@@ -189,7 +189,6 @@ class PhysicsSystem(sandbox.EntitySystem):
         shipPhysics.node.applyCentralForce(force)
         shipPhysics.node.applyTorque(Vec3(0, 0, -shipPhysics.currentTorque))
         #shipPhysics.node.applyTorque(Vec3(0, 0, -1.3e+7))
-        print "AV:", shipPhysics.node.getAngularVelocity(), shipPhysics.currentTorque
         #print "beat", shipPhysics.nodePath.getHpr(), shipPhysics.node.getAngularVelocity()
         #print "Physics", shipPhysics.nodePath.getHpr(), shipPhysics.currentTorque, shipPhysics.node.getAngularVelocity()
         #print "Physics", shipPhysics.nodePath.getPos(), shipPhysics.node.getLinier
@@ -215,7 +214,6 @@ class PhysicsSystem(sandbox.EntitySystem):
         # TODO: Revisit caulculation when enginerring power is added
         # Power curve should be deminishing returns, bell curve function
         power = 1.0
-        print data.heading
         shipPhysics.currentTorque = shipThrust.heading * power * data.heading / 100.0
         #shipPhysics.currentTorque = 1.3e+7
         #shipPhysics.currentTorque = shipThrust.heading / (100.0 * 4) * data.heading
