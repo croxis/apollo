@@ -1,6 +1,7 @@
 import math
 
 import sandbox
+import sandbox.mathextra
 
 import boxes
 import graphicsComponents
@@ -22,11 +23,6 @@ log = DirectNotify().newCategory("ITF-GUISystem")
 
 
 NEWSHIP = 'New ship...'
-
-
-'''Move this to sandbox'''
-def clamp(value, min_value, max_value):
-    return max(min(value, max_value), min_value)
 
 
 def debugView():
@@ -173,7 +169,7 @@ class GUIFSM(FSM):
         #widgets['heading'].removeNode()
         widgets['protractor'].removeNode()
         del widgets['protractor']
-        del widgets['stopHeading']
+        #del widgets['stopHeading']
         #sandbox.base.taskMgr.remove(tasks['throttle'])
 
 
@@ -281,25 +277,14 @@ class GUISystem(sandbox.EntitySystem):
 
     def autoTurnManager(self, task):
         if self.autoTurn:
-            #Break when ang_distance < 0.5 * current_ang_velocity**2 / torque
-            heading = 0
-
             shipid = sandbox.getSystem(shipSystem.ShipSystem).shipid
-            physicsComponent = sandbox.entities[shipid].getComponent(shipComponents.BulletPhysicsComponent)
-            #thrustComponent = sandbox.entities[shipid].getComponent(shipComponents.ThrustComponent)
+            physicsComponent =\
+                sandbox.entities[shipid].getComponent(shipComponents.BulletPhysicsComponent)
             currentAngle = physicsComponent.nodePath.getH() % 360
-            #trueDifference = abs(currentAngle - self.autoTurnTarget)
-            #distance = 180 - abs(trueDifference - 180)
-            #directionDistance = distance
 
-            directionDistance = ((self.autoTurnTarget - currentAngle)
-                + 180) % 360 - 180
-
-            # To determine if the target is left or right the angles are recomputed
-            # normalized to the orientation of the ship
-            #if self.autoTurnTarget - currentAngle > 180:
-            #    directionDistance = -directionDistance
-            #elif
+            directionDistance =\
+                sandbox.mathextra.signedAngularDistance(self.autoTurnTarget,
+                currentAngle)
 
             #print currentAngle, self.autoTurnTarget, trueDifference, distance, directionDistance
             #print currentAngle, self.autoTurnTarget, directionDistance
@@ -311,9 +296,9 @@ class GUISystem(sandbox.EntitySystem):
             #self.autoTurnPID.UpdateD(error, position)
 
             # Gaines -- tuned experimentally
-            Kp = 3
+            Kp = 10 ** 2 * (2 / 5.0 * physicsComponent.node.getMass() * 1 ** 2)
             Ki = 0
-            Kd = 1.0
+            Kd = 2 * 10 * (2 / 5.0 * physicsComponent.node.getMass() * 1 ** 2)
 
             #pError = self.autoTurnTarget - currentAngle
             pError = directionDistance
@@ -324,48 +309,7 @@ class GUISystem(sandbox.EntitySystem):
 
             torque = Kp * pError + Ki * iError + Kd * dError
             #print "Calculated Torque:", torque, currentAngle, self.autoTurnTarget, directionDistance
-
-            '''if angularVelocity[2] == 0:
-                print "Check 0:", physicsComponent.nodePath.getH(), currentAngle, distance, trueDifference, directionDistance
-                if directionDistance > 0:
-                    print "Heading +"
-                    heading = 100
-                else:
-                    print "Heading -"
-                    heading = -100
-            else:
-                print "Check 1:", physicsComponent.nodePath.getH(), currentAngle, distance, trueDifference, directionDistance, angularVelocity[2]
-                if sameSign(directionDistance, angularVelocity[2]):
-                    if physicsComponent.currentTorque != 0:
-                        breakAngleDistance = 0.5 * angularVelocity[2] ** 2 / float(thrustComponent.heading)
-                    else:
-                        breakAngleDistance = 0.5 * angularVelocity[2] ** 2
-                    print "Check 2:", distance, breakAngleDistance, math.degrees(angularVelocity[2]) ** 2, float(thrustComponent.heading)
-                    if distance < breakAngleDistance or distance < 1:
-                        print "Break!"
-                        if angularVelocity[2] > 0:
-                            print '+'
-                            heading = -100
-                        else:
-                            print '-'
-                            heading = 100
-                    else:
-                        print "Go!"
-                        if angularVelocity[2] > 0:
-                            heading = 100
-                        else:
-                            heading = -100
-                else:
-                    print "Check 3"
-                    if angularVelocity[2] > 0:
-                        heading = 100
-                    else:
-                        heading = -100'''
-            '''if distance < 1:
-                print "Check 4"
-                self.autoTurn = False
-                heading = 0'''
-            heading = clamp(torque, -100, 100)
+            heading = sandbox.mathextra.clamp(torque, -100, 100)
             widgets['heading']['value'] = -heading
         return task.cont
 

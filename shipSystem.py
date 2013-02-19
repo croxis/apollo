@@ -3,7 +3,7 @@ import sandbox
 from direct.stdpy.file import *
 
 from panda3d.bullet import BulletDebugNode, BulletRigidBodyNode, BulletSphereShape
-from panda3d.core import Point3, Vec3
+from panda3d.core import LPoint3d, Point3, Vec3
 
 import graphicsComponents
 import physics
@@ -19,6 +19,10 @@ from pandac.PandaModules import loadPrcFileData
 loadPrcFileData("", "notify-level-ITF-ShipSystem debug")
 from direct.directnotify.DirectNotify import DirectNotify
 log = DirectNotify().newCategory("ITF-ShipSystem")
+
+
+#Conversion factor from SI to units used in game
+CONVERT = 1000.0
 
 
 class ShipSystem(sandbox.EntitySystem):
@@ -74,7 +78,7 @@ class ShipSystem(sandbox.EntitySystem):
     def shipUpdate(self, ship, playerShip=False):
         if ship.id not in sandbox.entities:
             #self.spawnShip(ship.name, ship.className, playerShip, entityid=ship.id)
-            self.spawnShip(ship.name, ship.className, True, entityid=ship.id)
+            self.spawnShip(ship.name, ship.className, playerShip=True, entityid=ship.id)
             sandbox.send('updateStationGUI')
             #TODO: Request for full info from server and just return if no name or class?
         physicsComponent = sandbox.entities[ship.id].getComponent(shipComponents.BulletPhysicsComponent)
@@ -89,7 +93,7 @@ class ShipSystem(sandbox.EntitySystem):
         for ship in ships.ship:
             self.shipUpdate(ship)
 
-    def spawnShip(self, shipName, shipClass, playerShip=False, entityid=-1):
+    def spawnShip(self, shipName, shipClass, spawnPoint=LPoint3d(0,0,0), playerShip=False, entityid=-1):
         if shipName == '' or shipClass == '':
             return
         if entityid == -1:
@@ -99,24 +103,18 @@ class ShipSystem(sandbox.EntitySystem):
         if playerShip:
             component = shipComponents.PlayerComponent()
             ship.addComponent(component)
-        shape = BulletSphereShape(5)
+        shape = BulletSphereShape(1)
         velocity = Vec3(0, 0, 0)
-        truex = 0
-        truey = 0
-        if playerShip:
-            '''ePos = universals.solarSystemRoot.find('**/Earth').truePos
-            spawn = ePos - Point3(6771, 0, 0)
-            #velocity = Vec3(0, 7.67254, 0)'''
-            spawn = universals.spawn
-            truex = spawn.getX()
-            truey = spawn.getY()
+        print "SP", spawnPoint
+        truex = spawnPoint.getX()
+        truey = spawnPoint.getY()
+        print "True", truex, truey, spawnPoint
         component = physics.addNewBody(shipName, shape, self.shipClasses[shipClass]['mass'], truex, truey, velocity)
-        #component = physics.addNewBody(shipName, shape, self.shipClasses[shipClass]['mass'], truex, -700000, velocity)
         ship.addComponent(component)
         component = shipComponents.ThrustComponent()
         for engine in self.shipClasses[shipClass]['engines']:
-            component.forward += engine['thrust']
-        component.heading = self.shipClasses[shipClass]['torque']
+            component.forward += engine['thrust'] / CONVERT
+        component.heading = self.shipClasses[shipClass]['torque'] / CONVERT
         ship.addComponent(component)
         component = shipComponents.InfoComponent()
         component.shipClass = shipClass
@@ -126,7 +124,7 @@ class ShipSystem(sandbox.EntitySystem):
             component = graphicsComponents.RenderComponent()
             component.mesh = sandbox.base.loader.loadModel('ships/' + self.shipClasses[shipClass]['path'])
             component.mesh.reparentTo(sandbox.base.render)
-            component.mesh.setScale(0.001)
+            component.mesh.setScale(1 / CONVERT)
             ship.addComponent(component)
         #sandbox.send("shipGenerated", [ship, playerShip])
         log.info("Ship spawned: " + shipName + " " + shipClass)

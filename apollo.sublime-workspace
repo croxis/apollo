@@ -4,6 +4,14 @@
 		"selected_items":
 		[
 			[
+				"current",
+				"currentAngle"
+			],
+			[
+				"autoT",
+				"autoTurnTarget  (variable)"
+			],
+			[
 				"break",
 				"breakAngleDistance	(local, instance)"
 			],
@@ -14,10 +22,6 @@
 			[
 				"A",
 				"autoTurnTarget  (variable)"
-			],
-			[
-				"current",
-				"currentTorque"
 			],
 			[
 				"tas",
@@ -411,7 +415,7 @@
 			"file": "guiSystem.py",
 			"settings":
 			{
-				"buffer_size": 13652,
+				"buffer_size": 12719,
 				"line_ending": "Unix"
 			}
 		},
@@ -467,16 +471,8 @@
 			"file": "pid.py",
 			"settings":
 			{
-				"buffer_size": 2365,
+				"buffer_size": 2367,
 				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/home/croxis/.config/sublime-text-2/Packages/Default/Preferences.sublime-settings",
-			"settings":
-			{
-				"buffer_size": 13747,
-				"line_ending": "Unix"
 			}
 		},
 		{
@@ -523,16 +519,24 @@
 	"build_system": "Packages/User/ITF server.sublime-build",
 	"command_palette":
 	{
-		"height": 332.0,
+		"height": 392.0,
 		"selected_items":
 		[
+			[
+				"Pac",
+				"Package Control: List Packages"
+			],
+			[
+				"",
+				"About"
+			],
 			[
 				"Pack",
 				"Package Control: Install Package"
 			],
 			[
 				"Packa",
-				"Package Control: Upgrade Package"
+				"Package Control: Discover Packages"
 			],
 			[
 				"packa",
@@ -547,7 +551,7 @@
 				"Package Control: Remove Package"
 			]
 		],
-		"width": 593.0
+		"width": 602.0
 	},
 	"console":
 	{
@@ -564,6 +568,8 @@
 	},
 	"file_history":
 	[
+		"/home/croxis/.config/sublime-text-2/Packages/SublimeLinter/SublimeLinter.sublime-settings",
+		"/home/croxis/.config/sublime-text-2/Packages/Default/Preferences.sublime-settings",
 		"/home/croxis/src/SandBox/sandbox/__init__.py",
 		"/home/croxis/src/apollo/clientNet.py",
 		"/home/croxis/src/apollo/shipComponents.py",
@@ -627,7 +633,6 @@
 		"/home/croxis/.config/sublime-text-2/Packages/User/Pylinter.sublime-settings",
 		"/home/croxis/src/SandBox/__init__.py",
 		"/home/croxis/.config/sublime-text-2/Packages/SublimeCodeIntel/Base File.sublime-settings",
-		"/home/croxis/.config/sublime-text-2/Packages/Default/Preferences.sublime-settings",
 		"/home/croxis/.config/sublime-text-2/Packages/User/Python.sublime-settings"
 	],
 	"find":
@@ -694,15 +699,15 @@
 					"file": "guiSystem.py",
 					"settings":
 					{
-						"buffer_size": 13652,
+						"buffer_size": 12719,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								11138,
-								11138
+								12362,
+								12362
 							]
 						],
 						"settings":
@@ -800,7 +805,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 4554.0,
+						"translation.y": 5210.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -1504,7 +1509,7 @@
 			]
 		},
 		{
-			"selected": 1,
+			"selected": 5,
 			"sheets":
 			[
 				{
@@ -1512,15 +1517,15 @@
 					"file": "pid.py",
 					"settings":
 					{
-						"buffer_size": 2365,
+						"buffer_size": 2367,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1995,
-								1995
+								2035,
+								2035
 							]
 						],
 						"settings":
@@ -1617,129 +1622,13 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 1326.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 8,
-					"file": "/home/croxis/.config/sublime-text-2/Packages/Default/Preferences.sublime-settings",
-					"settings":
-					{
-						"buffer_size": 13747,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								12452,
-								12452
-							]
-						],
-						"settings":
-						{
-							"annotations":
-							[
-								"TODO",
-								"README",
-								"FIXME"
-							],
-							"csslint_options":
-							{
-								"adjoining-classes": "warning",
-								"box-model": true,
-								"box-sizing": "warning",
-								"compatible-vendor-prefixes": "warning",
-								"display-property-grouping": true,
-								"duplicate-background-images": "warning",
-								"duplicate-properties": true,
-								"empty-rules": true,
-								"errors": true,
-								"fallback-colors": "warning",
-								"floats": "warning",
-								"font-faces": "warning",
-								"font-sizes": "warning",
-								"gradients": "warning",
-								"ids": "warning",
-								"import": "warning",
-								"important": "warning",
-								"known-properties": true,
-								"outline-none": "warning",
-								"overqualified-elements": "warning",
-								"qualified-headings": "warning",
-								"regex-selectors": "warning",
-								"rules-count": "warning",
-								"shorthand": "warning",
-								"star-property-hack": "warning",
-								"text-indent": "warning",
-								"underscore-property-hack": "warning",
-								"unique-headings": "warning",
-								"universal-selector": "warning",
-								"vendor-prefix": true,
-								"zero-units": "warning"
-							},
-							"gjslint_ignore":
-							[
-								110
-							],
-							"gjslint_options":
-							[
-							],
-							"javascript_linter": "jshint",
-							"jshint_options":
-							{
-								"browser": true,
-								"evil": true,
-								"regexdash": true,
-								"sub": true,
-								"trailing": true,
-								"wsh": true
-							},
-							"pep8": true,
-							"pep8_ignore":
-							[
-								"E501"
-							],
-							"perl_linter": "perlcritic",
-							"pyflakes_ignore":
-							[
-							],
-							"pyflakes_ignore_import_*": true,
-							"sublimelinter": true,
-							"sublimelinter_delay": 2,
-							"sublimelinter_disable":
-							[
-							],
-							"sublimelinter_executable_map":
-							{
-							},
-							"sublimelinter_fill_outlines": false,
-							"sublimelinter_gutter_marks": false,
-							"sublimelinter_mark_style": "outline",
-							"sublimelinter_notes": false,
-							"sublimelinter_objj_check_ascii": false,
-							"sublimelinter_popup_errors_on_save": false,
-							"sublimelinter_syntax_map":
-							{
-								"C++": "c",
-								"Python Django": "python",
-								"Ruby on Rails": "ruby"
-							},
-							"sublimelinter_wrap_find": true,
-							"syntax": "Packages/JavaScript/JSON.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 171.0,
-						"translation.y": 5121.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 9,
 					"file": "ships/hyperion/ship.yaml",
 					"settings":
 					{
@@ -1855,7 +1744,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 10,
+					"buffer": 9,
 					"file": "protocol.py",
 					"settings":
 					{
@@ -1971,7 +1860,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 11,
+					"buffer": 10,
 					"file": "serverNet.py",
 					"settings":
 					{
@@ -2087,7 +1976,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 12,
+					"buffer": 11,
 					"file": "renderSystem.py",
 					"settings":
 					{
@@ -2203,7 +2092,7 @@
 					"type": "text"
 				},
 				{
-					"buffer": 13,
+					"buffer": 12,
 					"file": "physics.py",
 					"settings":
 					{
@@ -2214,8 +2103,8 @@
 						"selection":
 						[
 							[
-								8738,
-								8738
+								6939,
+								6939
 							]
 						],
 						"settings":

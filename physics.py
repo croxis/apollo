@@ -99,7 +99,7 @@ def addNewBody(name, shape, mass, truex=0, truey=0, velocity=Vec3(0, 0, 0)):
     component = shipComponents.BulletPhysicsComponent()
     component.bulletShape = shape
     component.node = BulletRigidBodyNode(name)
-    component.node.setMass(mass)
+    component.node.setMass(mass/1000.0)
     component.node.addShape(component.bulletShape)
     component.nodePath = zone[1].attachNewNode(component.node)
     component.currentSOI = universals.defaultSOIid

@@ -27,6 +27,7 @@ loadPrcFileData("", "notify-level-ITF debug")
 import universals
 from universals import log
 
+from panda3d.core import LPoint3d
 
 def usage(code, msg=''):
     print >> sys.stderr, usageText % {'prog': os.path.split(sys.argv[0])[1]}
@@ -94,6 +95,7 @@ else:
 
 # After initial setup we can now start sandbox
 log.debug("Loading sandbox")
+
 import sandbox
 
 sandbox.base.setSleep(0.001)
@@ -103,6 +105,7 @@ import physics
 import shipSystem
 import shipComponents
 import solarSystem
+
 if universals.runClient:
     import clientNet
     import graphicsComponents
@@ -151,7 +154,10 @@ def loginDebug(task):
 
 
 def spawnDebug(task):
-    shipSystem.spawnShip("The Hype", "Hyperion", True)
+    shipSystem.spawnShip("The Hype", "Hyperion", universals.spawn, True)
+    spawnPoint = LPoint3d(universals.spawn)
+    spawnPoint.addY(3)
+    shipSystem.spawnShip("Boo boo", "Hyperion", spawnPoint)
 
 #sandbox.base.taskMgr.doMethodLater(10, planetPositionDebug, "Position Debug")
 if universals.runClient:
