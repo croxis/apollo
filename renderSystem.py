@@ -36,7 +36,6 @@ def perspective():
 
 def wheel_up():
     if not PERSPECTIVE:
-        print sandbox.base.cam.node().getLens().getFilmSize()
         if sandbox.base.cam.node().getLens().getFilmSize()[0] >= MIN_FILM_SIZE:
             sandbox.base.cam.node().getLens().setFilmSize(sandbox.base.cam.node().getLens().getFilmSize() - 1)
 
@@ -74,9 +73,11 @@ class RenderSystem(sandbox.EntitySystem):
         pass
 
     def process(self, entity):
+        scaleFactor = 1
         if entity.hasComponent(shipComponents.BulletPhysicsComponent):
             phys = entity.getComponent(shipComponents.BulletPhysicsComponent)
             pos = phys.getTruePos()
+            scaleFactor = universals.CONVERT  # Convert ship meshes, in meters, to engine units
         elif entity.hasComponent(solarSystem.CelestialComponent):
             phys = entity.getComponent(solarSystem.CelestialComponent)
             pos = phys.truePos
@@ -87,8 +88,26 @@ class RenderSystem(sandbox.EntitySystem):
             playerShip = sandbox.entities[universals.shipid]
             playerPhysics = playerShip.getComponent(shipComponents.BulletPhysicsComponent)
             diff = playerPhysics.getTruePos() - pos
-            #near = sandbox.base.camLens.getFar() / 2.0
             scale = 1.0 / math.sqrt(diff.length())
+            if PERSPECTIVE:
+                diff = diff * scale
+                gfx.mesh.setPos(Point3(0, 0, 0) - convertPos(diff))
+                gfx.mesh.setScale(scale)
+                if entity.hasComponent(solarSystem.CelestialComponent):
+                    gfx.mesh.setScale(scale)
+                else:
+                    gfx.mesh.setScale(scale / scaleFactor)
+            else:
+                gfx.mesh.setPos(Point3(0, 0, 0) - convertPos(diff))
+                if entity.hasComponent(solarSystem.CelestialComponent):
+                    gfx.mesh.setScale(1)
+                else:
+                    gfx.mesh.setScale(1.0 / scaleFactor)
+
+
+            #near = sandbox.base.camLens.getFar() / 2.0
+            '''scale = 1.0 / math.sqrt(diff.length()) / scaleFactor
+
             #if gfx.mesh.getName() == "Sol":
             #    print "Sol", gfx.mesh.getScale()
             #TODO: LOD sphers to some other sort. Imposters maybe?
@@ -97,7 +116,10 @@ class RenderSystem(sandbox.EntitySystem):
             if not PERSPECTIVE:
                 diff = diff * scale
                 gfx.mesh.setPos(Point3(0, 0, 0) - convertPos(diff))
-                gfx.mesh.setScale(scale)
+            else:
+                diff = diff * scale
+                gfx.mesh.setPos(Point3(0, 0, 0) - convertPos(diff))'''
+
             '''if diff.length() > near:
                 x = diff.length() - near
                 scale = 1.0 / math.sqrt(x)

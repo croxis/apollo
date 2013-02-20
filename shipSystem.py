@@ -93,7 +93,8 @@ class ShipSystem(sandbox.EntitySystem):
         for ship in ships.ship:
             self.shipUpdate(ship)
 
-    def spawnShip(self, shipName, shipClass, spawnPoint=LPoint3d(0,0,0), playerShip=False, entityid=-1):
+    def spawnShip(self, shipName, shipClass, spawnPoint=LPoint3d(0, 0, 0),
+        playerShip=False, entityid=-1):
         if shipName == '' or shipClass == '':
             return
         if entityid == -1:
@@ -103,12 +104,13 @@ class ShipSystem(sandbox.EntitySystem):
         if playerShip:
             component = shipComponents.PlayerComponent()
             ship.addComponent(component)
+        else:
+            component = shipComponents.AIPilotComponent()
+            ship.addComponent(component)
         shape = BulletSphereShape(1)
         velocity = Vec3(0, 0, 0)
-        print "SP", spawnPoint
         truex = spawnPoint.getX()
         truey = spawnPoint.getY()
-        print "True", truex, truey, spawnPoint
         component = physics.addNewBody(shipName, shape, self.shipClasses[shipClass]['mass'], truex, truey, velocity)
         ship.addComponent(component)
         component = shipComponents.ThrustComponent()

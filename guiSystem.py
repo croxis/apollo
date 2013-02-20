@@ -192,8 +192,8 @@ def selectShip(menu, playerShips):
 
 
 def checkThrottle(task):
-    shipid = sandbox.getSystem(shipSystem.ShipSystem).shipid
-    physicsComponent = sandbox.entities[shipid].getComponent(shipComponents.BulletPhysicsComponent)
+    #shipid = sandbox.getSystem(shipSystem.ShipSystem).shipid
+    #physicsComponent = sandbox.entities[shipid].getComponent(shipComponents.BulletPhysicsComponent)
     '''if widgets['stopHeading']["indicatorValue"]:
         heading = 100
         if abs(physicsComponent.node.getAngularVelocity()[2]) < 0.5:

@@ -39,3 +39,6 @@ day = 9031.25
 username = "Moofoo"
 
 playerStations = ['navigation']
+
+#Conversion factor from SI to units used in engine
+CONVERT = 1000.0
