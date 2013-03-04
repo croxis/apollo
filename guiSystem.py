@@ -55,6 +55,7 @@ def navView():
         log.info("Hard Switching to navigation UI")
         fsm.request('Nav')
 
+
 def mainView():
     if fsm.state != 'MainScreen':
         log.info("Hard Switching to main screen UI")
@@ -66,11 +67,11 @@ widgets = {}
 tasks = {}
 pick = picker.Picker()
 
+
 def buildBars():
     '''Builds or rebuilds gui bars to be populated by widgets'''
     for bar in bars:
         bars[bar].destroy()
-        del bars[bar]
 
     bars['stationBar'] = boxes.HBox()
     bars['stationBar'].setScale(0.1)
@@ -78,7 +79,6 @@ def buildBars():
     bars['stationBar'].pack(DirectButton(text="Nav", command=navView))
     bars['stationBar'].pack(DirectButton(text="Main", command=mainView))
     bars['stationBar'].setPos(sandbox.base.a2dLeft, 0, sandbox.base.a2dTop)
-    bars['stationBar'].hide()
 
     bars['leftBar'] = boxes.VBox()
     bars['leftBar'].setScale(0.1)
@@ -89,15 +89,15 @@ def buildBars():
     bars['rightBar'].setScale(0.1)
     bars['rightBar'].setPos(sandbox.base.a2dRight, 0, 0.9)
 
-    bars['bottomBar'] = boxes.HBox()
+    bars['topBar'] = boxes.HBox()
+    bars['topBar'].setScale(0.1)
+    bars['topBar'].setPos(-0.9, 0, 0.9)
+
+    bars['bottomBar'] = boxes.HBox(margin=1)
     bars['bottomBar'].setScale(0.1)
-    bars['bottomBar'].setPos(sandbox.base.a2dLeft, 0, sandbox.base.a2dBottom)
+    bars['bottomBar'].setPos(sandbox.base.a2dLeft, 0, sandbox.base.a2dBottom + 0.2)
 
-    #leftBox = boxes.HBox()
-    #leftBox.setScale(0.1)
-    #leftBox.setPos(sandbox.base.a2dLeft, 0, 0.9)
-
-
+    #Center bar as needed
 
 
 def convertPos(point):
@@ -117,6 +117,8 @@ def stationContext(item):
 
 def mainViewContext(item):
     base.camera.reparentTo(widgets['cameras'][item])
+    base.camera.setPos(0, 0, 0)
+    base.camera.setHpr(0, 0, 0)
 
 
 class GUIFSM(FSM):
@@ -124,124 +126,117 @@ class GUIFSM(FSM):
         FSM.__init__(self, 'GUIFSM')
 
     def enterStationSelect(self, playerShips):
-        stations.hide()
-        widgets['guibox'] = boxes.HBox()
-        leftbox = boxes.VBox()
-        widgets['guibox'].setScale(0.1)
-        widgets['guibox'].db = playerShips
+        buildBars()
+        bars['stationBar'].hide()
+        shipBox = boxes.VBox()
         ships = [NEWSHIP]
         for playerShip in playerShips.ship:
             ships.append(playerShip.name)
-        widgets['guibox'].reparentTo(sandbox.base.aspect2d)
-        menu = DirectOptionMenu(text="options", items=ships, command=stationContext, initialitem=-1)
-        widgets['menu'] = menu
-        leftbox.pack(menu)
-        widgets['guibox'].pack(leftbox)
-        rightbox = boxes.VBox()
-        widgets['checkButtons'] = []
-        shipName = DirectEntry(initialText="Ship Name here...")
+
+        widgets['menu'] = DirectOptionMenu(
+            text="options", items=ships,
+            command=stationContext, initialitem=-1
+        )
+        shipBox.pack(widgets['menu'])
+
+        widgets['shipName'] = DirectEntry(initialText="Ship Name here...")
         if playerShips.ship:
-            shipName.hide()
-        widgets['shipName'] = shipName
-        rightbox.pack(shipName)
+            widgets['shipName'].hide()
+        shipBox.pack(widgets['shipName'])
+        bars['topBar'].pack(shipBox)
+
+        widgets['checkButtons'] = []
+        stationBox = boxes.VBox()
         for playerShip in playerShips.ship:
             for stationName in universals.playerStations:
                 checkButton = DirectCheckButton(text=stationName)
                 if getattr(playerShip.stations, stationName):
                     checkButton['state'] = DGG.DISABLED
-                rightbox.pack(checkButton)
+                stationBox.pack(checkButton)
                 widgets['checkButtons'].append(checkButton)
-        widgets['guibox'].pack(rightbox)
-        button = DirectButton(text="Select", command=selectShip,
-            extraArgs=[menu, playerShips])
-        widgets['guibox'].pack(button)
-        widgets['guibox'].setPos(-1, 0, 0.5)
+        bars['topBar'].pack(stationBox)
+        bars['topBar'].pack(
+            DirectButton(
+                text="Select", command=selectShip, extraArgs=[playerShips]
+            )
+        )
+        return
 
     def exitStationSelect(self):
-        widgets['guibox'].destroy()
-        del widgets['guibox']
+        bars['stationBar'].show()
         del widgets['menu']
         del widgets['checkButtons']
         del widgets['shipName']
 
     def enterDebug(self):
-        stations.show()
+        buildBars()
+        bars['stationBar'].show()
         sandbox.send('debugView')
         sandbox.send('showBG')
 
     def exitDebug(self):
-        stations.hide()
+        pass
 
     def enterNav(self):
-        stations.show()
+        buildBars()
         sandbox.send('orthographic')
-        text['xyz'] = OnscreenText(text="Standby", pos=(sandbox.base.a2dLeft, 0.85),
-            scale=0.05, fg=(1, 0.5, 0.5, 1), align=TextNode.ALeft, mayChange=1)
-        text['localxyz'] = OnscreenText(text="Standby", pos=(sandbox.base.a2dLeft, 0.81),
-            scale=0.05, fg=(1, 0.5, 0.5, 1), align=TextNode.ALeft, mayChange=1)
-        text['speed'] = OnscreenText(text="Standby", pos=(sandbox.base.a2dLeft, 0.77),
-            scale=0.05, fg=(1, 0.5, 0.5, 1), align=TextNode.ALeft, mayChange=1)
-        throttlebox = boxes.VBox()
-        throttlebox.setScale(0.1)
-        throttlebox.setPos(-1, 0, -0.75)
-        throttleLable = DirectLabel(text="Throttle")
-        throttlebox.pack(throttleLable)
-        widgets['throttle'] = DirectSlider(range=(-100, 100), value=0,
-            pageSize=1, orientation=VERTICAL, frameSize=(-0.5, 0.5, -1, 1))
-        throttlebox.pack(widgets['throttle'])
+        text['xyz'] = OnscreenText(
+            text="Standby", pos=(sandbox.base.a2dLeft, 0.85), scale=0.05,
+            fg=(1, 0.5, 0.5, 1), align=TextNode.ALeft, mayChange=1
+        )
+        text['localxyz'] = OnscreenText(
+            text="Standby", pos=(sandbox.base.a2dLeft, 0.81), scale=0.05,
+            fg=(1, 0.5, 0.5, 1), align=TextNode.ALeft, mayChange=1
+        )
+        text['speed'] = OnscreenText(
+            text="Standby", pos=(sandbox.base.a2dLeft, 0.77), scale=0.05,
+            fg=(1, 0.5, 0.5, 1), align=TextNode.ALeft, mayChange=1
+        )
+        bars['bottomBar'].pack(DirectLabel(text="Throttle"))
+        widgets['throttle'] = DirectSlider(
+            range=(-100, 100), value=0, pageSize=1, orientation=VERTICAL,
+            frameSize=(-0.5, 0.5, -1, 1)
+        )
+        '''widgets['throttle'] = DirectScrollBar(
+            range=(-100, 100), value=0, pageSize=1, orientation=VERTICAL
+        )'''
+        bars['bottomBar'].pack(widgets['throttle'])
         widgets['throt'] = 0
 
-        headingbox = boxes.VBox()
-        headingbox.setScale(0.1)
-        headingbox.setPos(0, 0, -0.75)
-        headingLable = DirectLabel(text="Heading")
-        headingbox.pack(headingLable)
-        widgets['heading'] = DirectSlider(range=(-100, 100), value=0,
-            pageSize=1, frameSize=(-1, 1, -0.5, 0.5))
-        headingbox.pack(widgets['heading'])
-        widgets['head'] = 0
-        #stopHeading = DirectCheckButton(text="Stop Rotation")
-        #headingbox.pack(stopHeading)
-        #widgets['stopHeading'] = stopHeading
-        tasks['throttle'] = sandbox.base.taskMgr.doMethodLater(0.2, checkThrottle, 'throttle')
-
-        #if sandbox.getSystem(shipSystem.ShipSystem).shipid != None:
-        #shipid = sandbox.getSystem(shipSystem.ShipSystem).shipid
-        #renderComponent = sandbox.entities[shipid].getComponent(graphicsComponents.RenderComponent)
-        #print renderComponent.mesh.listJoints()
-        '''cameras = {}
-        for joint in renderComponent.mesh.getJoints():
-            if 'camera' in joint.getName().lower():
-                cameras[joint.getName()] = joint
-        print "Cameras", cameras'''
+        bars['bottomBar'].pack(DirectLabel(text="Heading"))
+        '''widgets['heading'] = DirectSlider(
+            range=(-100, 100), value=0, pageSize=1, frameSize=(-1, 1, -0.5, 0.5)
+        )
+        bars['bottomBar'].pack(widgets['heading'])
+        widgets['head'] = 0'''
+        #widgets['stopHeading'] = DirectCheckButton(text="Stop Rotation")
+        #bars['bottomBar'].pack(widgets['stopHeading'])
+        #tasks['throttle'] = sandbox.base.taskMgr.doMethodLater(0.2, checkThrottle, 'throttle')
 
         texture = sandbox.base.loader.loadTexture("protractor.png")
         cm = CardMaker('protractor')
         widgets['protractor'] = sandbox.base.aspect2d.attachNewNode(cm.generate())
         widgets['protractor'].setTexture(texture)
-        #widgets['protractor'].setTransparency(TransparencyAttrib.MBinary)
         widgets['protractor'].setTransparency(TransparencyAttrib.MAlpha)
         widgets['protractor'].setPos(-0.75, 0, -0.75)
         widgets['protractor'].setScale(1.5)
-        #sandbox.send('makePickable', [widgets['protractor']])
         sandbox.send('hideBG')
 
     def exitNav(self):
-        stations.hide()
-        #text['xyz'].removeNode()
-        #text['localxyz'].removeNode()
-        #text['speed'].removeNode()
+        sandbox.base.taskMgr.remove(tasks['throttle'])
+        text['xyz'].removeNode()
+        text['localxyz'].removeNode()
+        text['speed'].removeNode()
         #widgets['throttle'].removeNode()
         #widgets['heading'].removeNode()
         widgets['protractor'].removeNode()
         del widgets['protractor']
         #del widgets['stopHeading']
-        #sandbox.base.taskMgr.remove(tasks['throttle'])
 
     def enterMainScreen(self):
+        buildBars()
         sandbox.send('perspective')
         sandbox.send('showBG')
-        stations.show()
         widgets['cameras'] = {}
         shipid = sandbox.getSystem(shipSystem.ShipSystem).shipid
         renderComponent = sandbox.entities[shipid].getComponent(graphicsComponents.RenderComponent)
@@ -252,20 +247,19 @@ class GUIFSM(FSM):
         #print "Cameras", widgets['cameras']
 
         #DirectOptionMenu(text="options", items=ships, command=stationContext, initialitem=-1)
-        widgets['cameraMenu'] = DirectOptionMenu(items=widgets['cameras'].keys(),
-            command=mainViewContext)
-        widgets['cameraMenu'].setPos(-1, 0, 0.75)
-        widgets['cameraMenu'].setScale(0.1)
+        widgets['cameraMenu'] = DirectOptionMenu(
+            items=widgets['cameras'].keys(), command=mainViewContext
+        )
+        bars['topBar'].pack(widgets['cameraMenu'])
 
     def exitMainScreen(self):
-        stations.hide()
         sandbox.base.camera.reparentTo(render)
         del widgets['cameras']
         del widgets['cameraMenu']
 
 
-def selectShip(menu, playerShips):
-    name = menu.get()
+def selectShip(playerShips):
+    name = widgets['menu'].get()
     if name == NEWSHIP:
         sandbox.send('requestCreateShip', [widgets['shipName'].get(), 'Hyperion'])
         return
@@ -283,9 +277,8 @@ def selectShip(menu, playerShips):
 
 
 def checkThrottle(task):
-    #shipid = sandbox.getSystem(shipSystem.ShipSystem).shipid
-    #physicsComponent = sandbox.entities[shipid].getComponent(shipComponents.BulletPhysicsComponent)
-    '''if widgets['stopHeading']["indicatorValue"]:
+    #TODO: Switch to PID
+    if widgets['stopHeading']["indicatorValue"]:
         heading = 100
         if abs(physicsComponent.node.getAngularVelocity()[2]) < 0.5:
             heading = 50
@@ -300,7 +293,7 @@ def checkThrottle(task):
         elif physicsComponent.node.getAngularVelocity()[2] < 0:
             widgets['heading']['value'] = -heading
         else:
-            widgets['heading']['value'] = 0'''
+            widgets['heading']['value'] = 0
     if widgets['throt'] != widgets['throttle']['value'] or widgets['head'] != widgets['heading']['value']:
         widgets['throt'] = widgets['throttle']['value']
         widgets['head'] = widgets['heading']['value']
