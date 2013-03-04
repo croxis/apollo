@@ -28,8 +28,8 @@ class BulletPhysicsComponent(object):
         if debug:
             print self.nodePath.getName(), self.zoney * physics.ZONESIZE, self.nodePath.getY(), self.zoney * physics.ZONESIZE + self.nodePath.getY()
         return LPoint3d(self.zonex * physics.ZONESIZE + self.nodePath.getX(),
-            self.zoney * physics.ZONESIZE + self.nodePath.getY(),
-            self.nodePath.getZ())
+                    self.zoney * physics.ZONESIZE + self.nodePath.getY(),
+                    self.nodePath.getZ())
 
     def setTruePos(self, truex, truey):
         '''Converts the true pos into the proper zone system'''
@@ -43,6 +43,7 @@ class AIPilotComponent(object):
 class PlayerComponent(object):
     '''These are given NetAddresses'''
     navigation = 0
+    mainScreen = 0
 
 
 class ThrustComponent(object):

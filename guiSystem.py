@@ -25,6 +25,27 @@ log = DirectNotify().newCategory("ITF-GUISystem")
 NEWSHIP = 'New ship...'
 
 
+'''Proposed UI
+|---------------------------------------|
+|           Station Menu bar            |
+|---------------------------------------|
+|   |                               |   |
+|   |           Top Box             |   |
+|   |-------------------------------|   |
+|   |                               |   |
+|   |                               |   |
+|   |                               |   |
+|   |          Center Box           |   |
+|   |                               |   |
+|   |                               |   |
+|   |                               |   |
+|   |                               |   |
+|   |-------------------------------|   |
+|   |          Bottom Box           |   |
+|---------------------------------------|
+Left box                        Right box'''
+
+
 def debugView():
     fsm.request('Debug')
 
@@ -34,18 +55,49 @@ def navView():
         log.info("Hard Switching to navigation UI")
         fsm.request('Nav')
 
+def mainView():
+    if fsm.state != 'MainScreen':
+        log.info("Hard Switching to main screen UI")
+        fsm.request('MainScreen')
 
+bars = {}
 text = {}
 widgets = {}
 tasks = {}
-stations = boxes.HBox()
-stations.setScale(0.1)
-stations.pack(DirectButton(text="DebugView", command=debugView))
-stations.pack(DirectButton(text="Nav", command=navView))
-stations.setPos(sandbox.base.a2dLeft, 0, sandbox.base.a2dTop)
-stations.hide()
-
 pick = picker.Picker()
+
+def buildBars():
+    '''Builds or rebuilds gui bars to be populated by widgets'''
+    for bar in bars:
+        bars[bar].destroy()
+        del bars[bar]
+
+    bars['stationBar'] = boxes.HBox()
+    bars['stationBar'].setScale(0.1)
+    bars['stationBar'].pack(DirectButton(text="DebugView", command=debugView))
+    bars['stationBar'].pack(DirectButton(text="Nav", command=navView))
+    bars['stationBar'].pack(DirectButton(text="Main", command=mainView))
+    bars['stationBar'].setPos(sandbox.base.a2dLeft, 0, sandbox.base.a2dTop)
+    bars['stationBar'].hide()
+
+    bars['leftBar'] = boxes.VBox()
+    bars['leftBar'].setScale(0.1)
+    bars['leftBar'].setPos(sandbox.base.a2dLeft, 0, 0.9)
+    #stations.hide()
+
+    bars['rightBar'] = boxes.VBox()
+    bars['rightBar'].setScale(0.1)
+    bars['rightBar'].setPos(sandbox.base.a2dRight, 0, 0.9)
+
+    bars['bottomBar'] = boxes.HBox()
+    bars['bottomBar'].setScale(0.1)
+    bars['bottomBar'].setPos(sandbox.base.a2dLeft, 0, sandbox.base.a2dBottom)
+
+    #leftBox = boxes.HBox()
+    #leftBox.setScale(0.1)
+    #leftBox.setPos(sandbox.base.a2dLeft, 0, 0.9)
+
+
 
 
 def convertPos(point):
@@ -61,6 +113,10 @@ def stationContext(item):
         widgets['shipName'].hide()
         for widget in widgets['checkButtons']:
             widget.show()
+
+
+def mainViewContext(item):
+    base.camera.reparentTo(widgets['cameras'][item])
 
 
 class GUIFSM(FSM):
@@ -110,11 +166,11 @@ class GUIFSM(FSM):
 
     def enterDebug(self):
         stations.show()
-        sandbox.send('perspective')
+        sandbox.send('debugView')
         sandbox.send('showBG')
 
     def exitDebug(self):
-        pass
+        stations.hide()
 
     def enterNav(self):
         stations.show()
@@ -149,6 +205,16 @@ class GUIFSM(FSM):
         #widgets['stopHeading'] = stopHeading
         tasks['throttle'] = sandbox.base.taskMgr.doMethodLater(0.2, checkThrottle, 'throttle')
 
+        #if sandbox.getSystem(shipSystem.ShipSystem).shipid != None:
+        #shipid = sandbox.getSystem(shipSystem.ShipSystem).shipid
+        #renderComponent = sandbox.entities[shipid].getComponent(graphicsComponents.RenderComponent)
+        #print renderComponent.mesh.listJoints()
+        '''cameras = {}
+        for joint in renderComponent.mesh.getJoints():
+            if 'camera' in joint.getName().lower():
+                cameras[joint.getName()] = joint
+        print "Cameras", cameras'''
+
         texture = sandbox.base.loader.loadTexture("protractor.png")
         cm = CardMaker('protractor')
         widgets['protractor'] = sandbox.base.aspect2d.attachNewNode(cm.generate())
@@ -157,11 +223,11 @@ class GUIFSM(FSM):
         widgets['protractor'].setTransparency(TransparencyAttrib.MAlpha)
         widgets['protractor'].setPos(-0.75, 0, -0.75)
         widgets['protractor'].setScale(1.5)
-        sandbox.send('makePickable', [widgets['protractor']])
+        #sandbox.send('makePickable', [widgets['protractor']])
         sandbox.send('hideBG')
 
     def exitNav(self):
-        pass
+        stations.hide()
         #text['xyz'].removeNode()
         #text['localxyz'].removeNode()
         #text['speed'].removeNode()
@@ -171,6 +237,31 @@ class GUIFSM(FSM):
         del widgets['protractor']
         #del widgets['stopHeading']
         #sandbox.base.taskMgr.remove(tasks['throttle'])
+
+    def enterMainScreen(self):
+        sandbox.send('perspective')
+        sandbox.send('showBG')
+        stations.show()
+        widgets['cameras'] = {}
+        shipid = sandbox.getSystem(shipSystem.ShipSystem).shipid
+        renderComponent = sandbox.entities[shipid].getComponent(graphicsComponents.RenderComponent)
+        for joint in renderComponent.mesh.getJoints():
+            if 'camera' in joint.getName().lower():
+                #widgets['cameras'][joint.getName()] = joint
+                widgets['cameras'][joint.getName()] = renderComponent.mesh.exposeJoint(None, "modelRoot", joint.getName())
+        #print "Cameras", widgets['cameras']
+
+        #DirectOptionMenu(text="options", items=ships, command=stationContext, initialitem=-1)
+        widgets['cameraMenu'] = DirectOptionMenu(items=widgets['cameras'].keys(),
+            command=mainViewContext)
+        widgets['cameraMenu'].setPos(-1, 0, 0.75)
+        widgets['cameraMenu'].setScale(0.1)
+
+    def exitMainScreen(self):
+        stations.hide()
+        sandbox.base.camera.reparentTo(render)
+        del widgets['cameras']
+        del widgets['cameraMenu']
 
 
 def selectShip(menu, playerShips):
@@ -228,6 +319,7 @@ class GUISystem(sandbox.EntitySystem):
     lastPError = 0.0
 
     def init(self):
+        buildBars()
         self.accept("shipSelectScreen", self.shipSelectScreen)
         self.accept("navigationScreen", self.navigationUI)
         self.accept("noSelected", self.noSelected)

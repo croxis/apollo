@@ -156,7 +156,8 @@ def loginDebug(task):
 def spawnDebug(task):
     shipSystem.spawnShip("The Hype", "Hyperion", universals.spawn, True)
     spawnPoint = LPoint3d(universals.spawn)
-    spawnPoint.addY(3)
+    #spawnPoint.addY(3)
+    spawnPoint.addX(3)
     shipSystem.spawnShip("Boo boo", "Hyperion", spawnPoint)
 
 #sandbox.base.taskMgr.doMethodLater(10, planetPositionDebug, "Position Debug")

@@ -1,5 +1,6 @@
 import sandbox
 
+from direct.actor.Actor import Actor
 from direct.stdpy.file import *
 
 from panda3d.bullet import BulletDebugNode, BulletRigidBodyNode, BulletSphereShape
@@ -124,7 +125,8 @@ class ShipSystem(sandbox.EntitySystem):
         ship.addComponent(component)
         if universals.runClient:
             component = graphicsComponents.RenderComponent()
-            component.mesh = sandbox.base.loader.loadModel('ships/' + self.shipClasses[shipClass]['path'])
+            #component.mesh = sandbox.base.loader.loadModel('ships/' + self.shipClasses[shipClass]['path'])
+            component.mesh = Actor('ships/' + self.shipClasses[shipClass]['path'])
             component.mesh.reparentTo(sandbox.base.render)
             component.mesh.setScale(1 / CONVERT)
             ship.addComponent(component)

@@ -29,6 +29,14 @@ def orthographic():
 def perspective():
     global PERSPECTIVE
     PERSPECTIVE = True
+    sandbox.base.disableMouse()
+    lens = PerspectiveLens()
+    sandbox.base.cam.node().setLens(lens)
+
+
+def debug():
+    global PERSPECTIVE
+    PERSPECTIVE = True
     sandbox.base.enableMouse()
     lens = PerspectiveLens()
     sandbox.base.cam.node().setLens(lens)
@@ -60,6 +68,7 @@ class RenderSystem(sandbox.EntitySystem):
         self.accept('showBG', self.showBG)
         self.accept('perspective', perspective)
         self.accept('orthographic', orthographic)
+        self.accept('debugView', debug)
         self.accept('wheel_up', wheel_up)
         self.accept('wheel_down', wheel_down)
 
