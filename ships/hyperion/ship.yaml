@@ -16,3 +16,17 @@ engines:
     y: 0
     z: 0
     thrust: 1.3e+11
+weapons:
+  bow top medium pulse cannon:
+    damage: 10
+    decay: 1/x^2
+    decay description: damage = x in meters
+    joints:
+      traverser:
+        axes:
+          y: -1
+          decription: Each joint must be given explicit permission to rotate. -1 is free rotate. [min, max] for limit
+      elevator:
+        axes:
+          x: [-90, 0]
+        

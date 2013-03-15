@@ -111,6 +111,7 @@ class Mixin_DirectGuiFix():
         t += self.getPos().getZ()
         return (Point3(l,0,b),Point3(r,0,t))
 
+
 # Apply our mixin class to a few DirectGui classes that we will use
 # later. You need to do this for every DirectGui class you're gonna use,
 # so should probably do it for all of them right here.
@@ -118,6 +119,7 @@ mixin(DirectLabel,Mixin_DirectGuiFix)
 mixin(DirectEntry,Mixin_DirectGuiFix)
 mixin(DirectButton,Mixin_DirectGuiFix)
 mixin(DirectScrolledList, Mixin_DirectGuiFix)
+
 
 # FIXME: I don't see any point in Box inheriting from DirectFrame
 # anymore and it's starting to get in the way (e.g. Box can't emulate a
@@ -129,13 +131,13 @@ mixin(DirectScrolledList, Mixin_DirectGuiFix)
 class Box(DirectFrame):
     """
     Base class for HBox and VBox. Not meant to be instantiated itself.
-   
+
     """
-   
-    def __init__(self,**args):
+
+    def __init__(self, **args):
         """Initialise the Box. **args is just passed to the DirectFrame
         initialiser.
-       
+
         """
         DirectFrame.__init__(self, **args)
         self.initialiseoptions(Box)
@@ -147,11 +149,11 @@ class Box(DirectFrame):
         # users can add children to this node without them being packed
         # into the box, which might be useful.
         self._objects = []
-       
+
         # DirectFrame does not appear to maintain its bounds in any
         # useful way  so we maintain our own bounds in the same
         # format used by NodePath.
-        self._tightBounds = (Point3(0,0,0),Point3(0,0,0))
+        self._tightBounds = (Point3(0, 0, 0), Point3(0, 0, 0))
 
     # Some convenience methods for dealing with this annoying bounds
     # structure. This is a humane API!
@@ -179,7 +181,7 @@ class Box(DirectFrame):
     def __len__(self):
         return len(self._objects)
     # We would like to emulate a Python container type but DirectFrame
-    # is already using those methods so we stay away from them.   
+    # is already using those methods so we stay away from them.
     def get(self,key):
         return self._objects[key]
     # Todo: implement set(self,key,value), del(self,key) and
@@ -189,7 +191,7 @@ class Box(DirectFrame):
     def getTightBounds(self):
         """Return the tight bounds of this object relative to its'
         parent node."""
-        
+
         #bounds = self.node().getFrame() #also try parent['frameSize']
         #for c in parent.getChildren():
         #    cB = getWidgetsBounds(c)
@@ -198,32 +200,31 @@ class Box(DirectFrame):
         #    bounds.setZ(min(cB[2],bounds[2])) #B
         #    bounds.setW(max(cB[3],bounds[3])) #T
         #return bounds
-       
+
         # FIXME: Err... this is not the correct way to translate to the
         # parent nodes coordinate space. It doesn't even account for
         # scale!
-        return (self.bottom_left()+self.getPos(),self.top_right()+self.getPos())
+        return (self.bottom_left() + self.getPos(), self.top_right() + self.getPos())
 
-    def pack(self,obj):
+    def pack(self, obj):
         """
         Pack a new object into this box.
-       
+
         Box.pack handles updating the bounds of the box, appending the
         new object to the list of packed objects, and updating the scene
         graph. It calls layout() to allow the new object to be
         positioned, subclasses should override layout to implement
         different layouts.
-       
         """
         # First reparent the object to the box in the scene graph, so
         # that values it returns are relative to the box.
         obj.reparentTo(self)
-       
+
         # Give derived classes a chance to position the new object.
         self.layout(obj)
 
         # Get the bounds of the new object.
-        bottom_left,top_right = obj.getTightBounds()
+        bottom_left, top_right = obj.getTightBounds()
         left = bottom_left.getX()
         right = top_right.getX()
         bottom = bottom_left.getZ()

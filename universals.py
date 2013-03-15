@@ -38,7 +38,7 @@ day = 9031.25
 # Keeps track of the user name of the client
 username = "Moofoo"
 
-playerStations = ['navigation', 'mainScreen']
+playerStations = ['navigation', 'mainScreen', 'weapons']
 
 #Conversion factor from SI to units used in engine
 CONVERT = 1000.0

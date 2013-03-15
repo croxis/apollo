@@ -204,11 +204,11 @@ class GUIFSM(FSM):
         widgets['throt'] = 0
 
         bars['bottomBar'].pack(DirectLabel(text="Heading"))
-        '''widgets['heading'] = DirectSlider(
+        widgets['heading'] = DirectSlider(
             range=(-100, 100), value=0, pageSize=1, frameSize=(-1, 1, -0.5, 0.5)
         )
         bars['bottomBar'].pack(widgets['heading'])
-        widgets['head'] = 0'''
+        widgets['head'] = 0
         #widgets['stopHeading'] = DirectCheckButton(text="Stop Rotation")
         #bars['bottomBar'].pack(widgets['stopHeading'])
         #tasks['throttle'] = sandbox.base.taskMgr.doMethodLater(0.2, checkThrottle, 'throttle')
@@ -256,6 +256,48 @@ class GUIFSM(FSM):
         sandbox.base.camera.reparentTo(render)
         del widgets['cameras']
         del widgets['cameraMenu']
+
+    def enterWeapons(self):
+        buildBars()
+        sandbox.send('orthographic')
+        text['target'] = OnscreenText(
+            text="Standby", pos=(sandbox.base.a2dLeft, 0.85), scale=0.05,
+            fg=(1, 0.5, 0.5, 1), align=TextNode.ALeft, mayChange=1
+        )
+        bars['bottomBar'].pack(DirectLabel(text="Throttle"))
+        widgets['throttle'] = DirectSlider(
+            range=(-100, 100), value=0, pageSize=1, orientation=VERTICAL,
+            frameSize=(-0.5, 0.5, -1, 1)
+        )
+        '''widgets['throttle'] = DirectScrollBar(
+            range=(-100, 100), value=0, pageSize=1, orientation=VERTICAL
+        )'''
+        bars['bottomBar'].pack(widgets['throttle'])
+        widgets['throt'] = 0
+
+        bars['bottomBar'].pack(DirectLabel(text="Heading"))
+        widgets['heading'] = DirectSlider(
+            range=(-100, 100), value=0, pageSize=1, frameSize=(-1, 1, -0.5, 0.5)
+        )
+        bars['bottomBar'].pack(widgets['heading'])
+        widgets['head'] = 0
+        #widgets['stopHeading'] = DirectCheckButton(text="Stop Rotation")
+        #bars['bottomBar'].pack(widgets['stopHeading'])
+        #tasks['throttle'] = sandbox.base.taskMgr.doMethodLater(0.2, checkThrottle, 'throttle')
+
+        texture = sandbox.base.loader.loadTexture("protractor.png")
+        cm = CardMaker('protractor')
+        widgets['protractor'] = sandbox.base.aspect2d.attachNewNode(cm.generate())
+        widgets['protractor'].setTexture(texture)
+        widgets['protractor'].setTransparency(TransparencyAttrib.MAlpha)
+        widgets['protractor'].setPos(-0.75, 0, -0.75)
+        widgets['protractor'].setScale(1.5)
+        sandbox.send('hideBG')
+
+    def exitWeapons(self):
+        sandbox.base.taskMgr.remove(tasks['throttle'])
+        text['target'].removeNode()
+        del text['target']
 
 
 def selectShip(playerShips):
