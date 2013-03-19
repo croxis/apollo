@@ -123,13 +123,13 @@ class ShipSystem(sandbox.EntitySystem):
         component.shipClass = shipClass
         component.name = shipName
         ship.addComponent(component)
-        if universals.runClient:
-            component = graphicsComponents.RenderComponent()
-            #component.mesh = sandbox.base.loader.loadModel('ships/' + self.shipClasses[shipClass]['path'])
-            component.mesh = Actor('ships/' + self.shipClasses[shipClass]['path'])
-            component.mesh.reparentTo(sandbox.base.render)
-            component.mesh.setScale(1 / CONVERT)
-            ship.addComponent(component)
+        #if universals.runClient:
+        component = graphicsComponents.RenderComponent()
+        #component.mesh = sandbox.base.loader.loadModel('ships/' + self.shipClasses[shipClass]['path'])
+        component.mesh = Actor('ships/' + self.shipClasses[shipClass]['path'])
+        component.mesh.reparentTo(sandbox.base.render)
+        component.mesh.setScale(1 / CONVERT)
+        ship.addComponent(component)
         #sandbox.send("shipGenerated", [ship, playerShip])
         log.info("Ship spawned: " + shipName + " " + shipClass)
         #TODO Transmit player's ship data

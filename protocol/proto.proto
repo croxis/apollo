@@ -25,15 +25,22 @@ message Ship {
     required int32 id = 1;
     optional double x = 2;
     optional double y = 3;
-    optional float h = 4;
-    optional double dx = 5;
-    optional double dy = 6;
-    optional float dh = 7;
-    optional float thrust = 8;
-    optional float torque = 9;
-    optional ShipStations stations = 16;
-    optional string name = 17;
-    optional string className = 18;
+    optional double z = 4;
+    optional float h = 5;
+    optional float p = 6;
+    optional float r = 7;
+    optional double dx = 8;
+    optional double dy = 9;
+    optional double dz = 10;
+    optional float dh = 11;
+    optional float dp = 12;
+    optional float dr = 13;
+    optional float thrust = 14;
+    optional float torque = 15;
+    repeated Turret turrets = 16;
+    optional ShipStations stations = 33;
+    optional string name = 34;
+    optional string className = 35;
 }
 
 message Ships {
@@ -47,4 +54,22 @@ message Throttle{
     optional double bsgjumpx = 4;
     optional double bsgjumpz = 5;
     optional float heading = 6;
+}
+
+message Target{
+    required int32 targetId = 1;
+    required string turretName = 2;
+}
+
+message Turret{
+    required string turretName = 1;
+    repeated Joint joints = 2;
+}
+
+message Joint{
+    required string jointName = 1;
+    required float targetH = 2;
+    required float targetP = 3;
+    required float targetR = 4;
+    required float time = 5;
 }

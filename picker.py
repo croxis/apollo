@@ -42,6 +42,9 @@ class Picker(DirectObject.DirectObject):
             sandbox.send('noSelected')
             return
         print "mouseLeft", pickedObj, pickedObj.getPos(), pickedPoint
+
+        sandbox.send('mousePicked', [pickedObj])
+
         return
         cell = (int(math.floor(pickedPoint[0])), int(math.floor(pickedPoint[1])), self.level)
         #print cell

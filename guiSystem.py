@@ -78,6 +78,7 @@ def buildBars():
     bars['stationBar'].pack(DirectButton(text="DebugView", command=debugView))
     bars['stationBar'].pack(DirectButton(text="Nav", command=navView))
     bars['stationBar'].pack(DirectButton(text="Main", command=mainView))
+    bars['stationBar'].pack(DirectButton(text="Weapons", command=weaponsView))
     bars['stationBar'].setPos(sandbox.base.a2dLeft, 0, sandbox.base.a2dTop)
 
     bars['leftBar'] = boxes.VBox()
@@ -264,26 +265,7 @@ class GUIFSM(FSM):
             text="Standby", pos=(sandbox.base.a2dLeft, 0.85), scale=0.05,
             fg=(1, 0.5, 0.5, 1), align=TextNode.ALeft, mayChange=1
         )
-        bars['bottomBar'].pack(DirectLabel(text="Throttle"))
-        widgets['throttle'] = DirectSlider(
-            range=(-100, 100), value=0, pageSize=1, orientation=VERTICAL,
-            frameSize=(-0.5, 0.5, -1, 1)
-        )
-        '''widgets['throttle'] = DirectScrollBar(
-            range=(-100, 100), value=0, pageSize=1, orientation=VERTICAL
-        )'''
-        bars['bottomBar'].pack(widgets['throttle'])
-        widgets['throt'] = 0
-
-        bars['bottomBar'].pack(DirectLabel(text="Heading"))
-        widgets['heading'] = DirectSlider(
-            range=(-100, 100), value=0, pageSize=1, frameSize=(-1, 1, -0.5, 0.5)
-        )
-        bars['bottomBar'].pack(widgets['heading'])
-        widgets['head'] = 0
-        #widgets['stopHeading'] = DirectCheckButton(text="Stop Rotation")
-        #bars['bottomBar'].pack(widgets['stopHeading'])
-        #tasks['throttle'] = sandbox.base.taskMgr.doMethodLater(0.2, checkThrottle, 'throttle')
+        widgets['fire'].pack(DirectCheckButton(text="Fire at Will!"))
 
         texture = sandbox.base.loader.loadTexture("protractor.png")
         cm = CardMaker('protractor')
@@ -298,6 +280,8 @@ class GUIFSM(FSM):
         sandbox.base.taskMgr.remove(tasks['throttle'])
         text['target'].removeNode()
         del text['target']
+        widgets['fire'].destroy()
+        del widgets['fire']
 
 
 def selectShip(playerShips):
@@ -358,6 +342,7 @@ class GUISystem(sandbox.EntitySystem):
         self.accept("shipSelectScreen", self.shipSelectScreen)
         self.accept("navigationScreen", self.navigationUI)
         self.accept("noSelected", self.noSelected)
+        self.accept("mousePicked", self.mousePicked)
         sandbox.base.taskMgr.add(self.autoTurnManager, "autoTurn")
 
     def begin(self):
@@ -401,6 +386,9 @@ class GUISystem(sandbox.EntitySystem):
             self.autoTurn = True
             self.autoTurnTarget = angle
             print math.degrees(math.atan2(y, x)), angle, currentAngle, trueDifference, distance
+
+    def mousePicked(self, picked):
+        print picked
 
     def autoTurnManager(self, task):
         if self.autoTurn:

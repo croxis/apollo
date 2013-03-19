@@ -38,6 +38,8 @@ NEW_STATION = 11  # A station has entered sensor range.
 
 SET_THROTTLE = 12
 
+SET_TARGET = 14
+
 LOGIN = 100
 LOGIN_DENIED = 101
 LOGIN_ACCEPTED = 103
@@ -94,6 +96,12 @@ def requestCreateShip(name, className):
     ship.className = className
     return sandbox.generatePacket(REQUEST_CREATE_SHIP, ship)
 
+
+def requestTurretTarget(targetId, turretName):
+    turret = proto.Target()
+    turret.targetId = targetId
+    turret.turretName = turretName
+    return sandbox.generatePacket(SET_TARGET, turret)
 
 #Server to client datagram generators
 
