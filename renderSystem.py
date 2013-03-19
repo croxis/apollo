@@ -37,6 +37,7 @@ def perspective():
 def debug():
     global PERSPECTIVE
     PERSPECTIVE = True
+    sandbox.base.cam.setPos(0, 0, 0)
     sandbox.base.enableMouse()
     lens = PerspectiveLens()
     sandbox.base.cam.node().setLens(lens)

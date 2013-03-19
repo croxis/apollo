@@ -61,6 +61,12 @@ def mainView():
         log.info("Hard Switching to main screen UI")
         fsm.request('MainScreen')
 
+
+def weaponsView():
+    if fsm.state != 'Weapons':
+        log.info("Hard Switching to weapons UI")
+        fsm.request('Weapons')
+
 bars = {}
 text = {}
 widgets = {}
@@ -224,7 +230,7 @@ class GUIFSM(FSM):
         sandbox.send('hideBG')
 
     def exitNav(self):
-        sandbox.base.taskMgr.remove(tasks['throttle'])
+        #sandbox.base.taskMgr.remove(tasks['throttle'])
         text['xyz'].removeNode()
         text['localxyz'].removeNode()
         text['speed'].removeNode()
@@ -265,19 +271,20 @@ class GUIFSM(FSM):
             text="Standby", pos=(sandbox.base.a2dLeft, 0.85), scale=0.05,
             fg=(1, 0.5, 0.5, 1), align=TextNode.ALeft, mayChange=1
         )
-        widgets['fire'].pack(DirectCheckButton(text="Fire at Will!"))
+        widgets['fire'] = DirectCheckButton(text="Fire at Will!")
+        bars['bottomBar'].pack(widgets['fire'])
 
-        texture = sandbox.base.loader.loadTexture("protractor.png")
+        '''texture = sandbox.base.loader.loadTexture("protractor.png")
         cm = CardMaker('protractor')
         widgets['protractor'] = sandbox.base.aspect2d.attachNewNode(cm.generate())
         widgets['protractor'].setTexture(texture)
         widgets['protractor'].setTransparency(TransparencyAttrib.MAlpha)
         widgets['protractor'].setPos(-0.75, 0, -0.75)
-        widgets['protractor'].setScale(1.5)
+        widgets['protractor'].setScale(1.5)'''
         sandbox.send('hideBG')
 
     def exitWeapons(self):
-        sandbox.base.taskMgr.remove(tasks['throttle'])
+        #sandbox.base.taskMgr.remove(tasks['throttle'])
         text['target'].removeNode()
         del text['target']
         widgets['fire'].destroy()

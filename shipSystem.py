@@ -94,8 +94,10 @@ class ShipSystem(sandbox.EntitySystem):
         for ship in ships.ship:
             self.shipUpdate(ship)
 
-    def spawnShip(self, shipName, shipClass, spawnPoint=LPoint3d(0, 0, 0),
-        playerShip=False, entityid=-1):
+    def spawnShip(
+        self, shipName, shipClass, spawnPoint=LPoint3d(0, 0, 0),
+        playerShip=False, entityid=-1
+    ):
         if shipName == '' or shipClass == '':
             return
         if entityid == -1:
@@ -123,12 +125,14 @@ class ShipSystem(sandbox.EntitySystem):
         component.shipClass = shipClass
         component.name = shipName
         ship.addComponent(component)
-        #if universals.runClient:
+
         component = graphicsComponents.RenderComponent()
         #component.mesh = sandbox.base.loader.loadModel('ships/' + self.shipClasses[shipClass]['path'])
         component.mesh = Actor('ships/' + self.shipClasses[shipClass]['path'])
         component.mesh.reparentTo(sandbox.base.render)
         component.mesh.setScale(1 / CONVERT)
+        if universals.runClient and not playerShip:
+            sandbox.send('makePickable', [component.mesh])
         ship.addComponent(component)
         #sandbox.send("shipGenerated", [ship, playerShip])
         log.info("Ship spawned: " + shipName + " " + shipClass)

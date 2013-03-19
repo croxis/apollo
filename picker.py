@@ -40,6 +40,7 @@ class Picker(DirectObject.DirectObject):
     def mouseLeft(self, pickedObj, pickedPoint):
         if pickedObj == None:
             sandbox.send('noSelected')
+            print "No selected"
             return
         print "mouseLeft", pickedObj, pickedObj.getPos(), pickedPoint
 
@@ -54,15 +55,15 @@ class Picker(DirectObject.DirectObject):
     def getMouseCell(self):
         """Returns terrain cell coordinates (x,y) at mouse pointer"""
         #get mouse coords
-        if sandbox.base.mouseWatcherNode.hasMouse() == False:
+        if sandbox.base.mouseWatcherNode.hasMouse() is False:
             return
         mpos = sandbox.base.mouseWatcherNode.getMouse()
         #locate ray from camera lens to mouse coords
-        self.ray.setFromLens(base.camNode, mpos.getX(), mpos.getY())
+        self.ray.setFromLens(sandbox.base.camNode, mpos.getX(), mpos.getY())
         #get collision: picked obj and point
         pickedObj, pickedPoint = self.getCollision(self.queue)
         #call appropiate mouse function (left or right)
-        if pickedObj == None:
+        if pickedObj is None:
             return
         cell = (int(math.floor(pickedPoint[0])), int(math.floor(pickedPoint[1])))
         return cell
@@ -71,7 +72,7 @@ class Picker(DirectObject.DirectObject):
         """mouse pick"""
         #print "Mousepick"
         #get mouse coords
-        if sandbox.base.mouseWatcherNode.hasMouse() == False:
+        if sandbox.base.mouseWatcherNode.hasMouse() is False:
             return
         mpos = sandbox.base.mouseWatcherNode.getMouse()
         #locate ray from camera lens to mouse coords
@@ -87,7 +88,7 @@ class Picker(DirectObject.DirectObject):
     """Returns the picked nodepath and the picked 3d point"""
     def getCollision(self, queue):
         #do the traverse
-        base.cTrav.traverse(render)
+        sandbox.base.cTrav.traverse(sandbox.base.render)
         #process collision entries in queue
         if queue.getNumEntries() > 0:
             queue.sortEntries()
@@ -97,11 +98,13 @@ class Picker(DirectObject.DirectObject):
                 #iterate up in model hierarchy to found a pickable tag
                 parent = pickedObj.getParent()
                 for n in range(1):
-                    if parent.getTag('pickable') != "" or parent == render:
+                    #if parent.getTag('pickable') != "" or parent == render:
+                    if parent.getPythonTag('pickable') != "" or parent == sandbox.base.render:
                         break
                     parent = parent.getParent()
                 #return appropiate picked object
-                if parent.getTag('pickable') != "":
+                #if parent.getTag('pickable') != "":
+                if parent.getPythonTag('pickable') != "":
                     pickedObj = parent
                     pickedPoint = collisionEntry.getSurfacePoint(pickedObj)
                     #pickedNormal = collisionEntry.getSurfaceNormal(self.ancestor.worldNode)
@@ -109,11 +112,12 @@ class Picker(DirectObject.DirectObject):
                     return pickedObj, pickedPoint
         return None, None
 
-    def makePickable(self,newObj,tag='true'):
+    def makePickable(self, newObj, tag='true'):
         """sets nodepath pickable state"""
-        newObj.setTag('pickable',tag)
-        print "Pickable: ",newObj,"as",tag
-    
+        #newObj.setTag('pickable',tag)
+        newObj.setPythonTag('pickable', tag)
+        print "Pickable: ", newObj, "as", tag
+
     """creates a ray for detecting collisions"""
     def createRay(self,obj,ent,name,show=False,x=0,y=0,z=0,dx=0,dy=0,dz=-1):
         #create queue
