@@ -10,9 +10,19 @@ import shipComponents
 import solarSystem
 import universals
 
+from pandac.PandaModules import loadPrcFileData
+loadPrcFileData("", "notify-level-ITF-RenderSystem debug")
+from direct.directnotify.DirectNotify import DirectNotify
+log = DirectNotify().newCategory("ITF-RenderSystem")
+
 PERSPECTIVE = True
 
 MIN_FILM_SIZE = 5
+
+
+def report():
+    sandbox.base.render.analyze()
+    sandbox.base.cTrav.showCollisions(render)
 
 
 def orthographic():
@@ -34,13 +44,13 @@ def perspective():
     sandbox.base.cam.node().setLens(lens)
 
 
-def debug():
+def debugCamera():
     global PERSPECTIVE
     PERSPECTIVE = True
-    sandbox.base.cam.setPos(0, 0, 0)
     sandbox.base.enableMouse()
     lens = PerspectiveLens()
     sandbox.base.cam.node().setLens(lens)
+    sandbox.base.cam.setPos(0, 0, 0)
 
 
 def wheel_up():
@@ -69,15 +79,18 @@ class RenderSystem(sandbox.EntitySystem):
         self.accept('showBG', self.showBG)
         self.accept('perspective', perspective)
         self.accept('orthographic', orthographic)
-        self.accept('debugView', debug)
+        self.accept('debugView', debugCamera)
         self.accept('wheel_up', wheel_up)
         self.accept('wheel_down', wheel_down)
+        self.accept('`', report)
 
     def hideBG(self):
         self.skybox.hide()
+        log.debug('Hiding skybox')
 
     def showBG(self):
         self.skybox.show()
+        log.debug('Showing skybox')
 
     def begin(self):
         pass

@@ -85,15 +85,15 @@ class SolarSystemSystem(sandbox.EntitySystem):
             position = position * 149598000
         return position
 
-    def get2DBodyPosition(self, entity, time):
+    def get2DBodyPosition(self, component, time):
         """Returns celestial position relative to the parent"""
         # Convert to radians
-        M = radians(eval(entity.orbit['M'])(time))
-        w = radians(eval(entity.orbit['w'])(time))
-        i = radians(eval(entity.orbit['i'])(time))
-        N = radians(eval(entity.orbit['N'])(time))
-        a = entity.orbit['a']
-        e = eval(entity.orbit['e'])(time)
+        M = radians(eval(component.orbit['M'])(time))
+        w = radians(eval(component.orbit['w'])(time))
+        i = radians(eval(component.orbit['i'])(time))
+        N = radians(eval(component.orbit['N'])(time))
+        a = component.orbit['a']
+        e = eval(component.orbit['e'])(time)
         # Compute eccentric anomaly
         E = M + e * sin(M) * (1.0 + e * cos(M))
         if degrees(E) > 0.05:
@@ -109,7 +109,7 @@ class SolarSystemSystem(sandbox.EntitySystem):
         # If we are not a moon then our orbits are done in au.
         # We need to convert to km
         # FIXME: Add moon body type
-        if entity.kind != TYPES['moon']:
+        if component.kind != TYPES['moon']:
             position = position * 149598000
         return position
 
@@ -120,6 +120,17 @@ class SolarSystemSystem(sandbox.EntitySystem):
             E1 = self.computeE(E1, M, e)
         return E1
 
+    def addParentPos(self, displacement, childComponent):
+        for component in sandbox.getComponents(CelestialComponent):
+            if component.nodePath == childComponent.nodePath.getParent():
+                if component.nodePath == universals.solarSystemRoot:
+                    pass
+                else:
+                    displacement += self.addParentPos(displacement, component)
+                    displacement += component.truePos
+        return displacement
+
+
     def process(self, entity):
         '''Gets the xyz position of the body, relative to its parent, on the given day before/after the date of element. Units will be in AU'''
         #Static bodies for now
@@ -129,6 +140,13 @@ class SolarSystemSystem(sandbox.EntitySystem):
             #print component.nodePath, self.get2DBodyPosition(component.nodePath, universals.day)
             #component.nodePath.setPos(self.get2DBodyPosition(component, universals.day))
             component.truePos = self.get2DBodyPosition(component, universals.day)
+            #NOTE: truePos is only get position relative tot he parent body. We need
+            # to convert this to heliocentric
+            # This only computes to the position of the parent body
+            # We want to put moons into heliocentric coords as well
+            # Iterate through parents and add their positions
+            component.truePos += self.addParentPos(LPoint3d(0, 0, 0), component)
+            #print component.nodePath, component.truePos
 
     def init(self, name='Sol'):
         log.debug("Loading Solar System Bodies")

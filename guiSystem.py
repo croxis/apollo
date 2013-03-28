@@ -85,7 +85,6 @@ def buildBars():
     bars['stationBar'].setScale(0.1)
     global stationButtons
     stationButtons = []
-    stationButtons.append(DirectButton(text="DebugView", command=debugView))
     if stations:
         if stations.mainScreen:
             stationButtons.append(DirectButton(text="Main", command=mainView))
@@ -93,8 +92,10 @@ def buildBars():
             stationButtons.append(DirectButton(text="Nav", command=navView))
         if stations.weapons:
             stationButtons.append(DirectButton(text="Weapons", command=weaponsView))
+    stationButtons.append(DirectButton(text="DebugView", command=debugView))
     for station in stationButtons:
         bars['stationBar'].pack(station)
+    
     #bars['stationBar'].pack(DirectButton(text="DebugView", command=debugView))
     #bars['stationBar'].pack(DirectButton(text="Nav", command=navView))
     #bars['stationBar'].pack(DirectButton(text="Main", command=mainView))
@@ -140,6 +141,7 @@ def mainViewContext(item):
     base.camera.reparentTo(widgets['cameras'][item])
     base.camera.setPos(0, 0, 0)
     base.camera.setHpr(0, 0, 0)
+    sandbox.send('showBG')
 
 
 class GUIFSM(FSM):
@@ -191,9 +193,9 @@ class GUIFSM(FSM):
 
     def enterDebug(self):
         buildBars()
-        bars['stationBar'].show()
         sandbox.send('debugView')
         sandbox.send('showBG')
+        bars['stationBar'].show()
 
     def exitDebug(self):
         pass
@@ -201,6 +203,7 @@ class GUIFSM(FSM):
     def enterNav(self):
         buildBars()
         sandbox.send('orthographic')
+        sandbox.send('hideBG')
         text['xyz'] = OnscreenText(
             text="Standby", pos=(sandbox.base.a2dLeft, 0.85), scale=0.05,
             fg=(1, 0.5, 0.5, 1), align=TextNode.ALeft, mayChange=1
@@ -241,7 +244,6 @@ class GUIFSM(FSM):
         widgets['protractor'].setTransparency(TransparencyAttrib.MAlpha)
         widgets['protractor'].setPos(-0.75, 0, -0.75)
         widgets['protractor'].setScale(1.5)
-        sandbox.send('hideBG')
 
     def exitNav(self):
         #sandbox.base.taskMgr.remove(tasks['throttle'])
@@ -281,6 +283,7 @@ class GUIFSM(FSM):
     def enterWeapons(self):
         buildBars()
         sandbox.send('orthographic')
+        sandbox.send('hideBG')
         text['target'] = OnscreenText(
             text="Standby", pos=(sandbox.base.a2dLeft, 0.85), scale=0.05,
             fg=(1, 0.5, 0.5, 1), align=TextNode.ALeft, mayChange=1

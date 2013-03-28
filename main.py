@@ -92,6 +92,9 @@ else:
     loadPrcFileData('', 'show-frame-rate-meter 1')
     loadPrcFileData('', 'window-title ' + "ITF")
     loadPrcFileData('', "sync-video 0")
+    loadPrcFileData('', 'task-timer-verbose 1')
+    loadPrcFileData('', 'pstats-tasks 1')
+    loadPrcFileData('', 'want-pstats 1')
 
 # After initial setup we can now start sandbox
 log.debug("Loading sandbox")
