@@ -86,12 +86,13 @@ def buildBars():
     global stationButtons
     stationButtons = []
     stationButtons.append(DirectButton(text="DebugView", command=debugView))
-    if hasattr(stations, 'mainScreen'):
-        stationButtons.append(DirectButton(text="Main", command=mainView))
-    if hasattr(stations, 'navigation'):
-        stationButtons.append(DirectButton(text="Nav", command=navView))
-    if hasattr(stations, 'weapons'):
-        stationButtons.append(DirectButton(text="Weapons", command=weaponsView))
+    if stations:
+        if stations.mainScreen:
+            stationButtons.append(DirectButton(text="Main", command=mainView))
+        if stations.navigation:
+            stationButtons.append(DirectButton(text="Nav", command=navView))
+        if stations.weapons:
+            stationButtons.append(DirectButton(text="Weapons", command=weaponsView))
     for station in stationButtons:
         bars['stationBar'].pack(station)
     #bars['stationBar'].pack(DirectButton(text="DebugView", command=debugView))
@@ -368,7 +369,7 @@ class GUISystem(sandbox.EntitySystem):
 
     def begin(self):
         if fsm.state == 'Nav':
-            if sandbox.getSystem(shipSystem.ShipSystem).shipid != None:
+            if sandbox.getSystem(shipSystem.ShipSystem).shipid is not None:
                 shipid = sandbox.getSystem(shipSystem.ShipSystem).shipid
                 physics = sandbox.entities[shipid].getComponent(shipComponents.BulletPhysicsComponent)
                 t = "X: " + str(round(physics.getTruePos().getX(), 1)) + ", Y: " + str(round(physics.getTruePos().getY(), 1)) + ", H: " + str(round(physics.nodePath.getH(), 1))
@@ -381,7 +382,6 @@ class GUISystem(sandbox.EntitySystem):
     def makeStationUI(self, data):
         global stations
         stations = data.stations
-        
         stationButtons[0]['command']()
         #bars['stationBar'].pack(DirectButton(text="Nav", command=navView))
         #bars['stationBar'].pack(DirectButton(text="Main", command=mainView))

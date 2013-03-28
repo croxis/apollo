@@ -12,13 +12,14 @@ message ShipClasses {
     repeated ShipClass shipClass = 1;
 }
 
+// Optional must be used to allow defaults
 message ShipStations {
-    required bool mainScreen = 1;
-    required bool navigation = 2;
-    required bool weapons = 3;
-    required bool engineering = 4;
-    required bool science = 5;
-    required bool comms = 6;
+    optional bool mainScreen = 1 [default = false];
+    optional bool navigation = 2 [default = false];
+    optional bool weapons = 3 [default = false];
+    optional bool engineering = 4 [default = false];
+    optional bool science = 5 [default = false];
+    optional bool comms = 6 [default = false];
 }
 
 message Ship {

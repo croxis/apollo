@@ -75,7 +75,6 @@ def requestStations(shipid, stations):
     playerShips = proto.Ships()
     playerShip = playerShips.ship.add()
     playerShip.id = shipid
-    #shipStations = playerShip.stations.add()
     shipStations = playerShip.stations
     for station in stations:
         setattr(shipStations, station, 1)
