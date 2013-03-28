@@ -13,12 +13,12 @@ message ShipClasses {
 }
 
 message ShipStations {
-    optional bool mainScreen = 1;
-    optional bool navigation = 2;
-    optional bool weapons = 3;
-    optional bool engineering = 4;
-    optional bool science = 5;
-    optional bool comms = 6;
+    required bool mainScreen = 1;
+    required bool navigation = 2;
+    required bool weapons = 3;
+    required bool engineering = 4;
+    required bool science = 5;
+    required bool comms = 6;
 }
 
 message Ship {

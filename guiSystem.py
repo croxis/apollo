@@ -72,6 +72,8 @@ text = {}
 widgets = {}
 tasks = {}
 pick = picker.Picker()
+stationButtons = []
+stations = None
 
 
 def buildBars():
@@ -81,10 +83,21 @@ def buildBars():
 
     bars['stationBar'] = boxes.HBox()
     bars['stationBar'].setScale(0.1)
-    bars['stationBar'].pack(DirectButton(text="DebugView", command=debugView))
-    bars['stationBar'].pack(DirectButton(text="Nav", command=navView))
-    bars['stationBar'].pack(DirectButton(text="Main", command=mainView))
-    bars['stationBar'].pack(DirectButton(text="Weapons", command=weaponsView))
+    global stationButtons
+    stationButtons = []
+    stationButtons.append(DirectButton(text="DebugView", command=debugView))
+    if hasattr(stations, 'mainScreen'):
+        stationButtons.append(DirectButton(text="Main", command=mainView))
+    if hasattr(stations, 'navigation'):
+        stationButtons.append(DirectButton(text="Nav", command=navView))
+    if hasattr(stations, 'weapons'):
+        stationButtons.append(DirectButton(text="Weapons", command=weaponsView))
+    for station in stationButtons:
+        bars['stationBar'].pack(station)
+    #bars['stationBar'].pack(DirectButton(text="DebugView", command=debugView))
+    #bars['stationBar'].pack(DirectButton(text="Nav", command=navView))
+    #bars['stationBar'].pack(DirectButton(text="Main", command=mainView))
+    #bars['stationBar'].pack(DirectButton(text="Weapons", command=weaponsView))
     bars['stationBar'].setPos(sandbox.base.a2dLeft, 0, sandbox.base.a2dTop)
 
     bars['leftBar'] = boxes.VBox()
@@ -350,6 +363,7 @@ class GUISystem(sandbox.EntitySystem):
         self.accept("navigationScreen", self.navigationUI)
         self.accept("noSelected", self.noSelected)
         self.accept("mousePicked", self.mousePicked)
+        self.accept("makeStationUI", self.makeStationUI)
         sandbox.base.taskMgr.add(self.autoTurnManager, "autoTurn")
 
     def begin(self):
@@ -363,6 +377,15 @@ class GUISystem(sandbox.EntitySystem):
                 text['localxyz'].setText(localtext)
                 speedText = "Speed: " + str(round(physics.node.getLinearVelocity().length(), 1)) + " km/s"
                 text['speed'].setText(speedText)
+
+    def makeStationUI(self, data):
+        global stations
+        stations = data.stations
+        
+        stationButtons[0]['command']()
+        #bars['stationBar'].pack(DirectButton(text="Nav", command=navView))
+        #bars['stationBar'].pack(DirectButton(text="Main", command=mainView))
+        #bars['stationBar'].pack(DirectButton(text="Weapons", command=weaponsView))
 
     def shipSelectScreen(self, playerShips):
         fsm.request('StationSelect', playerShips)
