@@ -19,6 +19,7 @@ class NetworkSystem(sandbox.UDPNetworkSystem):
         self.accept('requestStations', self.requestStations)
         self.accept('requestThrottle', self.requestThrottle)
         self.accept('requestCreateShip', self.requestCreateShip)
+        self.accept('requestTarget', self.requestTarget)
 
     def processPacket(self, msgID, remotePacketCount, ack, acks, hashID, serialized, address):
         #If not in our protocol range then we just reject
@@ -43,6 +44,10 @@ class NetworkSystem(sandbox.UDPNetworkSystem):
         universals.log.debug("sending login")
         self.send(datagram)
 
+    def requestCreateShip(self, shipName, className):
+        datagram = protocol.requestCreateShip(shipName, className)
+        self.send(datagram)
+
     def requestStations(self, shipid, stations):
         datagram = protocol.requestStations(shipid, stations)
         self.send(datagram)
@@ -51,8 +56,8 @@ class NetworkSystem(sandbox.UDPNetworkSystem):
         datagram = protocol.requestThrottle(throttle, heading)
         self.send(datagram)
 
-    def requestCreateShip(self, shipName, className):
-        datagram = protocol.requestCreateShip(shipName, className)
+    def requestTarget(self, targetID):
+        datagram = protocol.requestTurretTarget(targetID)
         self.send(datagram)
 
     def send(self, datagram):

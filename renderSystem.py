@@ -2,6 +2,7 @@ import sandbox
 
 import math
 
+from direct.actor.Actor import Actor
 from panda3d.core import OrthographicLens, PerspectiveLens, Point3
 
 import graphicsComponents
@@ -22,7 +23,7 @@ MIN_FILM_SIZE = 5
 
 def report():
     sandbox.base.render.analyze()
-    sandbox.base.cTrav.showCollisions(render)
+    sandbox.base.cTrav.showCollisions(sandbox.base.render)
 
 
 def orthographic():
@@ -83,6 +84,18 @@ class RenderSystem(sandbox.EntitySystem):
         self.accept('wheel_up', wheel_up)
         self.accept('wheel_down', wheel_down)
         self.accept('`', report)
+
+    def entityFromNode(self, nodepath):
+        for entity in self.entities:
+            renderComp = sandbox.entities[entity].getComponent(graphicsComponents.RenderComponent)
+            print renderComp.mesh
+            if isinstance(renderComp.mesh, Actor):
+                print renderComp.mesh.getPart('modelRoot')
+                if renderComp.mesh.getPart('modelRoot') is nodepath:
+                    print "ZOMG YAY"
+
+            if nodepath is renderComp.mesh:
+                print "Yay!"
 
     def hideBG(self):
         self.skybox.hide()

@@ -4,12 +4,11 @@ from direct.actor.Actor import Actor
 from direct.stdpy.file import *
 
 from panda3d.bullet import BulletDebugNode, BulletRigidBodyNode, BulletSphereShape
-from panda3d.core import LPoint3d, Point3, Vec3
+from panda3d.core import LPoint3d, NodePath, Vec3
 
 import graphicsComponents
 import physics
 import shipComponents
-import solarSystem
 import universals
 
 import glob
@@ -38,6 +37,8 @@ class ShipSystem(sandbox.EntitySystem):
         self.shipClasses = {}
         self.shipid = None  # This is for clients to id who the controlling
         # ship is for quick lookup
+        sandbox.ships = NodePath("ships")
+        sandbox.ships.reparentTo(sandbox.base.render)
 
     def process(self, entity):
         pass
@@ -129,7 +130,8 @@ class ShipSystem(sandbox.EntitySystem):
         component = graphicsComponents.RenderComponent()
         #component.mesh = sandbox.base.loader.loadModel('ships/' + self.shipClasses[shipClass]['path'])
         component.mesh = Actor('ships/' + self.shipClasses[shipClass]['path'])
-        component.mesh.reparentTo(sandbox.base.render)
+        component.mesh.reparentTo(sandbox.ships)
+        component.mesh.getPart('modelRoot').setPythonTag('entityID', ship.id)
         component.mesh.setScale(1 / CONVERT)
         if universals.runClient and not playerShip:
             sandbox.send('makePickable', [component.mesh])

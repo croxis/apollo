@@ -59,7 +59,7 @@ message Throttle{
 
 message Target{
     required int32 targetId = 1;
-    required string turretName = 2;
+    optional string turretName = 2 [default = ''];
 }
 
 message Turret{

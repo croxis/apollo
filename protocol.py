@@ -96,10 +96,11 @@ def requestCreateShip(name, className):
     return sandbox.generatePacket(REQUEST_CREATE_SHIP, ship)
 
 
-def requestTurretTarget(targetId, turretName):
+def requestTurretTarget(targetId, turretName=None):
     turret = proto.Target()
     turret.targetId = targetId
-    turret.turretName = turretName
+    if turretName:
+        turret.turretName = turretName
     return sandbox.generatePacket(SET_TARGET, turret)
 
 #Server to client datagram generators

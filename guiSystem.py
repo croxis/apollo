@@ -7,6 +7,7 @@ import boxes
 import graphicsComponents
 import picker
 import pid
+import renderSystem
 import shipComponents
 import shipSystem
 import universals
@@ -95,7 +96,7 @@ def buildBars():
     stationButtons.append(DirectButton(text="DebugView", command=debugView))
     for station in stationButtons:
         bars['stationBar'].pack(station)
-    
+
     #bars['stationBar'].pack(DirectButton(text="DebugView", command=debugView))
     #bars['stationBar'].pack(DirectButton(text="Nav", command=navView))
     #bars['stationBar'].pack(DirectButton(text="Main", command=mainView))
@@ -421,7 +422,9 @@ class GUISystem(sandbox.EntitySystem):
             print math.degrees(math.atan2(y, x)), angle, currentAngle, trueDifference, distance
 
     def mousePicked(self, picked):
-        print picked
+        if picked.getPythonTag('entityID'):
+            sandbox.send('requestTarget', [picked.getPythonTag('entityID')])
+        #sandbox.getSystem(renderSystem.RenderSystem).entityFromNode(picked)
 
     def autoTurnManager(self, task):
         if self.autoTurn:
@@ -431,8 +434,10 @@ class GUISystem(sandbox.EntitySystem):
             currentAngle = physicsComponent.nodePath.getH() % 360
 
             directionDistance =\
-                sandbox.mathextra.signedAngularDistance(self.autoTurnTarget,
-                currentAngle)
+                sandbox.mathextra.signedAngularDistance(
+                    self.autoTurnTarget,
+                    currentAngle
+                )
 
             #print currentAngle, self.autoTurnTarget, trueDifference, distance, directionDistance
             #print currentAngle, self.autoTurnTarget, directionDistance

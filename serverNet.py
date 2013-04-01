@@ -23,19 +23,21 @@ class NetworkSystem(sandbox.UDPNetworkSystem):
         self.accept("confirmPlayerStations", self.confirmPlayerStations)
         self.accept('playerDisconnected', self.playerDisconnected)
         self.activePlayers = []  # PlayerComponent
-        self.playerMap = {} # {Address: Shipid}
+        self.playerMap = {}  # {Address: Shipid}
         #self.shipMap = {} # {ShipID: {CONSOL: Netaddress}}
         #self.accept("shipGenerated", self.shipGenerated)
         if universals.runServer and not universals.runClient:
             sandbox.base.taskMgr.doMethodLater(0.2, self.sendShipUpdates, 'shipUpdates')
 
-    def processPacket(self, msgID, remotePacketCount,
-            ack, acks, hashID, serialized, address):
+    def processPacket(
+        self, msgID, remotePacketCount,
+        ack, acks, hashID, serialized, address
+    ):
         #If not in our protocol range then we just reject
         if msgID < 0 or msgID > 200:
             return
         data = protocol.readProto(msgID, serialized)
-        if data == None and msgID != protocol.LOGIN:
+        if data is None and msgID != protocol.LOGIN:
             log.error("Package reading error: " + str(msgID) + " " + serialized)
             return
 
@@ -67,6 +69,8 @@ class NetworkSystem(sandbox.UDPNetworkSystem):
             sandbox.send('setPlayerStations', [address, data.ship[0].id, stations])
         elif msgID == protocol.SET_THROTTLE:
             sandbox.send('setThrottle', [self.playerMap[address], data])
+        elif msgID == protocol.SET_TARGET:
+            sandbox.send('setTarget', [self.playerMap[address], data])
         '''if username not in accountEntities:
             entity = sandbox.createEntity()
             component = AccountComponent()

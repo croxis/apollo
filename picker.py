@@ -29,7 +29,7 @@ class Picker(DirectObject.DirectObject):
 
     def mouseRight(self, pickedObj, pickedPoint):
         contextDict = {}
-        if pickedObj == None:
+        if pickedObj is None:
             pass
         else:
             #get cell from pickedpoint
@@ -38,7 +38,7 @@ class Picker(DirectObject.DirectObject):
         sandbox.send('buildContextMenu', [contextDict])
 
     def mouseLeft(self, pickedObj, pickedPoint):
-        if pickedObj == None:
+        if pickedObj is None:
             sandbox.send('noSelected')
             print "No selected"
             return
