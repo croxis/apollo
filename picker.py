@@ -28,29 +28,15 @@ class Picker(DirectObject.DirectObject):
         self.level = level
 
     def mouseRight(self, pickedObj, pickedPoint):
-        contextDict = {}
-        if pickedObj is None:
-            pass
-        else:
-            #get cell from pickedpoint
-            cell = (int(math.floor(pickedPoint[0])), int(math.floor(pickedPoint[1])), self.level)
-            contextDict['cell'] = cell
-        sandbox.send('buildContextMenu', [contextDict])
+        return
 
     def mouseLeft(self, pickedObj, pickedPoint):
         if pickedObj is None:
             sandbox.send('noSelected')
-            print "No selected"
             return
-        print "mouseLeft", pickedObj, pickedObj.getPos(), pickedPoint
-
+        #print "mouseLeft", pickedObj, pickedObj.getPos(), pickedPoint
         sandbox.send('mousePicked', [pickedObj])
-
         return
-        cell = (int(math.floor(pickedPoint[0])), int(math.floor(pickedPoint[1])), self.level)
-        #print cell
-        if database.terrain[cell[2]][cell[0]][cell[1]]['structure']:
-            messenger.send('structureClick', [cell, ])
 
     def getMouseCell(self):
         """Returns terrain cell coordinates (x,y) at mouse pointer"""
@@ -62,11 +48,8 @@ class Picker(DirectObject.DirectObject):
         self.ray.setFromLens(sandbox.base.camNode, mpos.getX(), mpos.getY())
         #get collision: picked obj and point
         pickedObj, pickedPoint = self.getCollision(self.queue)
-        #call appropiate mouse function (left or right)
         if pickedObj is None:
             return
-        cell = (int(math.floor(pickedPoint[0])), int(math.floor(pickedPoint[1])))
-        return cell
 
     def mousePick(self, but, queue):
         """mouse pick"""
@@ -123,9 +106,9 @@ class Picker(DirectObject.DirectObject):
         #create queue
         obj.queue = CollisionHandlerQueue()
         #create ray  
-        obj.rayNP=ent.attachNewNode(CollisionNode(name))
-        obj.ray=CollisionRay(x,y,z,dx,dy,dz)
+        obj.rayNP = ent.attachNewNode(CollisionNode(name))
+        obj.ray = CollisionRay(x,y,z,dx,dy,dz)
         obj.rayNP.node().addSolid(obj.ray)
         obj.rayNP.node().setFromCollideMask(GeomNode.getDefaultCollideMask())
-        base.cTrav.addCollider(obj.rayNP, obj.queue) 
+        sandbox.base.cTrav.addCollider(obj.rayNP, obj.queue)
         if show: obj.rayNP.show()
