@@ -4,6 +4,8 @@ from direct.showbase import DirectObject
 from pandac.PandaModules import CollisionTraverser, CollisionHandlerQueue, CollisionNode, CollisionRay, GeomNode
 
 
+#TODO: Move from base.cTrav to own system
+
 class Picker(DirectObject.DirectObject):
     '''
     Mouse controller.
@@ -13,7 +15,7 @@ class Picker(DirectObject.DirectObject):
         self.accept('switchLevelRequest', self.switchLevel)
         self.level = 0
         #create traverser
-        sandbox.base.cTrav = CollisionTraverser()
+        sandbox.pickTrav = CollisionTraverser()
         #create collision ray
         self.createRay(self, sandbox.base.camera, name="mouseRay", show=True)
         #initialize mousePick
@@ -56,7 +58,7 @@ class Picker(DirectObject.DirectObject):
     """Returns the picked nodepath and the picked 3d point"""
     def getCollision(self, queue):
         #do the traverse
-        sandbox.base.cTrav.traverse(sandbox.base.render)
+        sandbox.pickTrav.traverse(sandbox.base.render)
         #process collision entries in queue
         if queue.getNumEntries() > 0:
             queue.sortEntries()
@@ -87,13 +89,16 @@ class Picker(DirectObject.DirectObject):
         print "Pickable: ", newObj, "as", tag
 
     """creates a ray for detecting collisions"""
-    def createRay(self,obj,ent,name,show=False,x=0,y=0,z=0,dx=0,dy=0,dz=-1):
+    def createRay(
+        self, obj, ent, name, show=False, x=0, y=0, z=0, dx=0, dy=0, dz=-1
+    ):
         #create queue
         obj.queue = CollisionHandlerQueue()
-        #create ray  
+        #create ray
         obj.rayNP = ent.attachNewNode(CollisionNode(name))
-        obj.ray = CollisionRay(x,y,z,dx,dy,dz)
+        obj.ray = CollisionRay(x, y, z, dx, dy, dz)
         obj.rayNP.node().addSolid(obj.ray)
         obj.rayNP.node().setFromCollideMask(GeomNode.getDefaultCollideMask())
-        sandbox.base.cTrav.addCollider(obj.rayNP, obj.queue)
-        if show: obj.rayNP.show()
+        sandbox.pickTrav.addCollider(obj.rayNP, obj.queue)
+        if show:
+            obj.rayNP.show()
