@@ -1,7 +1,5 @@
 import sandbox
 
-import math
-
 from direct.showbase import DirectObject
 from pandac.PandaModules import CollisionTraverser, CollisionHandlerQueue, CollisionNode, CollisionRay, GeomNode
 
@@ -37,19 +35,6 @@ class Picker(DirectObject.DirectObject):
         #print "mouseLeft", pickedObj, pickedObj.getPos(), pickedPoint
         sandbox.send('mousePicked', [pickedObj])
         return
-
-    def getMouseCell(self):
-        """Returns terrain cell coordinates (x,y) at mouse pointer"""
-        #get mouse coords
-        if sandbox.base.mouseWatcherNode.hasMouse() is False:
-            return
-        mpos = sandbox.base.mouseWatcherNode.getMouse()
-        #locate ray from camera lens to mouse coords
-        self.ray.setFromLens(sandbox.base.camNode, mpos.getX(), mpos.getY())
-        #get collision: picked obj and point
-        pickedObj, pickedPoint = self.getCollision(self.queue)
-        if pickedObj is None:
-            return
 
     def mousePick(self, but, queue):
         """mouse pick"""
