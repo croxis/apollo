@@ -25,6 +25,8 @@ log = DirectNotify().newCategory("ITF-ShipSystem")
 #Conversion factor from SI to units used in game
 CONVERT = 1000.0
 
+shipClasses = {}
+
 
 class ShipSystem(sandbox.EntitySystem):
     def init(self):
@@ -36,7 +38,6 @@ class ShipSystem(sandbox.EntitySystem):
         self.accept('spawnShip', self.spawnShip)
         self.accept('setTarget', self.setTarget)
         self.accept('playerDisconnected', self.playerDisconnected)
-        self.shipClasses = {}
         self.shipid = None  # This is for clients to id who the controlling
         # ship is for quick lookup
         sandbox.ships = NodePath("ships")
@@ -54,7 +55,7 @@ class ShipSystem(sandbox.EntitySystem):
             traverser = mesh.controlJoint(None, 'modelRoot', (turret.name + ' traverser').replace(' ', '-'))
             hpr = mesh.getHpr(targetRender.mesh)
 
-            shipClass = self.shipClasses[entity.getComponent(shipComponents.InfoComponent).shipClass]
+            shipClass = shipClasses[entity.getComponent(shipComponents.InfoComponent).shipClass]
             rotationSpeed = shipClass['weapons'][turret.name]['rotationSpeed']
             deltaH = (360 / float(rotationSpeed)) * globalClock.getDt()
 
@@ -89,10 +90,10 @@ class ShipSystem(sandbox.EntitySystem):
 
     def checkClasses(self, shipClasses):
         for ship in shipClasses.shipClass:
-            if ship.className not in self.shipClasses:
+            if ship.className not in shipClasses:
                 import sys
                 sandbox.log.warning("Ship type " + ship.folder + ' does not exist!')
-                sandbox.log.warning("Current DB: " + str(self.shipClasses))
+                sandbox.log.warning("Current DB: " + str(shipClasses))
                 sys.exit(1)
 
     def loadShipClasses(self):
@@ -114,7 +115,7 @@ class ShipSystem(sandbox.EntitySystem):
             ship['folder'] = m.group(1)
             shipFile.close()
             #TODO switch class name to folder name
-            self.shipClasses[ship['class']] = ship
+            shipClasses[ship['class']] = ship
             universals.log.info("Loaded " + ship['mesh'])
 
     def shipUpdate(self, ship, playerShip=False):
@@ -155,12 +156,12 @@ class ShipSystem(sandbox.EntitySystem):
         velocity = Vec3(0, 0, 0)
         truex = spawnPoint.getX()
         truey = spawnPoint.getY()
-        component = physics.addNewBody(shipName, shape, self.shipClasses[shipClass]['mass'], truex, truey, velocity)
+        component = physics.addNewBody(shipName, shape, shipClasses[shipClass]['mass'], truex, truey, velocity)
         ship.addComponent(component)
         component = shipComponents.ThrustComponent()
-        for engine in self.shipClasses[shipClass]['engines']:
+        for engine in shipClasses[shipClass]['engines']:
             component.forward += engine['thrust'] / CONVERT
-        component.heading = self.shipClasses[shipClass]['torque'] / CONVERT
+        component.heading = shipClasses[shipClass]['torque'] / CONVERT
         ship.addComponent(component)
         component = shipComponents.InfoComponent()
         component.shipClass = shipClass
@@ -168,8 +169,8 @@ class ShipSystem(sandbox.EntitySystem):
         ship.addComponent(component)
 
         component = graphicsComponents.RenderComponent()
-        #component.mesh = sandbox.base.loader.loadModel('ships/' + self.shipClasses[shipClass]['path'])
-        component.mesh = Actor('ships/' + self.shipClasses[shipClass]['path'])
+        #component.mesh = sandbox.base.loader.loadModel('ships/' + shipClasses[shipClass]['path'])
+        component.mesh = Actor('ships/' + shipClasses[shipClass]['path'])
         component.mesh.reparentTo(sandbox.ships)
         component.mesh.getPart('modelRoot').setPythonTag('entityID', ship.id)
         component.mesh.setScale(1 / CONVERT)
@@ -185,17 +186,17 @@ class ShipSystem(sandbox.EntitySystem):
 
         if not turrets:
             print "Not turrets"
-            for weapon in self.shipClasses[shipClass]['weapons']:
+            for weapon in shipClasses[shipClass]['weapons']:
                 turretEntity = sandbox.createEntity()
                 turret = shipComponents.TurretComponent()
-                if not containsAny(self.shipClasses[shipClass]['weapons'][weapon]['decay'], 'abcdefghijklmnopqrstuvwyz'):
-                    turret.decay = lambda x: eval(self.shipClasses[shipClass]['weapons'][weapon]['decay'])
+                if not containsAny(shipClasses[shipClass]['weapons'][weapon]['decay'], 'abcdefghijklmnopqrstuvwyz'):
+                    turret.decay = lambda x: eval(shipClasses[shipClass]['weapons'][weapon]['decay'])
                 turret.name = weapon
-                turret.damage = self.shipClasses[shipClass]['weapons'][weapon]['damage']
-                if 'traverser' in self.shipClasses[shipClass]['weapons'][weapon]['joints']:
-                    turret.traverser = self.shipClasses[shipClass]['weapons'][weapon]['joints']['traverser']['axes']
-                if 'elevator' in self.shipClasses[shipClass]['weapons'][weapon]['joints']:
-                    turret.elevator = self.shipClasses[shipClass]['weapons'][weapon]['joints']['elevator']['axes']
+                turret.damage = shipClasses[shipClass]['weapons'][weapon]['damage']
+                if 'traverser' in shipClasses[shipClass]['weapons'][weapon]['joints']:
+                    turret.traverser = shipClasses[shipClass]['weapons'][weapon]['joints']['traverser']['axes']
+                if 'elevator' in shipClasses[shipClass]['weapons'][weapon]['joints']:
+                    turret.elevator = shipClasses[shipClass]['weapons'][weapon]['joints']['elevator']['axes']
                 turret.parentID = ship.id
                 turretEntity.addComponent(turret)
                 turretsComponent.turretIDs.append(turretEntity.id)
@@ -205,14 +206,14 @@ class ShipSystem(sandbox.EntitySystem):
                 turretEntity = sandbox.addEntity(t.turretid)
                 turret = shipComponents.TurretComponent()
                 weapon = turret.turretName
-                if not containsAny(self.shipClasses[shipClass]['weapons'][weapon]['decay'], 'abcdefghijklmnopqrstuvwyz'):
-                    turret.decay = lambda x: eval(self.shipClasses[shipClass]['weapons'][weapon]['decay'])
+                if not containsAny(shipClasses[shipClass]['weapons'][weapon]['decay'], 'abcdefghijklmnopqrstuvwyz'):
+                    turret.decay = lambda x: eval(shipClasses[shipClass]['weapons'][weapon]['decay'])
                 turret.name = weapon
-                turret.damage = self.shipClasses[shipClass]['weapons'][weapon]['damage']
-                if 'traverser' in self.shipClasses[shipClass]['weapons'][weapon]['joints']:
-                    turret.traverser = self.shipClasses[shipClass]['weapons'][weapon]['joints']['traverser']['axes']
-                if 'elevator' in self.shipClasses[shipClass]['weapons'][weapon]['joints']:
-                    turret.elevator = self.shipClasses[shipClass]['weapons'][weapon]['joints']['elevator']['axes']
+                turret.damage = shipClasses[shipClass]['weapons'][weapon]['damage']
+                if 'traverser' in shipClasses[shipClass]['weapons'][weapon]['joints']:
+                    turret.traverser = shipClasses[shipClass]['weapons'][weapon]['joints']['traverser']['axes']
+                if 'elevator' in shipClasses[shipClass]['weapons'][weapon]['joints']:
+                    turret.elevator = shipClasses[shipClass]['weapons'][weapon]['joints']['elevator']['axes']
                 turret.parentID = ship.id
                 turretEntity.addComponent(turret)
                 turretsComponent.turretIDs.append(turretEntity.id)
