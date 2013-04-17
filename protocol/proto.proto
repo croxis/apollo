@@ -53,18 +53,20 @@ message Throttle{
     optional float warp = 2;
     optional bool jump = 3;
     optional double bsgjumpx = 4;
-    optional double bsgjumpz = 5;
-    optional float heading = 6;
+    optional double bsgjumpy = 5;
+    optional double bsgjumpz = 6;
+    optional float heading = 7;
 }
 
 message Target{
     required int32 targetId = 1;
-    optional string turretName = 2 [default = ''];
+    optional int32 turretId = 2 [default = -1];
 }
 
 message Turret{
-    required string turretName = 1;
-    repeated Joint joints = 2;
+    required int32 turretid = 1;
+    optional string turretName = 2;
+    repeated Joint joints = 3;
 }
 
 message Joint{
@@ -73,4 +75,7 @@ message Joint{
     required float targetP = 3;
     required float targetR = 4;
     required float time = 5;
+    optional float currentH = 6;
+    optional float currentP = 7;
+    optional float currentR = 8;
 }

@@ -1,6 +1,7 @@
 import sandbox
 
 from direct.actor.Actor import Actor
+from direct.interval.LerpInterval import LerpHprInterval
 from direct.stdpy.file import *
 
 from panda3d.bullet import BulletDebugNode, BulletRigidBodyNode, BulletSphereShape
@@ -33,6 +34,7 @@ class ShipSystem(sandbox.EntitySystem):
         self.accept('shipUpdate', self.shipUpdate)
         self.accept('shipUpdates', self.shipUpdates)
         self.accept('spawnShip', self.spawnShip)
+        self.accept('setTarget', self.setTarget)
         self.accept('playerDisconnected', self.playerDisconnected)
         self.shipClasses = {}
         self.shipid = None  # This is for clients to id who the controlling
@@ -41,7 +43,45 @@ class ShipSystem(sandbox.EntitySystem):
         sandbox.ships.reparentTo(sandbox.base.render)
 
     def process(self, entity):
-        pass
+        #TODO: Turret tracking here
+        # Turret tracking done here
+        mesh = entity.getComponent(graphicsComponents.RenderComponent).mesh
+        turrets = entity.getComponent(shipComponents.TurretsComponent)
+        for turretEntity in turrets:
+            turret = turretEntity.getComponent(shipComponents.TurretComponent)
+            #target = sandbox.entities[turret.targetID].getComponent(shipComponents.BulletPhysicsComponent)
+            targetRender = sandbox.entities[turret.targetID].getComponent(graphicsComponents.RenderComponent)
+            traverser = mesh.controlJoint(None, 'modelRoot', (turret.name + ' traverser').replace(' ', '-'))
+            hpr = mesh.getHpr(targetRender.mesh)
+
+            shipClass = self.shipClasses[entity.getComponent(shipComponents.InfoComponent).shipClass]
+            rotationSpeed = shipClass['weapons'][turret.name]['rotationSpeed']
+            deltaH = (360 / float(rotationSpeed)) * globalClock.getDt()
+
+            directionDistance =\
+                sandbox.mathextra.signedAngularDistance(
+                    hpr[0],
+                    traverser.getH()
+                )
+
+            if directionDistance > 0.1:
+                traverser.setH(traverser.setH(traverser.getH + deltaH))
+            elif directionDistance < -0.1:
+                traverser.setH(traverser.setH(traverser.getH - deltaH))
+
+    def setTarget(self, masterShipID, data):
+        # TODO: Support client sending specific turrets
+        # Get ship turrets
+        allTurrets = sandbox.getEntitiesByComponentType(shipComponents.TurretComponent)
+        turrets = []
+        for turret in allTurrets:
+            if turret.getComponent(shipComponents.TurretComponent).parentID == masterShipID:
+                if data.turretId == -1:
+                    turrets.append(turret.getComponent(shipComponents.TurretComponent))
+                elif data.turretId == turrent.id:
+                    turrets.append(turret.getComponent(shipComponents.TurretComponent))
+        for turret in turrets:
+            turret.targetID = data.targetId
 
     def setShipID(self, data):
         self.shipid = data.id
@@ -80,7 +120,7 @@ class ShipSystem(sandbox.EntitySystem):
     def shipUpdate(self, ship, playerShip=False):
         if ship.id not in sandbox.entities:
             #self.spawnShip(ship.name, ship.className, playerShip, entityid=ship.id)
-            self.spawnShip(ship.name, ship.className, playerShip=True, entityid=ship.id)
+            self.spawnShip(ship.name, ship.className, playerShip=True, entityid=ship.id, turrets=ship.turrets)
             sandbox.send('updateStationGUI')
             #TODO: Request for full info from server and just return if no name or class?
         physicsComponent = sandbox.entities[ship.id].getComponent(shipComponents.BulletPhysicsComponent)
@@ -97,7 +137,7 @@ class ShipSystem(sandbox.EntitySystem):
 
     def spawnShip(
         self, shipName, shipClass, spawnPoint=LPoint3d(0, 0, 0),
-        playerShip=False, entityid=-1
+        playerShip=False, entityid=-1, turrets=None
     ):
         if shipName == '' or shipClass == '':
             return
@@ -136,6 +176,49 @@ class ShipSystem(sandbox.EntitySystem):
         if universals.runClient and not playerShip:
             sandbox.send('makePickable', [component.mesh])
         ship.addComponent(component)
+
+        # Load turret info here. Also check if gun is actually on ship!
+        def containsAny(string, check):
+            return 1 in [c in string for c in check]
+
+        turretsComponent = shipComponents.TurretsComponent()
+
+        if not turrets:
+            print "Not turrets"
+            for weapon in self.shipClasses[shipClass]['weapons']:
+                turretEntity = sandbox.createEntity()
+                turret = shipComponents.TurretComponent()
+                if not containsAny(self.shipClasses[shipClass]['weapons'][weapon]['decay'], 'abcdefghijklmnopqrstuvwyz'):
+                    turret.decay = lambda x: eval(self.shipClasses[shipClass]['weapons'][weapon]['decay'])
+                turret.name = weapon
+                turret.damage = self.shipClasses[shipClass]['weapons'][weapon]['damage']
+                if 'traverser' in self.shipClasses[shipClass]['weapons'][weapon]['joints']:
+                    turret.traverser = self.shipClasses[shipClass]['weapons'][weapon]['joints']['traverser']['axes']
+                if 'elevator' in self.shipClasses[shipClass]['weapons'][weapon]['joints']:
+                    turret.elevator = self.shipClasses[shipClass]['weapons'][weapon]['joints']['elevator']['axes']
+                turret.parentID = ship.id
+                turretEntity.addComponent(turret)
+                turretsComponent.turretIDs.append(turretEntity.id)
+        if turrets:
+            print "Turrets"
+            for t in turrets:
+                turretEntity = sandbox.addEntity(t.turretid)
+                turret = shipComponents.TurretComponent()
+                weapon = turret.turretName
+                if not containsAny(self.shipClasses[shipClass]['weapons'][weapon]['decay'], 'abcdefghijklmnopqrstuvwyz'):
+                    turret.decay = lambda x: eval(self.shipClasses[shipClass]['weapons'][weapon]['decay'])
+                turret.name = weapon
+                turret.damage = self.shipClasses[shipClass]['weapons'][weapon]['damage']
+                if 'traverser' in self.shipClasses[shipClass]['weapons'][weapon]['joints']:
+                    turret.traverser = self.shipClasses[shipClass]['weapons'][weapon]['joints']['traverser']['axes']
+                if 'elevator' in self.shipClasses[shipClass]['weapons'][weapon]['joints']:
+                    turret.elevator = self.shipClasses[shipClass]['weapons'][weapon]['joints']['elevator']['axes']
+                turret.parentID = ship.id
+                turretEntity.addComponent(turret)
+                turretsComponent.turretIDs.append(turretEntity.id)
+
+        ship.addComponent(turretsComponent)
+
         #sandbox.send("shipGenerated", [ship, playerShip])
         log.info("Ship spawned: " + shipName + " " + shipClass)
         #TODO Transmit player's ship data

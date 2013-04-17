@@ -19,8 +19,9 @@ engines:
 weapons:
   bow top medium pulse cannon:
     damage: 10
-    decay: 1/x^2
-    decay description: damage = x in meters
+    decay: 1/x**2  # Use python's power notation
+    decay description: damage = x in kilometers
+    rotationSpeed: 30 # Seconds turret takes to rotate 360
     joints:
       traverser:
         axes:

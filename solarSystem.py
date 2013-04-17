@@ -188,7 +188,7 @@ class SolarSystemSystem(sandbox.EntitySystem):
             #body.setPos(self.get2DBodyPosition(component, universals.day))
             component.truePos = self.get2DBodyPosition(component, universals.day)
             if name == "Earth":
-                universals.spawn = component.truePos + LPoint3d(6771, 0, 0)
+                universals.spawn = component.truePos + LPoint3d(6671, 0, 0)
 
         if parentNode == universals.solarSystemRoot:
             universals.defaultSOIid = bodyEntity.id

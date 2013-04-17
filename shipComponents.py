@@ -65,5 +65,23 @@ class InfoComponent(object):
     shipClass = ""
 
 
+class TurretsComponent(object):
+    '''Tracks the child turret entities'''
+    turretIDs = []
+
+
+class TurretComponent(object):
+    parentID = None  # In good practice the parent pointer should be its
+    # own component. We will move to this if a gun entity uses more than
+    # this component
+    name = ''
+    damage = 0
+    speed = 0 # Speed of weapon in km/s
+    decay = lambda x: x
+    traverser = {}  # {'y': -1}
+    elevator = {}  # {'x': [-90, 0]}
+    targetID = None
+
+
 '''The following components represent the stations found on a ship.
 These values are manipulated by the player or AI'''

@@ -38,7 +38,7 @@ class NetworkSystem(sandbox.UDPNetworkSystem):
             return
         data = protocol.readProto(msgID, serialized)
         if data is None and msgID != protocol.LOGIN:
-            log.error("Package reading error: " + str(msgID) + " " + serialized)
+            log.warning("Package reading error: " + str(msgID) + " " + serialized)
             return
 
         #Order of these will need to be optimized later

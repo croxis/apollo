@@ -64,6 +64,8 @@ def readProto(msgID, message):
         data = proto.Throttle()
     elif msgID == SHIP_CLASSES:
         data = proto.ShipClasses()
+    elif msgID == SET_TARGET:
+        data = proto.Target()
     else:
         return
     data.ParseFromString(message)
@@ -96,11 +98,11 @@ def requestCreateShip(name, className):
     return sandbox.generatePacket(REQUEST_CREATE_SHIP, ship)
 
 
-def requestTurretTarget(targetId, turretName=None):
+def requestTurretTarget(targetId, turretId=None):
     turret = proto.Target()
     turret.targetId = targetId
-    if turretName:
-        turret.turretName = turretName
+    if turretId:
+        turret.turretId = turretName
     return sandbox.generatePacket(SET_TARGET, turret)
 
 #Server to client datagram generators
@@ -185,4 +187,12 @@ def sendShipUpdates(shipEntities):
         packFullPhysics(component, ship)
         ship.name = shipEntity.getComponent(shipComponents.InfoComponent).name
         ship.className = shipEntity.getComponent(shipComponents.InfoComponent).shipClass
+        turrets = shipEntity.getComponent(shipComponent.TurretsComponent).turrets
+        for turretEntityID in turrets.turretIDs:
+            turret = ships.ship.turret.add()
+            turret.turretid = turretEntityID
+
+            joint = turret.joints.add()
+
+
     return sandbox.generatePacket(POS_PHYS_UPDATE, ships)
