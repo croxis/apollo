@@ -130,7 +130,6 @@ class SolarSystemSystem(sandbox.EntitySystem):
                     displacement += component.truePos
         return displacement
 
-
     def process(self, entity):
         '''Gets the xyz position of the body, relative to its parent, on the given day before/after the date of element. Units will be in AU'''
         #Static bodies for now
@@ -211,12 +210,16 @@ class SolarSystemSystem(sandbox.EntitySystem):
             #component.mesh.setScale(body.radius)
             component.mesh.reparentTo(sandbox.base.render)
             sandbox.send('makePickable', [component.mesh])
-            texture = sandbox.base.loader.loadTexture('planets/' + DB['texture'])
-            texture.setMinfilter(Texture.FTLinearMipmapLinear)
-            ts1 = TextureStage('textures1')
-            ts1.setMode(TextureStage.MGlow)
-            component.mesh.setTexture(ts1, texture)
+            #texture = sandbox.base.loader.loadTexture('planets/' + DB['texture'])
+            #texture.setMinfilter(Texture.FTLinearMipmapLinear)
+            #ts1 = TextureStage('textures1')
+            #ts1.setMode(TextureStage.MGlow)
+            #component.mesh.setTexture(ts1, texture)
             #component.mesh.setTexture(texture, 1)
+
+            #Shader test
+            
+
             component.light = component.mesh.attachNewNode(PointLight("sunPointLight"))
             component.light.node().setColor(Vec4(1, 1, 1, 1))
             sandbox.base.render.setLight(component.light)

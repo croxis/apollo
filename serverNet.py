@@ -46,8 +46,7 @@ class NetworkSystem(sandbox.UDPNetworkSystem):
             #TODO, if connection previously existed, reconnect
             #TODO: send current mission status.
             #TODO: Move ship select to separate function
-            shipSys = sandbox.getSystem(shipSystem.ShipSystem)
-            ackDatagram = protocol.shipClasses(shipSys.shipClasses)
+            ackDatagram = protocol.shipClasses(shipSystem.shipClasses)
             self.sendData(ackDatagram, address)
             ackDatagram = protocol.playerShipStations()
             self.sendData(ackDatagram, address)
@@ -107,7 +106,9 @@ class NetworkSystem(sandbox.UDPNetworkSystem):
     def sendShipUpdates(self, task):
         ships = sandbox.getSystem(shipSystem.ShipSystem).getPlayerShipEntities()
         ships += sandbox.getEntitiesByComponentType(shipComponents.AIPilotComponent)
-        self.broadcastData(protocol.sendShipUpdates(ships))
+        #self.broadcastData(protocol.sendShipUpdates(ships))
+        for ship in ships:
+            self.broadcastData(protocol.sendShipUpdates([ship]))
         return task.again
 
     def playerDisconnected(self, address):

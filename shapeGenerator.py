@@ -369,6 +369,12 @@ class Geometry(NodePath):
 # ------------------------------------------------------------------------------
 # CUSTOM GEOMETRY GENERATORS
 # ------------------------------------------------------------------------------
+class Circle(Geometry):
+  def __init__(self, radius, radiusSegments):
+    Geometry.__init__(self)
+    self.addGeometry(CircleData(outerRadius=radius, innerRadius=0.0, radiusSegments=radiusSegments, inverted=False))
+
+
 class Cube(Geometry):
   def __init__(self, height, width, depth):
     Geometry.__init__(self)
@@ -387,6 +393,19 @@ class Cylinder(Geometry):
     top    = self.addGeometry(CircleData(outerRadius=radius, innerRadius=0.0, radiusSegments=radiusSegments))
     top.setZ(length)
 
+
+class ShellCylinder(Geometry):
+  def __init__(self, radius, length, radiusSegments):
+    Geometry.__init__(self)
+    if radius > 0:
+      side   = self.addGeometry(TubeWallData(radius=radius, length=length, radiusSegments=radiusSegments))
+    else:
+      side   = self.addGeometry(TubeWallData(radius=radius, length=length, radiusSegments=radiusSegments, inverted=True))
+    #bottom = self.addGeometry(CircleData(outerRadius=radius, innerRadius=0.0, radiusSegments=radiusSegments,inverted=True))
+    #top    = self.addGeometry(CircleData(outerRadius=radius, innerRadius=0.0, radiusSegments=radiusSegments))
+    #top.setZ(length)
+
+
 class Tube(Geometry):
   def __init__(self, outerRadius=1.0, innerRadius=0.5, length=1.0, radiusSegments=32):
     Geometry.__init__(self)
@@ -395,6 +414,14 @@ class Tube(Geometry):
     cylinderBottom    = self.addGeometry(CircleData(outerRadius=outerRadius, innerRadius=innerRadius, radiusSegments=radiusSegments,inverted=True))
     cylinderInnerWall = self.addGeometry(TubeWallData(radius=innerRadius, length=length, radiusSegments=radiusSegments,inverted=True))
     cylinderOuterWall = self.addGeometry(TubeWallData(radius=outerRadius, length=length, radiusSegments=radiusSegments))
+
+
+class ShellTube(Geometry):
+  def __init__(self, radius=1.0, length=1.0, radiusSegments=32):
+    Geometry.__init__(self)
+    cylinderWall = self.addGeometry(TubeWallData(radius=radius, length=length, radiusSegments=radiusSegments))
+
+
 
 class Capsule(Geometry):
   def __init__(self, radius=1.0, length=1.0, radiusSegments=32, heightSegments=16):

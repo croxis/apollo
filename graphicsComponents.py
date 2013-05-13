@@ -1,3 +1,6 @@
+from panda3d.core import PerlinNoise2
+
+
 class CameraComponent(object):
     pass
 
@@ -16,3 +19,5 @@ class StarRender(object):
     body = None
     atmosphere = None
     light = None
+    noise = PerlinNoise2(1024, 1024)
+    noise_texture = None

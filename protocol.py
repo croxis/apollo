@@ -1,4 +1,6 @@
 import proto_pb2 as proto
+
+import graphicsComponents
 import shipComponents
 import shipSystem
 import universals
@@ -187,12 +189,31 @@ def sendShipUpdates(shipEntities):
         packFullPhysics(component, ship)
         ship.name = shipEntity.getComponent(shipComponents.InfoComponent).name
         ship.className = shipEntity.getComponent(shipComponents.InfoComponent).shipClass
-        turrets = shipEntity.getComponent(shipComponent.TurretsComponent).turrets
+        turrets = shipEntity.getComponent(shipComponents.TurretsComponent)
+        mesh = shipEntity.getComponent(graphicsComponents.RenderComponent).mesh
         for turretEntityID in turrets.turretIDs:
-            turret = ships.ship.turret.add()
+            turret = ship.turrets.add()
             turret.turretid = turretEntityID
 
-            joint = turret.joints.add()
+            turretComponent = sandbox.entities[turretEntityID].getComponent(shipComponents.TurretComponent)
+            turret.turretName = turretComponent.name
 
+            joint = turret.joints.add()
+            # Using "targetHPR" as current HPR for now
+            fullJoint = 'gun-' + turretComponent.name.replace(' ', '_') + "-elevator"
+            joint.jointName = "elevator"
+            joint.time = 0
+            joint.targetH = mesh.controlJoint(None, "modelRoot", fullJoint).getH()
+            joint.targetP = mesh.controlJoint(None, "modelRoot", fullJoint).getP()
+            joint.targetR = mesh.controlJoint(None, "modelRoot", fullJoint).getR()
+
+            joint = turret.joints.add()
+            # Using "targetHPR" as current HPR for now
+            fullJoint = joint.jointName = 'gun-' + turretComponent.name.replace(' ', '_') + "-traverser"
+            joint.jointName = "traverser"
+            joint.time = 0
+            joint.targetH = mesh.controlJoint(None, "modelRoot", fullJoint).getH()
+            joint.targetP = mesh.controlJoint(None, "modelRoot", fullJoint).getP()
+            joint.targetR = mesh.controlJoint(None, "modelRoot", fullJoint).getR()
 
     return sandbox.generatePacket(POS_PHYS_UPDATE, ships)

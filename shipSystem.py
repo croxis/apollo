@@ -48,9 +48,11 @@ class ShipSystem(sandbox.EntitySystem):
         # Turret tracking done here
         mesh = entity.getComponent(graphicsComponents.RenderComponent).mesh
         turrets = entity.getComponent(shipComponents.TurretsComponent)
-        for turretEntity in turrets:
-            turret = turretEntity.getComponent(shipComponents.TurretComponent)
+        for turretEntityID in turrets.turretIDs:
+            turret = sandbox.entities[turretEntityID].getComponent(shipComponents.TurretComponent)
             #target = sandbox.entities[turret.targetID].getComponent(shipComponents.BulletPhysicsComponent)
+            if turret.targetID is None:
+                continue
             targetRender = sandbox.entities[turret.targetID].getComponent(graphicsComponents.RenderComponent)
             traverser = mesh.controlJoint(None, 'modelRoot', (turret.name + ' traverser').replace(' ', '-'))
             hpr = mesh.getHpr(targetRender.mesh)
@@ -88,8 +90,8 @@ class ShipSystem(sandbox.EntitySystem):
         self.shipid = data.id
         universals.shipid = data.id
 
-    def checkClasses(self, shipClasses):
-        for ship in shipClasses.shipClass:
+    def checkClasses(self, shipClasses2):
+        for ship in shipClasses2.shipClass:
             if ship.className not in shipClasses:
                 import sys
                 sandbox.log.warning("Ship type " + ship.folder + ' does not exist!')
@@ -185,7 +187,6 @@ class ShipSystem(sandbox.EntitySystem):
         turretsComponent = shipComponents.TurretsComponent()
 
         if not turrets:
-            print "Not turrets"
             for weapon in shipClasses[shipClass]['weapons']:
                 turretEntity = sandbox.createEntity()
                 turret = shipComponents.TurretComponent()
@@ -201,11 +202,10 @@ class ShipSystem(sandbox.EntitySystem):
                 turretEntity.addComponent(turret)
                 turretsComponent.turretIDs.append(turretEntity.id)
         if turrets:
-            print "Turrets"
             for t in turrets:
                 turretEntity = sandbox.addEntity(t.turretid)
                 turret = shipComponents.TurretComponent()
-                weapon = turret.turretName
+                weapon = t.turretName
                 if not containsAny(shipClasses[shipClass]['weapons'][weapon]['decay'], 'abcdefghijklmnopqrstuvwyz'):
                     turret.decay = lambda x: eval(shipClasses[shipClass]['weapons'][weapon]['decay'])
                 turret.name = weapon

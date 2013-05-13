@@ -396,6 +396,13 @@ class Tube(Geometry):
     cylinderInnerWall = self.addGeometry(TubeWallData(radius=innerRadius, length=length, radiusSegments=radiusSegments,inverted=True))
     cylinderOuterWall = self.addGeometry(TubeWallData(radius=outerRadius, length=length, radiusSegments=radiusSegments))
 
+
+class ShellTube(Geometry):
+  def __init__(self, radius=1.0, length=1.0, radiusSegments=32):
+    Geometry.__init__(self)
+    cylinderWall = self.addGeometry(TubeWallData(radius=radius, length=length, radiusSegments=radiusSegments))
+
+
 class Capsule(Geometry):
   def __init__(self, radius=1.0, length=1.0, radiusSegments=32, heightSegments=16):
     Geometry.__init__(self)
