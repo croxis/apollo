@@ -54,7 +54,7 @@ def taskUpdate(task):
     vortex_camera.setHpr(sandbox.base.camera.getHpr())
     return task.cont
 
-shaders = Shader.load(Shader.SLGLSL, 'vortexVertex.glsl', 'vortexFrag2.glsl')
+shaders = Shader.load(Shader.SLGLSL, 'vortex_vertex.glsl', 'vortex_fragment.glsl')
 #inside_vortex.setShader(shaders)
 outside_vortex.setShader(shaders)
 vortex.setShader(shaders)

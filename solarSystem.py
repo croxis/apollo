@@ -5,11 +5,12 @@ import sandbox
 import yaml
 
 from direct.stdpy.file import *
-from panda3d.core import LPoint3d, NodePath, Point3, PointLight, Shader, Vec4
-from panda3d.core import Texture, TextureStage,  TexGenAttrib
+from panda3d.core import LPoint3d, NodePath, PNMImage, Point3, PointLight, Shader, Vec4
+from panda3d.core import TextNode, Texture, TextureStage,  TexGenAttrib
 
 import graphicsComponents
 import shapeGenerator
+import surface_mesh
 import universals
 
 #from pandac.PandaModules import loadPrcFileData
@@ -187,6 +188,7 @@ class SolarSystemSystem(sandbox.EntitySystem):
             #body.setPos(self.get2DBodyPosition(component, universals.day))
             component.truePos = self.get2DBodyPosition(component, universals.day)
             if name == "Earth":
+                #universals.spawn = component.truePos + LPoint3d(0, 6671, 0)
                 universals.spawn = component.truePos + LPoint3d(6671, 0, 0)
 
         if parentNode == universals.solarSystemRoot:
@@ -217,22 +219,63 @@ class SolarSystemSystem(sandbox.EntitySystem):
             #component.mesh.setTexture(ts1, texture)
             #component.mesh.setTexture(texture, 1)
 
-            #Shader test
-            
-
             component.light = component.mesh.attachNewNode(PointLight("sunPointLight"))
             component.light.node().setColor(Vec4(1, 1, 1, 1))
             sandbox.base.render.setLight(component.light)
             bodyEntity.addComponent(component)
 
+            #Shader test
+            componentStar = graphicsComponents.StarRender()
+            componentStar.noise_texture = Texture('noise')
+            componentStar.noise_texture.setup2dTexture()
+            img = PNMImage(1024, 1024)
+            for y in range(1024):
+                for x in range(1024):
+                    img.setXel(x, y, componentStar.noise.noise(x, y))
+                    #print componentStar.noise.noise(x, y)
+            componentStar.noise_texture.load(img)
+            #componentStar.noise_texture.write('test.png')
+            #component.mesh.setTexture(componentStar.noise_texture, 1)
+
+            texture = sandbox.base.loader.loadTexture('planets/' + DB['texture'])
+            ts1 = TextureStage('textures1')
+            ts1.setMode(TextureStage.MGlow)
+            component.mesh.setTexture(ts1, componentStar.noise_texture)
+            #component.mesh.setTexture(ts1, texture)
+
+            component.mesh.setShaderInput('time', universals.get_day_in_seconds())
+            shaders = Shader.load(Shader.SLGLSL, 'vortexVertex.glsl', 'starFrag.glsl')
+            component.mesh.setShader(shaders)
+            sandbox.send('makePickable', [component.mesh])
+
+
         if universals.runClient and (DB['type'] == 'solid' or DB['type'] == 'moon'):
             component = graphicsComponents.RenderComponent()
             #component.mesh = shapeGenerator.Sphere(body.radius, 128, name)
-            component.mesh = shapeGenerator.Sphere(body.radius, 64, name)
-            sandbox.send('makePickable', [component.mesh])
+            #component.mesh = shapeGenerator.Sphere(body.radius, 64, name)
+            component.mesh = surface_mesh.make_planet(name=name, scale=body.radius)
+            #sandbox.send('makePickable', [component.mesh])
+            sandbox.send('makePickable', [component.mesh.node_path])
             #component.mesh.setScale(body.radius)
-            component.mesh.reparentTo(render)
-            if '#' in DB['texture']:
+            component.mesh.reparent_to(sandbox.base.render)
+            # Doing world text
+            text = TextNode('node name')
+            text.setText(name)
+            #textNodePath = component.mesh.attachNewNode(text)
+            textNodePath = component.mesh.node_path.attachNewNode(text)
+            textNodePath.setScale(0.07)
+
+            component.mesh.set_textures(DB['texture'],
+                night_path=DB['night'],
+                gloss_path=DB['spec'])
+
+
+            component.mesh.set_ambient(1, 1, 1, 1)
+            component.mesh.set_diffuse(1, 1, 1, 1)
+            component.mesh.set_specular(1, 1, 1, 1)
+            component.mesh.set_shininess(100)
+
+            '''if '#' in DB['texture']:
                 component.mesh.setTexGen(TextureStage.getDefault(), TexGenAttrib.MWorldPosition)
                 component.mesh.setTexProjector(TextureStage.getDefault(), sandbox.base.render, component.mesh)
                 component.mesh.setTexScale(TextureStage.getDefault(), 1,  1, -1)
@@ -242,7 +285,7 @@ class SolarSystemSystem(sandbox.EntitySystem):
             else:
                 texture = sandbox.base.loader.loadTexture('planets/' + DB['texture'])
             #texture.setMinfilter(Texture.FTLinearMipmapLinear)
-            component.mesh.setTexture(texture, 1)
+            component.mesh.setTexture(texture, 1)'''
             '''if "atmosphere" in DB:
                 component.atmosphere = shapeGenerator.Sphere(-1, 128)
                 component.atmosphere.reparentTo(render)

@@ -123,6 +123,7 @@ if universals.runClient:
     log.info("Setting up render system")
     sandbox.addSystem(renderSystem.RenderSystem(graphicsComponents.RenderComponent))
     sandbox.base.render.setShaderAuto()
+    
 if universals.runServer:
     import serverNet
     log.info("Setting up server network")

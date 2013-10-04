@@ -42,3 +42,6 @@ playerStations = ['navigation', 'mainScreen', 'weapons']
 
 #Conversion factor from SI to units used in engine
 CONVERT = 1000.0
+
+def get_day_in_seconds():
+    return day * 86400

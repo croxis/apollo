@@ -34,13 +34,12 @@ class Picker(DirectObject.DirectObject):
         if pickedObj is None:
             sandbox.send('noSelected')
             return
-        #print "mouseLeft", pickedObj, pickedObj.getPos(), pickedPoint
+        print "mouseLeft", pickedObj, pickedObj.getPos(), pickedPoint
         sandbox.send('mousePicked', [pickedObj])
         return
 
     def mousePick(self, but, queue):
         """mouse pick"""
-        #print "Mousepick"
         #get mouse coords
         if sandbox.base.mouseWatcherNode.hasMouse() is False:
             return
@@ -49,7 +48,7 @@ class Picker(DirectObject.DirectObject):
         self.ray.setFromLens(sandbox.base.camNode, mpos.getX(), mpos.getY())
         #get collision: picked obj and point
         pickedObj, pickedPoint = self.getCollision(queue)
-        #call appropiate mouse function (left or right)
+        #call appropriate mouse function (left or right)
         if but == 1:
             self.mouseLeft(pickedObj, pickedPoint)
         if but == 3:

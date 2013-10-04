@@ -84,6 +84,10 @@ class RenderSystem(sandbox.EntitySystem):
         self.accept('wheel_up', wheel_up)
         self.accept('wheel_down', wheel_down)
         self.accept('`', report)
+        self.accept('w', self.toggleWireframe)
+
+    def toggleWireframe(self):
+        sandbox.base.toggleWireframe()
 
     def entityFromNode(self, nodepath):
         for entity in self.entities:
@@ -93,7 +97,6 @@ class RenderSystem(sandbox.EntitySystem):
                 print renderComp.mesh.getPart('modelRoot')
                 if renderComp.mesh.getPart('modelRoot') is nodepath:
                     print "ZOMG YAY"
-
             if nodepath is renderComp.mesh:
                 print "Yay!"
 
@@ -118,27 +121,29 @@ class RenderSystem(sandbox.EntitySystem):
             phys = entity.getComponent(solarSystem.CelestialComponent)
             pos = phys.truePos
         gfx = entity.getComponent(graphicsComponents.RenderComponent)
+        gfx.mesh.set_shader_input('time', universals.get_day_in_seconds())
         if entity.id is not universals.shipid:
             if universals.shipid is None:
                 return
             playerShip = sandbox.entities[universals.shipid]
             playerPhysics = playerShip.getComponent(shipComponents.BulletPhysicsComponent)
             diff = playerPhysics.getTruePos() - pos
-            scale = 1.0 / math.sqrt(diff.length())
+            #scale = 1.0 / math.sqrt(diff.length())
+            scale = 1
             if PERSPECTIVE:
-                diff = diff * scale
-                gfx.mesh.setPos(Point3(0, 0, 0) - convertPos(diff))
-                gfx.mesh.setScale(scale)
+                #diff = diff * scale
+                gfx.mesh.set_pos(Point3(0, 0, 0) - convertPos(diff))
+                gfx.mesh.set_scale(scale)
                 if entity.hasComponent(solarSystem.CelestialComponent):
-                    gfx.mesh.setScale(scale)
+                    gfx.mesh.set_scale(scale)
                 else:
-                    gfx.mesh.setScale(scale / scaleFactor)
+                    gfx.mesh.set_scale(scale / scaleFactor)
             else:
-                gfx.mesh.setPos(Point3(0, 0, 0) - convertPos(diff))
+                gfx.mesh.set_pos(Point3(0, 0, 0) - convertPos(diff))
                 if entity.hasComponent(solarSystem.CelestialComponent):
-                    gfx.mesh.setScale(1)
+                    gfx.mesh.set_scale(1)
                 else:
-                    gfx.mesh.setScale(1.0 / scaleFactor)
+                    gfx.mesh.set_scale(1.0 / scaleFactor)
 
 
             #near = sandbox.base.camLens.getFar() / 2.0
@@ -162,7 +167,7 @@ class RenderSystem(sandbox.EntitySystem):
             else:
                 gfx.mesh.setPos(Point3(0, 0, 0) - convertPos(diff))'''
         #print phys.nodePath.getHpr()
-        gfx.mesh.setHpr(phys.nodePath.getHpr())
+        gfx.mesh.set_hpr(phys.nodePath.get_hpr())
 
     def end(self):
         pass

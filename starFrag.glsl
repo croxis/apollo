@@ -1,6 +1,9 @@
 // based on https://www.shadertoy.com/view/4dXGR4 by flight404
 // CC-NC-SA
 
+uniform float time;
+uniform sampler2D p3d_Texture0;
+
 float snoise(vec3 uv, float res)    // by trisomie21
 {
     const vec3 s = vec3(1e0, 1e2, 1e4);
@@ -41,11 +44,12 @@ void main(void)
     
     vec3 orange         = vec3( 0.8, 0.65, 0.3 );
     vec3 orangeRed      = vec3( 0.8, 0.35, 0.1 );
-    float time      = iGlobalTime * 0.1;
-    float aspect    = iResolution.x/iResolution.y;
-    vec2 uv         = gl_FragCoord.xy / iResolution.xy;
+    float time      = time * 0.1;
+    //float aspect    = iResolution.x/iResolution.y;
+    //vec2 uv         = gl_FragCoord.xy / iResolution.xy;
+    vec2 uv         = gl_FragCoord.xy;
     vec2 p          = -0.5 + uv;
-    p.x *= aspect;
+    //p.x *= aspect;
 
     float fade      = pow( length( 2.0 * p ), 0.5 );
     float fVal1     = 1.0 - fade;
@@ -72,7 +76,7 @@ void main(void)
     vec3 starSphere     = vec3( 0.0 );
     
     vec2 sp = -1.0 + 2.0 * uv;
-    sp.x *= aspect;
+    //sp.x *= aspect;
     sp *= ( 2.0 - brightness );
     float r = dot(sp,sp);
     float f = (1.0-sqrt(abs(1.0-r)))/(r) + brightness * 0.5;
@@ -83,15 +87,15 @@ void main(void)
         newUv.y = sp.y*f;
         newUv += vec2( time, 0.0 );
         
-        vec3 texSample  = texture2D( iChannel0, newUv ).rgb;
+        vec3 texSample  = texture2D( p3d_Texture0, newUv ).rgb;
         float uOff      = ( texSample.g * brightness * 4.5 + time );
         vec2 starUV     = newUv + vec2( uOff, 0.0 );
-        starSphere      = texture2D( iChannel0, starUV ).rgb;
+        starSphere      = texture2D( p3d_Texture0, starUV ).rgb;
     }
     
     float starGlow  = min( max( 1.0 - dist * ( 1.0 - brightness ), 0.0 ), 1.0 );
     //gl_FragColor.rgb  = vec3( r );
     //gl_FragColor.rgb  = vec3( f * ( 0.75 + brightness * 0.3 ) * orange ) + starSphere + corona * orange + starGlow * orangeRed;
-    gl_FragColor.rgb    = vec3( f * ( 0.75 + brightness * 0.3 ) * orange ) + starSphere  + starGlow * orangeRed;
+    //gl_FragColor.rgb    = vec3( f * ( 0.75 + brightness * 0.3 ) * orange ) + starSphere  + starGlow * orangeRed;
     gl_FragColor.a      = 1.0;
 }
