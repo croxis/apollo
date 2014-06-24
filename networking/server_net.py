@@ -1,13 +1,8 @@
-import sys
-sys.path.append('..')
-import sandbox
-
-from pandac.PandaModules import loadPrcFileData
-loadPrcFileData("", "notify-level-ITF-ServerNetwork debug")
 from direct.directnotify.DirectNotify import DirectNotify
-log = DirectNotify().newCategory("ITF-ServerNetwork")
+log = DirectNotify().newCategory("Apollo-ServerNetwork")
 
-import protocol
+import sandbox
+import protocol_old
 import shipComponents
 import universals
 import shipSystem
@@ -26,8 +21,8 @@ class NetworkSystem(sandbox.UDPNetworkSystem):
         self.playerMap = {}  # {Address: Shipid}
         #self.shipMap = {} # {ShipID: {CONSOL: Netaddress}}
         #self.accept("shipGenerated", self.shipGenerated)
-        if universals.runServer and not universals.runClient:
-            sandbox.base.taskMgr.doMethodLater(0.2, self.sendShipUpdates, 'shipUpdates')
+        #if universals.runServer and not universals.runClient:
+        #    sandbox.base.taskMgr.doMethodLater(0.2, self.sendShipUpdates, 'shipUpdates')
 
     def processPacket(
         self, msgID, remotePacketCount,
@@ -36,28 +31,28 @@ class NetworkSystem(sandbox.UDPNetworkSystem):
         #If not in our protocol range then we just reject
         if msgID < 0 or msgID > 200:
             return
-        data = protocol.readProto(msgID, serialized)
-        if data is None and msgID != protocol.LOGIN:
+        data = protocol_old.readProto(msgID, serialized)
+        if data is None and msgID != protocol_old.LOGIN:
             log.warning("Package reading error: " + str(msgID) + " " + serialized)
             return
 
         #Order of these will need to be optimized later
-        if msgID == protocol.LOGIN:
+        if msgID == protocol_old.LOGIN:
             #TODO, if connection previously existed, reconnect
             #TODO: send current mission status.
             #TODO: Move ship select to separate function
-            ackDatagram = protocol.shipClasses(shipSystem.shipClasses)
+            ackDatagram = protocol_old.shipClasses(shipSystem.shipClasses)
             self.sendData(ackDatagram, address)
-            ackDatagram = protocol.playerShipStations()
+            ackDatagram = protocol_old.playerShipStations()
             self.sendData(ackDatagram, address)
             entity = sandbox.createEntity()
             component = AccountComponent()
             component.address = address
             entity.addComponent(component)
             self.activeConnections[component.address] = component
-        elif msgID == protocol.REQUEST_CREATE_SHIP:
+        elif msgID == protocol_old.REQUEST_CREATE_SHIP:
             sandbox.send('spawnShip', [data.name, data.className, True])
-        elif msgID == protocol.REQUEST_STATIONS:
+        elif msgID == protocol_old.REQUEST_STATIONS:
             entity = sandbox.entities[data.ship[0].id]
             #info = entity.getComponent(shipComponents.InfoComponent)
             player = entity.getComponent(shipComponents.PlayerComponent)
@@ -66,9 +61,9 @@ class NetworkSystem(sandbox.UDPNetworkSystem):
                 if getattr(player, stationName) != 0:
                     print "Resend ship select window"
             sandbox.send('setPlayerStations', [address, data.ship[0].id, stations])
-        elif msgID == protocol.SET_THROTTLE:
+        elif msgID == protocol_old.SET_THROTTLE:
             sandbox.send('setThrottle', [self.playerMap[address], data])
-        elif msgID == protocol.SET_TARGET:
+        elif msgID == protocol_old.SET_TARGET:
             sandbox.send('setTarget', [self.playerMap[address], data])
         '''if username not in accountEntities:
             entity = sandbox.createEntity()
@@ -108,7 +103,7 @@ class NetworkSystem(sandbox.UDPNetworkSystem):
         ships += sandbox.getEntitiesByComponentType(shipComponents.AIPilotComponent)
         #self.broadcastData(protocol.sendShipUpdates(ships))
         for ship in ships:
-            self.broadcastData(protocol.sendShipUpdates([ship]))
+            self.broadcastData(protocol_old.sendShipUpdates([ship]))
         return task.again
 
     def playerDisconnected(self, address):
@@ -120,7 +115,7 @@ class NetworkSystem(sandbox.UDPNetworkSystem):
 
     def confirmPlayerStations(self, netAddress, shipid, stations):
         self.playerMap[netAddress] = shipid
-        datagram = protocol.confirmStations(shipid, stations)
+        datagram = protocol_old.confirmStations(shipid, stations)
         self.sendData(datagram, netAddress)
 
 

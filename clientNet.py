@@ -1,20 +1,17 @@
 import sandbox
-from panda3d.core import Point3, VBase3, Vec3
-from panda3d.core import QueuedConnectionManager, QueuedConnectionReader, ConnectionWriter, NetAddress, NetDatagram
-from direct.distributed.PyDatagram import PyDatagram
-from direct.distributed.PyDatagramIterator import PyDatagramIterator
 
-import protocol
+from direct.directnotify.DirectNotify import DirectNotify
+log = DirectNotify().newCategory("Apolloe-ClientNet")
+
+import protocol_old
 import shipComponents
-import universals
-from universals import log
 
 #PROPOSAL! {server entity id: client entity id} and reverse lookup dict too
 
 
 class NetworkSystem(sandbox.UDPNetworkSystem):
     def init2(self):
-        self.packetCount = 0
+        self.packet_count = 0
         self.accept('login', self.sendLogin)
         self.accept('requestStations', self.requestStations)
         self.accept('requestThrottle', self.requestThrottle)
@@ -25,39 +22,39 @@ class NetworkSystem(sandbox.UDPNetworkSystem):
         #If not in our protocol range then we just reject
         if msgID < 0 or msgID > 200:
             return
-        data = protocol.readProto(msgID, serialized)
-        if msgID == protocol.CONFIRM_STATIONS:
+        data = protocol_old.readProto(msgID, serialized)
+        if msgID == protocol_old.CONFIRM_STATIONS:
             sandbox.send('shipUpdate', [data, True])
             sandbox.send('setShipID', [data])
             sandbox.send('makeStationUI', [data])
-        elif msgID == protocol.PLAYER_SHIPS:
+        elif msgID == protocol_old.PLAYER_SHIPS:
             sandbox.send('shipUpdates', [data])
             sandbox.send('shipSelectScreen', [data])
-        elif msgID == protocol.POS_PHYS_UPDATE:
+        elif msgID == protocol_old.POS_PHYS_UPDATE:
             sandbox.send('shipUpdates', [data])
-        elif msgID == protocol.SHIP_CLASSES:
+        elif msgID == protocol_old.SHIP_CLASSES:
             sandbox.send('shipClassList', [data])
 
     def sendLogin(self, serverAddress):
         self.serverAddress = serverAddress
-        datagram = self.generateGenericPacket(protocol.LOGIN)
+        datagram = self.generateGenericPacket(protocol_old.LOGIN)
         universals.log.debug("sending login")
         self.send(datagram)
 
     def requestCreateShip(self, shipName, className):
-        datagram = protocol.requestCreateShip(shipName, className)
+        datagram = protocol_old.requestCreateShip(shipName, className)
         self.send(datagram)
 
     def requestStations(self, shipid, stations):
-        datagram = protocol.requestStations(shipid, stations)
+        datagram = protocol_old.requestStations(shipid, stations)
         self.send(datagram)
 
     def requestThrottle(self, throttle, heading):
-        datagram = protocol.requestThrottle(throttle, heading)
+        datagram = protocol_old.requestThrottle(throttle, heading)
         self.send(datagram)
 
     def requestTarget(self, targetID):
-        datagram = protocol.requestTurretTarget(targetID)
+        datagram = protocol_old.requestTurretTarget(targetID)
         self.send(datagram)
 
     def send(self, datagram):

@@ -4,6 +4,18 @@
 		"selected_items":
 		[
 			[
+				"celestial_",
+				"celestial_component	(local, instance)"
+			],
+			[
+				"make",
+				"make_planet(name, scale, debug)	(global, function)"
+			],
+			[
+				"set",
+				"set_shader_input(args, kwargs)	(attribute, function)"
+			],
+			[
 				"A",
 				"AtmosphericScattering	(imported, class)"
 			],
@@ -412,10 +424,6 @@
 				"entities"
 			],
 			[
-				"set",
-				"setattr	(builtin, function)"
-			],
-			[
 				"Pla",
 				"PlayerShips	(imported, class)"
 			],
@@ -506,58 +514,88 @@
 			[
 				"component",
 				"componentType	(local, instance)"
-			],
-			[
-				"ack",
-				"ackDatagram	(local, instance)"
-			],
-			[
-				"En",
-				"EntitySystem  (class)"
 			]
 		]
 	},
 	"buffers":
 	[
 		{
-			"file": "/home/croxis/src/Panda-Core-Technology/Planet/main.py",
+			"file": "/home/croxis/src/SpaceDrive/spacedrive/orbit_system.py",
 			"settings":
 			{
-				"buffer_size": 4294,
+				"buffer_size": 14336,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"contents": "Package Control Messages\n========================\n\nSublimeCodeIntel:\n----------------\n\n  SublimeCodeIntel v2.0.6 Release Notes\n  =====================================\n  [Restart Sublime Text after reading this. In case of trouble, please read the Troubleshooting section in the README]\n  \n  A full-featured code intelligence and smart autocomplete engine for Sublime Text.\n  (Code intelligence plugin ported from Open Komodo Editor to Sublime Text)\n  \n  If you like SublimeCodeIntel, please make a donation: http://sublimecodeintel.github.io/SublimeCodeIntel/donate.html\n  \n  \n  For more information:\n  ---------------------\n  Please take the time to read the documentation:\n  \n  * Online - http://sublimecodeintel.github.io/SublimeCodeIntel/\n  \n  \n  CHANGES/FIXES\n  -------------\n  \n  + Tooltips can use Popups, Output Panel or Status Bar (\"popup\", \"panel\", \"status\" respectively, in the settings)\n  \n  - Resolved issues with XML and other languages.\n  \n  - Improved speed by using cache for some things (added zope.cachedescriptors)\n  \n",
+			"file": "/home/croxis/src/SpaceDrive/spacedrive/surface_mesh.py",
 			"settings":
 			{
-				"buffer_size": 1038,
-				"line_ending": "Unix",
-				"name": "Package Control Messages",
-				"scratch": true
-			}
-		},
-		{
-			"file": "/home/croxis/src/Panda-Core-Technology/Planet/planet_surface_vert.glsl",
-			"settings":
-			{
-				"buffer_size": 2192,
+				"buffer_size": 7184,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "/home/croxis/src/Panda-Core-Technology/Planet/surface_mesh.py",
+			"file": "/home/croxis/src/SpaceDrive/spacedrive/__init__.py",
 			"settings":
 			{
-				"buffer_size": 6942,
+				"buffer_size": 381,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "/home/croxis/src/Panda-Core-Technology/Planet/planet_surface_frag.glsl",
+			"file": "physics.py",
 			"settings":
 			{
-				"buffer_size": 1744,
+				"buffer_size": 9149,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/croxis/src/SpaceDrive/spacedrive/physics_components.py",
+			"settings":
+			{
+				"buffer_size": 1079,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "main.py",
+			"settings":
+			{
+				"buffer_size": 5029,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/croxis/src/SpaceDrive/spacedrive/physics_system.py",
+			"settings":
+			{
+				"buffer_size": 4943,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "solarSystem.py",
+			"settings":
+			{
+				"buffer_size": 15356,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/croxis/src/SpaceDrive/spacedrive/render_components.py",
+			"settings":
+			{
+				"buffer_size": 193,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "renderSystem.py",
+			"settings":
+			{
+				"buffer_size": 5918,
 				"line_ending": "Unix"
 			}
 		}
@@ -630,6 +668,39 @@
 	},
 	"file_history":
 	[
+		"/home/croxis/src/SandBox/.gitignore",
+		"/home/croxis/src/SpaceDrive/spacedrive/universals.py",
+		"/home/croxis/src/apollo/graphicsComponents.py",
+		"/home/croxis/src/SpaceDrive/spacedrive/celestial_components.py",
+		"/home/croxis/src/apollo/shipComponents.py",
+		"/home/croxis/src/apollo/surface_mesh.py",
+		"/home/croxis/src/SpaceDrive/spacedrive/__init__.py",
+		"/home/croxis/src/SpaceDrive/spacedrive/orbitSystem.py",
+		"/home/croxis/src/SpaceDrive/spacedrive/rendercomponents.py",
+		"/home/croxis/src/SpaceDrive/spacedrive/celestialentities.py",
+		"/home/croxis/src/Panda-Core-Technology/Planet/main.py",
+		"/home/croxis/src/Panda-Core-Technology/Planet/planet_cloud_vert.glsl",
+		"/home/croxis/src/Panda-Core-Technology/Planet/surface_mesh.py",
+		"/home/croxis/src/Panda-Core-Technology/Planet/planet_cloud_frag.glsl",
+		"/home/croxis/src/apollo/main.py",
+		"/home/croxis/src/apollo/solarsystem.yaml",
+		"/home/croxis/src/apollo/solarSystem.py",
+		"/home/croxis/src/apollo/renderSystem.py",
+		"/home/croxis/src/SandBox/sandbox/__init__.py",
+		"/home/croxis/src/apollo/clientNet.py",
+		"/home/croxis/src/apollo/galaxy.jpg",
+		"/home/croxis/src/apollo/crach.py",
+		"/home/croxis/src/apollo/universals.py",
+		"/home/croxis/src/ScatteringPrecomputing4/planet_surface_frag.glsl",
+		"/home/croxis/src/ScatteringPrecomputing4/planet_surface_vert.glsl",
+		"/home/croxis/src/ScatteringPrecomputing4/surface_mesh.py",
+		"/home/croxis/src/ScatteringPrecomputing4/scattering/postProcessing.glsl",
+		"/home/croxis/src/ScatteringPrecomputing4/AtmosphericScattering.py",
+		"/home/croxis/src/ScatteringPrecomputing4/main.py",
+		"/home/croxis/src/Panda-Core-Technology/Planet/planet_surface_frag.glsl",
+		"/home/croxis/src/Panda-Core-Technology/Planet/planet_surface_vert.glsl",
+		"/home/croxis/src/ScatteringPrecomputing4/scattering/common.glsl",
+		"/home/croxis/src/PrecomputedAtmosphericScattering/common.glsl",
 		"/home/croxis/src/Panda-Core-Technology/Planet/atmoshaders/transmittance.glsl",
 		"/home/croxis/src/Panda-Core-Technology/Planet/atmoshaders/simple_vertex.glsl",
 		"/home/croxis/src/Panda-Core-Technology/Planet/precompute.py",
@@ -642,16 +713,11 @@
 		"/home/croxis/src/Panda-Core-Technology/Planet/planet_atmosphere_frag.glsl",
 		"/home/croxis/src/Panda-Core-Technology/Planet/atmo_bruneton.py",
 		"/home/croxis/src/Panda-Core-Technology/Planet/atmoshaders/t.bak",
-		"/home/croxis/src/Panda-Core-Technology/Planet/planet_surface_vert.glsl",
-		"/home/croxis/src/Panda-Core-Technology/Planet/planet_surface_frag.glsl",
 		"/home/croxis/src/Panda-Core-Technology/Planet/shapeGenerator.py",
 		"/home/croxis/src/Panda-Core-Technology/Planet/atmoshaders/oneil_sky_from_space_vert.glsl",
-		"/home/croxis/src/Panda-Core-Technology/Planet/surface_mesh.py",
-		"/home/croxis/src/Panda-Core-Technology/Planet/main.py",
 		"/home/croxis/src/Panda-Core-Technology/Planet/planet_atmosphere_vert.glsl",
 		"/home/croxis/src/Panda-Core-Technology/Planet/convert_texture.py",
 		"/home/croxis/src/Panda-Core-Technology/Planet/atmoshaders/oneil_sky_from_space_frag.glsl",
-		"/home/croxis/src/apollo/solarSystem.py",
 		"/home/croxis/src/Panda-Core-Technology/Planet/test.py",
 		"/home/croxis/src/Panda-Core-Technology/Planet/smiley.egg.pz",
 		"/home/croxis/src/eval/eval.py",
@@ -663,7 +729,6 @@
 		"/home/croxis/src/apollo/quadPlanetFrag2.glsl",
 		"/home/croxis/src/apollo/quadPlanetVert2.glsl",
 		"/home/croxis/src/apollo/planet_prototype.py",
-		"/home/croxis/src/apollo/crach.py",
 		"/home/croxis/src/apollo/quadPlanetVert3.glsl",
 		"/home/croxis/src/apollo/starFrag.glsl",
 		"/home/croxis/src/apollo/shapeGenerator.py",
@@ -673,28 +738,21 @@
 		"/home/croxis/src/apollo/starFrag2.glsl",
 		"/home/croxis/src/apollo/quadPlanet.shader",
 		"/home/croxis/src/apollo/startest.py",
-		"/home/croxis/src/apollo/graphicsComponents.py",
 		"/home/croxis/src/apollo/ocquadtree.py",
 		"/home/croxis/src/apollo/shaderTest.py",
 		"/home/croxis/src/apollo/vortexVertex.glsl",
-		"/home/croxis/src/apollo/main.py",
 		"/home/croxis/src/apollo/picker.py",
 		"/home/croxis/src/apollo/vortexFrag2.glsl",
-		"/home/croxis/src/apollo/renderSystem.py",
-		"/home/croxis/src/SandBox/sandbox/__init__.py",
-		"/home/croxis/src/apollo/universals.py",
 		"/home/croxis/src/apollo/shipSystem.py",
 		"/home/croxis/src/SandBox/sandbox/urwidOnly.py",
 		"/home/croxis/src/SandBox/sandbox/cgui2.py",
 		"/home/croxis/src/SandBox/sandbox/cgui.py",
 		"/home/croxis/src/apollo/guiSystem.py",
 		"/home/croxis/src/apollo/serverNet.py",
-		"/home/croxis/src/apollo/shipComponents.py",
 		"/home/croxis/src/apollo/protocol/proto.proto",
 		"/home/croxis/src/apollo/protocol.py",
 		"/home/croxis/src/apollo/vortexFrag.glsl",
 		"/home/croxis/src/apollo/ships/hyperion/ship.yaml",
-		"/home/croxis/src/apollo/clientNet.py",
 		"/home/croxis/src/apollo/shapeGen/shapeGenerator.py",
 		"/home/croxis/.config/sublime-text-2/Packages/SublimeCodeIntel/Base File.sublime-settings",
 		"/home/croxis/.config/sublime-text-2/Packages/SublimeRope/SublimeRope.sublime-settings",
@@ -713,7 +771,6 @@
 		"/home/croxis/.config/sublime-text-2/Packages/SublimeLinter/SublimeLinter.sublime-settings",
 		"/home/croxis/.config/sublime-text-2/Packages/Default/Preferences.sublime-settings",
 		"/home/croxis/.config/sublime-text-2/Packages/SideBarEnhancements/messages/11.13.2012.1305.0.txt",
-		"/home/croxis/src/apollo/solarsystem.yaml",
 		"/home/croxis/src/apollo/windowBorders/renderSystem.py",
 		"/home/croxis/src/apollo/hyperspace.py",
 		"/home/croxis/src/apollo/test.py",
@@ -738,24 +795,7 @@
 		"/home/croxis/src/ITF/ITF.sublime-project",
 		"/home/croxis/.config/sublime-text-2/Packages/User/ITF server.sublime-build",
 		"/home/croxis/src/ITF/clientNet.py",
-		"/home/croxis/src/ITF/serverNet.py",
-		"/home/croxis/src/ITF/solarSystem.py",
-		"/home/croxis/src/ITF/universals.py",
-		"/home/croxis/src/ITF/physics.py",
-		"/home/croxis/src/ITF/protocol.py",
-		"/home/croxis/src/ITF/ships.py",
-		"/home/croxis/src/ITF/playerShipSystem.py",
-		"/home/croxis/src/ITF/client.py",
-		"/home/croxis/src/ITF/solarsystem.yaml",
-		"/home/croxis/.config/sublime-text-2/Packages/User/ITF Server Client.sublime-build",
-		"/home/croxis/src/ITF/PlayerShipSystem.py",
-		"/home/croxis/src/ITF/PlayerShipSystem",
-		"/home/croxis/src/ITF/physics",
-		"/home/croxis/src/ITF/globals.py",
-		"/home/croxis/.config/sublime-text-2/Packages/Pylinter/Pylinter.sublime-settings",
-		"/home/croxis/.config/sublime-text-2/Packages/User/Pylinter.sublime-settings",
-		"/home/croxis/src/SandBox/__init__.py",
-		"/home/croxis/.config/sublime-text-2/Packages/User/Python.sublime-settings"
+		"/home/croxis/src/ITF/serverNet.py"
 	],
 	"find":
 	{
@@ -775,6 +815,8 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"gl_FragData",
+			"ATMOSPHERE_OFFSET",
 			"print",
 			"self.",
 			"16",
@@ -807,7 +849,7 @@
 			"NodePath"
 		],
 		"highlight": true,
-		"in_selection": true,
+		"in_selection": false,
 		"preserve_case": false,
 		"regex": false,
 		"replace_history":
@@ -828,23 +870,23 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 0,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "/home/croxis/src/Panda-Core-Technology/Planet/main.py",
+					"file": "/home/croxis/src/SpaceDrive/spacedrive/orbit_system.py",
 					"settings":
 					{
-						"buffer_size": 4294,
+						"buffer_size": 14336,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								4101,
-								4101
+								240,
+								240
 							]
 						],
 						"settings":
@@ -943,170 +985,25 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 2435.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 1,
+					"file": "/home/croxis/src/SpaceDrive/spacedrive/surface_mesh.py",
 					"settings":
 					{
-						"buffer_size": 1038,
+						"buffer_size": 7184,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1038,
-								1038
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Text/Plain text.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true,
-							"word_wrap": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "/home/croxis/src/Panda-Core-Technology/Planet/planet_surface_vert.glsl",
-					"settings":
-					{
-						"buffer_size": 2192,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2051,
-								2051
-							]
-						],
-						"settings":
-						{
-							"annotations":
-							[
-								"TODO",
-								"README",
-								"FIXME"
-							],
-							"csslint_options":
-							{
-								"adjoining-classes": "warning",
-								"box-model": true,
-								"box-sizing": "warning",
-								"compatible-vendor-prefixes": "warning",
-								"display-property-grouping": true,
-								"duplicate-background-images": "warning",
-								"duplicate-properties": true,
-								"empty-rules": true,
-								"errors": true,
-								"fallback-colors": "warning",
-								"floats": "warning",
-								"font-faces": "warning",
-								"font-sizes": "warning",
-								"gradients": "warning",
-								"ids": "warning",
-								"import": "warning",
-								"important": "warning",
-								"known-properties": true,
-								"outline-none": "warning",
-								"overqualified-elements": "warning",
-								"qualified-headings": "warning",
-								"regex-selectors": "warning",
-								"rules-count": "warning",
-								"shorthand": "warning",
-								"star-property-hack": "warning",
-								"text-indent": "warning",
-								"underscore-property-hack": "warning",
-								"unique-headings": "warning",
-								"universal-selector": "warning",
-								"vendor-prefix": true,
-								"zero-units": "warning"
-							},
-							"gjslint_ignore":
-							[
-								110
-							],
-							"gjslint_options":
-							[
-							],
-							"javascript_linter": "jshint",
-							"jshint_options":
-							{
-								"browser": true,
-								"evil": true,
-								"regexdash": true,
-								"sub": true,
-								"trailing": true,
-								"wsh": true
-							},
-							"pep8": true,
-							"pep8_ignore":
-							[
-								"E501"
-							],
-							"perl_linter": "perlcritic",
-							"pyflakes_ignore":
-							[
-							],
-							"pyflakes_ignore_import_*": true,
-							"sublimelinter": true,
-							"sublimelinter_delay": 2,
-							"sublimelinter_disable":
-							[
-							],
-							"sublimelinter_executable_map":
-							{
-							},
-							"sublimelinter_fill_outlines": false,
-							"sublimelinter_gutter_marks": true,
-							"sublimelinter_gutter_marks_theme": "simple",
-							"sublimelinter_mark_style": "none",
-							"sublimelinter_notes": false,
-							"sublimelinter_objj_check_ascii": false,
-							"sublimelinter_popup_errors_on_save": false,
-							"sublimelinter_syntax_map":
-							{
-								"C++": "c",
-								"Python Django": "python",
-								"Ruby on Rails": "ruby"
-							},
-							"sublimelinter_wrap_find": true,
-							"syntax": "Packages/ShaderLanguages/OpenGL SL.tmLanguage",
-							"tab_size": 4,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 288.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "/home/croxis/src/Panda-Core-Technology/Planet/surface_mesh.py",
-					"settings":
-					{
-						"buffer_size": 6942,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								5957,
-								5957
+								7003,
+								7003
 							]
 						],
 						"settings":
@@ -1205,7 +1102,356 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 2208.0,
+						"translation.y": 2794.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "/home/croxis/src/SpaceDrive/spacedrive/__init__.py",
+					"settings":
+					{
+						"buffer_size": 381,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								256,
+								256
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110
+							],
+							"gjslint_options":
+							[
+							],
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"pep8": true,
+							"pep8_ignore":
+							[
+								"E501"
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"sublimelinter": true,
+							"sublimelinter_delay": 2,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": true,
+							"sublimelinter_gutter_marks_theme": "simple",
+							"sublimelinter_mark_style": "none",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"C++": "c",
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"syntax": "Packages/Python/Python.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "physics.py",
+					"settings":
+					{
+						"buffer_size": 9149,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								79,
+								79
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110
+							],
+							"gjslint_options":
+							[
+							],
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"pep8": true,
+							"pep8_ignore":
+							[
+								"E501"
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"sublimelinter": true,
+							"sublimelinter_delay": 2,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": true,
+							"sublimelinter_gutter_marks_theme": "simple",
+							"sublimelinter_mark_style": "none",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"C++": "c",
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "/home/croxis/src/SpaceDrive/spacedrive/physics_components.py",
+					"settings":
+					{
+						"buffer_size": 1079,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1079,
+								1079
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110
+							],
+							"gjslint_options":
+							[
+							],
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"pep8": true,
+							"pep8_ignore":
+							[
+								"E501"
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"sublimelinter": true,
+							"sublimelinter_delay": 2,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": true,
+							"sublimelinter_gutter_marks_theme": "simple",
+							"sublimelinter_mark_style": "none",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"C++": "c",
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -1213,23 +1459,23 @@
 			]
 		},
 		{
-			"selected": 0,
+			"selected": 2,
 			"sheets":
 			[
 				{
-					"buffer": 4,
-					"file": "/home/croxis/src/Panda-Core-Technology/Planet/planet_surface_frag.glsl",
+					"buffer": 5,
+					"file": "main.py",
 					"settings":
 					{
-						"buffer_size": 1744,
+						"buffer_size": 5029,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1413,
-								1413
+								3745,
+								3745
 							]
 						],
 						"settings":
@@ -1323,8 +1569,472 @@
 								"Ruby on Rails": "ruby"
 							},
 							"sublimelinter_wrap_find": true,
-							"syntax": "Packages/ShaderLanguages/OpenGL SL.tmLanguage",
-							"tab_size": 2,
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1488.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "/home/croxis/src/SpaceDrive/spacedrive/physics_system.py",
+					"settings":
+					{
+						"buffer_size": 4943,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2561,
+								2561
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110
+							],
+							"gjslint_options":
+							[
+							],
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"pep8": true,
+							"pep8_ignore":
+							[
+								"E501"
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"sublimelinter": true,
+							"sublimelinter_delay": 2,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": true,
+							"sublimelinter_gutter_marks_theme": "simple",
+							"sublimelinter_mark_style": "none",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"C++": "c",
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"syntax": "Packages/Python/Python.tmLanguage"
+						},
+						"translation.x": 17.0,
+						"translation.y": 678.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "solarSystem.py",
+					"settings":
+					{
+						"buffer_size": 15356,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								802,
+								802
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110
+							],
+							"gjslint_options":
+							[
+							],
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"pep8": true,
+							"pep8_ignore":
+							[
+								"E501"
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"sublimelinter": true,
+							"sublimelinter_delay": 2,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": true,
+							"sublimelinter_gutter_marks_theme": "simple",
+							"sublimelinter_mark_style": "none",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"C++": "c",
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "/home/croxis/src/SpaceDrive/spacedrive/render_components.py",
+					"settings":
+					{
+						"buffer_size": 193,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								61,
+								61
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110
+							],
+							"gjslint_options":
+							[
+							],
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"pep8": true,
+							"pep8_ignore":
+							[
+								"E501"
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"sublimelinter": true,
+							"sublimelinter_delay": 2,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": true,
+							"sublimelinter_gutter_marks_theme": "simple",
+							"sublimelinter_mark_style": "none",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"C++": "c",
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"syntax": "Packages/Python/Python.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "renderSystem.py",
+					"settings":
+					{
+						"buffer_size": 5918,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5321,
+								5321
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110
+							],
+							"gjslint_options":
+							[
+							],
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"pep8": true,
+							"pep8_ignore":
+							[
+								"E501"
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"sublimelinter": true,
+							"sublimelinter_delay": 2,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": true,
+							"sublimelinter_gutter_marks_theme": "simple",
+							"sublimelinter_mark_style": "none",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"C++": "c",
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 4,
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
@@ -1364,7 +2074,7 @@
 		"cols":
 		[
 			0.0,
-			0.507696122255,
+			0.50949900687,
 			1.0
 		],
 		"rows":

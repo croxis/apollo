@@ -1,4 +1,4 @@
-usageText = """
+"""
 Usage:
 
   %(prog)s [opts]
@@ -17,32 +17,31 @@ Options:
      optional log filename
 
 If no options are specified, the default is to run a solo client-server."""
+# ## Python 3 look ahead imports ###
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
 
-import getopt
+import argparse
 import os
 import sys
-from pandac.PandaModules import loadPrcFileData
-loadPrcFileData("", "notify-level-ITF debug")
+
+from panda3d.core import loadPrcFileData
+from direct.directnotify.DirectNotify import DirectNotify
+
+import spacedrive
+#from spacedrive import universals
+
+
 #loadPrcFileData("", "extended-exceptions 1")
-import universals
-from universals import log
 
-from panda3d.core import LPoint3d
+parser = argparse.ArgumentParser()
+parser.add_argument("-c", "--client", action="store_true", help="run as a multiplayer client")
+parser.add_argument("-s", "--server", action="store_true", help="run as a multiplayer server")
+args = parser.parse_args()
 
-def usage(code, msg=''):
-    print >> sys.stderr, usageText % {'prog': os.path.split(sys.argv[0])[1]}
-    print >> sys.stderr, msg
-    sys.exit(code)
-
-try:
-    opts, args = getopt.getopt(sys.argv[1:], 'sacr:tp:l:h')
-except getopt.error, msg:
-    usage(1, msg)
-
-logFilename = None
-threadedNet = False
-
-for opt, arg in opts:
+'''for opt, arg in opts:
     if opt == '-s':
         universals.runServer = True
         print "Server Flag"
@@ -77,39 +76,37 @@ if logFilename:
     sys.stderr = sw
 
     # Since we're writing to a log file, turn on timestamping.
-    loadPrcFileData('', 'notify-timestamp 1')
+    loadPrcFileData('', 'notify-timestamp 1')'''
+
+run_server = args.server
+run_client = args.client
+local_only = False
+
+if not run_client and not run_server:
+    run_client = True
+    run_server = True
+    local_only = True
 
 
-if not universals.runClient:
-    # Don't open a graphics window on the server.  (Open a window only
-    # if we're running a normal client, not one of the server
-    # processes.)
-    loadPrcFileData('', 'window-type none\naudio-library-name null')
-    #pass
-else:
-    loadPrcFileData('', 'frame-rate-meter-scale 0.035')
-    loadPrcFileData('', 'frame-rate-meter-side-margin 0.1')
-    loadPrcFileData('', 'show-frame-rate-meter 1')
-    loadPrcFileData('', 'window-title ' + "ITF")
-    loadPrcFileData('', "sync-video 0")
-    loadPrcFileData('', 'task-timer-verbose 1')
-    loadPrcFileData('', 'pstats-tasks 1')
-    loadPrcFileData('', 'want-pstats 1')
+spacedrive.init(run_server=args.server,
+                run_client=args.client,
+                local_only=local_only,
+                log_level='debug',
+                window_title='Apollo')
 
-# After initial setup we can now start sandbox
-log.debug("Loading sandbox")
+loadPrcFileData("", "notify-level-Apollo debug")
+log = DirectNotify().newCategory("Apollo")
 
-import sandbox
+spacedrive.init_physics()
+#import shipSystem
+#import shipComponents
+#import solarSystem
+if run_server:
+    log.info("Setting up server network")
+    from networking.server_net import NetworkSystem
+    spacedrive.init_server_net(NetworkSystem)
 
-sandbox.base.setSleep(0.001)
-sandbox.base.disableMouse()
-
-import physics
-import shipSystem
-import shipComponents
-import solarSystem
-
-if universals.runClient:
+if run_client:
     import clientNet
     import graphicsComponents
     import guiSystem
@@ -123,13 +120,6 @@ if universals.runClient:
     log.info("Setting up render system")
     sandbox.addSystem(renderSystem.RenderSystem(graphicsComponents.RenderComponent))
     sandbox.base.render.setShaderAuto()
-    
-if universals.runServer:
-    import serverNet
-    log.info("Setting up server network")
-    servnet = serverNet.NetworkSystem()
-    servnet.port = 1999
-    sandbox.addSystem(servnet)
 
 log.info("Setting up Solar System Body Simulator")
 sandbox.addSystem(solarSystem.SolarSystemSystem(solarSystem.CelestialComponent))
